@@ -228,6 +228,23 @@ textarea.veld{width:100%;min-height:84px;box-sizing:border-box;padding:12px 14px
   .eters{grid-template-columns:repeat(3,minmax(0,1fr))}
   main .tab{height:46px;padding:0 14px;font-size:15px}
 }
+/* ---------- tabletstand & nachtstand ---------- */
+.tabletknop{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 14px;border-radius:22px;border:1.5px solid #323745;background:transparent;color:var(--muted);font-size:14px;font-weight:800}
+.tabletknop[aria-pressed="true"]{color:#C9B8FF;border-color:#6E5BB8;background:rgba(155,130,255,.10)}
+.nacht{position:fixed;inset:0;background:#000;color:#6B7180;display:flex;align-items:center;justify-content:center;padding:40px;z-index:30;cursor:pointer}
+.nacht-in{display:flex;flex-direction:column;align-items:center;gap:22px;max-width:760px;width:100%;transition:transform 2s ease}
+.nacht-klok{font-size:clamp(90px,16vw,170px);font-weight:800;line-height:1;letter-spacing:-3px;color:#7A8090;font-variant-numeric:tabular-nums}
+.nacht-datum{font-size:22px;font-weight:800;margin-top:-10px}
+.nacht-blok{width:100%;border-top:1px solid #1A1C22;padding-top:16px;display:flex;flex-direction:column;gap:10px}
+.nacht-kop{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#545A68;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.nacht-rij{display:flex;gap:14px;align-items:baseline;font-size:19px;font-weight:800}
+.nacht-rij .t{min-width:58px;color:#5C6272}
+.nacht-rij .w{font-size:15px;font-weight:700;color:#4F5562}
+.nacht-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;opacity:.55}
+.nacht-hint{font-size:13px;font-weight:700;color:#3E434E}
+.nacht svg{opacity:.7}
+@media (max-width:1399px){.tabletknop{width:44px;padding:0;justify-content:center}.tabletknop span{display:none}}
+@media (max-width:760px){.tabletknop{display:none}}
 /* ---------- telefoon ---------- */
 .ikknop{display:none}
 @media (max-width:760px){
@@ -451,8 +468,85 @@ function hoofdletter(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
 /* ---------------- weergave ---------------- */
 
+/* ---------------- tabletstand: scherm aan houden + nachtstand ---------------- */
+var tabletStand = (function () { try { return localStorage.getItem('gezinsdashboard-tablet') === '1'; } catch (e) { return false; } })();
+var wekker = null;            // de 'scherm aan'-vergrendeling van de browser
+var wakkerTot = 0;            // in de nachtstand: tot wanneer het gewone dashboard open blijft na een tik
+var WAKKER_MS = 3 * 60000;
+
+function houdSchermAan(klaar) {
+  if (!tabletStand || document.hidden) return;
+  if (wekker) { if (klaar) klaar(true); return; }
+  if (!navigator.wakeLock) { if (klaar) klaar(false); return; }
+  navigator.wakeLock.request('screen').then(function (l) {
+    wekker = l;
+    l.addEventListener('release', function () { wekker = null; });
+    if (klaar) klaar(true);
+  }, function () { if (klaar) klaar(false); });   // niet toegestaan: dan geldt de gewone time-out van de tablet
+}
+function laatSchermLos() { if (wekker) { try { wekker.release(); } catch (e) {} wekker = null; } }
+function zetTabletStand(aan) {
+  tabletStand = aan;
+  try { localStorage.setItem('gezinsdashboard-tablet', aan ? '1' : '0'); } catch (e) {}
+  if (!aan) { laatSchermLos(); zegt('Tabletstand uit', '#C9B8FF'); return; }
+  houdSchermAan(function (gelukt) {
+    zegt(gelukt ? 'Tabletstand aan: scherm blijft aan' : 'Tabletstand aan (scherm aan houden lukt niet in deze browser: zet "Actief blijven" aan op de tablet)', '#C9B8FF');
+  });
+}
+
+function nachtTijden() { return (D && D.nacht) || { van: '20:00', tot: '07:00' }; }
+function minuten(hhmm) { var p = String(hhmm).split(':'); return Number(p[0]) * 60 + Number(p[1] || 0); }
+function isNacht() {
+  var n = new Date(), nu = n.getHours() * 60 + n.getMinutes();
+  var van = minuten(nachtTijden().van), tot = minuten(nachtTijden().tot);
+  return van > tot ? (nu >= van || nu < tot) : (nu >= van && nu < tot);
+}
+function iemandBezig() {
+  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm);
+}
+function toonNacht() {
+  return tabletStand && !isMobiel() && isNacht() && Date.now() > wakkerTot && !iemandBezig();
+}
+
+function renderNacht() {
+  var n = new Date();
+  var klok = ('0' + n.getHours()).slice(-2) + ':' + ('0' + n.getMinutes()).slice(-2);
+  // Na middernacht gaat 'morgen' over vandaag; daarvoor over morgen.
+  var naMiddernacht = n.getHours() < 12;
+  var dagDatum = naMiddernacht ? D.vandaag : D.morgen;
+  var dag = ((D.agenda || {}).dagen || []).filter(function (d) { return d.datum === dagDatum; })[0];
+  var titel = naMiddernacht ? 'Vandaag' : 'Morgen';
+  var w = weerVoor(dagDatum);
+  var weer = w ? '<span style="display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-weight:800">' + svg(w.icoon, 18) + esc(w.tekst) + ' · ' + w.min + '–' + w.max + '°' +
+    (w.kans >= 30 ? ' · ' + w.kans + '% regen' : '') + '</span>' : '';
+  var lijst = dag ? dag.events.slice(0, 6).map(function (e) {
+    var wie = e.wie.map(persoon).filter(Boolean);
+    var rit = '';
+    if (e.kind && !e.heleDag) {
+      var b = e.breng && persoon(e.breng), h = e.haal && persoon(e.haal);
+      rit = ' · breng ' + (b ? b.naam : '?') + ' · haal ' + (h ? h.naam : '?');
+    }
+    return '<div class="nacht-rij"><span class="t">' + esc(e.tijd) + '</span><span>' + esc(e.titel) +
+      '<div class="w">' + wie.map(function (p) { return '<span class="nacht-dot" style="background:' + esc(p.kleur) + '"></span>' + esc(p.naam); }).join(' ') + esc(rit) + '</div></span></div>';
+  }).join('') : '';
+  if (dag && dag.events.length > 6) lijst += '<div class="nacht-hint">en nog ' + (dag.events.length - 6) + ' meer</div>';
+  var mee = (D.meenemen || []).filter(function (x) { return x.datum === dagDatum && !x.ingepakt; });
+  var meeHtml = mee.length ? '<div class="nacht-blok"><div class="nacht-kop">' + svg('tas', 16) + 'Mee naar school</div>' +
+    mee.map(function (x) { var k = persoon(x.kind) || { naam: '', kleur: '#555' }; return '<div class="nacht-rij"><span><span class="nacht-dot" style="background:' + esc(k.kleur) + '"></span>' + esc(k.naam) + ': ' + esc(x.wat) + '</span></div>'; }).join('') + '</div>' : '';
+  // Elke minuut een paar pixels verschuiven, zodat er niets in het scherm inbrandt.
+  var m = n.getMinutes(), dx = ((m * 7) % 21) - 10, dy = ((m * 11) % 21) - 10;
+  document.getElementById('app').innerHTML = '<div class="nacht" data-act="nachtWakker" role="button" aria-label="Nachtstand. Tik om het dashboard te openen">' +
+    '<div class="nacht-in" style="transform:translate(' + dx + 'px,' + dy + 'px)">' +
+    '<div class="nacht-klok">' + klok + '</div><div class="nacht-datum">' + esc(hoofdletter(D.datumTekst || '')) + '</div>' +
+    '<div class="nacht-blok"><div class="nacht-kop">' + titel + (dag ? ' · ' + esc(dag.dag + ' ' + dag.nr) : '') + ' ' + weer + '</div>' +
+    (lijst || '<div class="nacht-rij" style="color:#4F5562">Geen afspraken</div>') + '</div>' + meeHtml +
+    '<div class="nacht-hint">Tik om het dashboard te openen</div></div></div>';
+  document.getElementById('laag').innerHTML = '';
+}
+
 function render() {
   if (vergrendeld) { renderSlot(); return; }
+  if (toonNacht()) { renderNacht(); return; }
   var bewaard = ['nieuw', 'wens'].map(function (id) {
     var el = document.getElementById(id);
     return el ? { id: id, v: el.value, f: document.activeElement === el } : null;
@@ -478,11 +572,13 @@ function kop() {
   var ikKnop = '<button type="button" class="ikknop" data-act="ikOpen" aria-label="Wie ben jij? Nu: ' + esc(mij ? mij.naam : 'hele gezin') + '">' +
     (mij ? av(mij, 34) : '<span class="av" style="width:34px;height:34px;background:#9CC2FF;font-size:13px">' + svg('agenda', 18) + '</span>') +
     '<span>' + esc(mij ? mij.naam : 'Gezin') + '</span></button>';
+  var tabletKnop = '<button type="button" class="tabletknop" data-act="tabletStand" aria-pressed="' + tabletStand + '" title="Scherm blijft aan; van ' + esc(nachtTijden().van) + ' tot ' + esc(nachtTijden().tot) + ' rustige nachtstand">' +
+    svg('pyjama', 18) + '<span>Tabletstand' + (tabletStand ? ' aan' : '') + '</span></button>';
   return '<header><div><div class="datum">' + esc(hoofdletter(D.datumTekst)) + '</div><div class="sub">Ons gezin · week ' + D.week +
     '<span class="volgende"> · volgende melding ' + esc(volgende) + '</span></div></div>' + ikKnop + '<nav aria-label="Onderdelen" role="tablist">' + tabs.map(function (t) {
       return '<button type="button" class="tab" role="tab" aria-selected="' + (tab === t[0]) + '" data-act="tab" data-id="' + t[0] + '">' +
         svg(t[2], 22) + (t[3] ? '<span class="lang">' + t[1] + '</span><span class="kort">' + t[3] + '</span>' : '<span>' + t[1] + '</span>') + '</button>';
-    }).join('') + '</nav><div class="status' + (toast ? ' heeft-toast' : '') + '" aria-live="polite">' + rechts + '</div></header>';
+    }).join('') + '</nav>' + tabletKnop + '<div class="status' + (toast ? ' heeft-toast' : '') + '" aria-live="polite">' + rechts + '</div></header>';
 }
 
 function vandaag() {
@@ -1529,6 +1625,8 @@ document.addEventListener('click', function (ev) {
   var act = b.getAttribute('data-act'), id = b.getAttribute('data-id');
   if (act === 'tab') { tab = id; toast = null; render(); window.scrollTo(0, 0); return; }
   if (act === 'key') { druk(id); return; }
+  if (act === 'nachtWakker') { wakkerTot = Date.now() + WAKKER_MS; render(); return; }
+  if (act === 'tabletStand') { zetTabletStand(!tabletStand); return; }
   if (act === 'weekNr') { weekNr = Number(id); render(); return; }
   if (act === 'detail') { detail = id; bewerkA = null; render(); return; }
   if (bewerkA && (act === 'aStatus' || act === 'aBreng' || act === 'aHaal' || act === 'aCat')) {
@@ -1781,7 +1879,18 @@ document.addEventListener('input', function (ev) {
   if (ev.target.id === 'kf-datum' && klusForm) klusForm.datum = ev.target.value;
 });
 
-document.addEventListener('visibilitychange', function () { if (!document.hidden) ververs(); });
+document.addEventListener('visibilitychange', function () { if (!document.hidden) { ververs(); houdSchermAan(); } });
+// In de nachtstand: elke tik houdt het gewone dashboard nog even open; daarna terug naar de nachtstand.
+['pointerdown', 'keydown'].forEach(function (soort) {
+  document.addEventListener(soort, function () { if (tabletStand && isNacht() && Date.now() < wakkerTot) wakkerTot = Date.now() + WAKKER_MS; }, true);
+});
+var wasNacht = toonNacht();
+setInterval(function () {
+  var nu = toonNacht();
+  if (nu || nu !== wasNacht) render();   // klok bijwerken, of wisselen tussen dag- en nachtstand
+  wasNacht = nu;
+}, 20000);
+houdSchermAan();
 setInterval(ververs, 60000);          // elke minuut verversen, zodat tablet en telefoons gelijk lopen
 setInterval(function () { if (!toast) render(); }, 5 * 60000); // "volgende melding" bijwerken
 
