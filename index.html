@@ -289,7 +289,7 @@ window.google = { script: { run: (function maak(gelukt, mislukt) {
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ code: code, fn: fn, args: args || [] })
       }).then(function (r) { return r.json(); })
-        .then(function (res) { if (res && res.__fout) fout(res.__fout); else if (gelukt) gelukt(res); })
+        .then(function (res) { if (res && res.__fout) fout(res.__fout); else if (gelukt) setTimeout(function () { gelukt(res); }, 0); })
         .catch(function () { fout('Geen verbinding'); });
     }
   };
@@ -298,7 +298,29 @@ window.google = { script: { run: (function maak(gelukt, mislukt) {
 <script>
 var D = { slot: true };
 var gezinscode = (function () { try { return localStorage.getItem('gezinsdashboard-code') || ''; } catch (e) { return ''; } })();
+var DATA_SLEUTEL = 'gezinsdashboard-data';
+/* Laatst bekende data van dit apparaat: het dashboard staat dan meteen op het scherm en wordt op de
+   achtergrond bijgewerkt (alleen op apparaten die de gezinscode al hebben). */
+var uitGeheugen = false;
+if (D.slot && gezinscode) {
+  try {
+    var bewaard = JSON.parse(localStorage.getItem(DATA_SLEUTEL) || 'null');
+    if (bewaard && bewaard.gezin) { D = bewaard; uitGeheugen = true; }
+  } catch (e) {}
+}
 var vergrendeld = !!D.slot;   // er is een gezinscode ingesteld en dit apparaat heeft hem (nog) niet
+function nieuweData(res) {
+  D = res;
+  try { if (gezinscode) localStorage.setItem(DATA_SLEUTEL, JSON.stringify(res)); } catch (e) {}
+}
+/** Alleen als de server zegt dat de code echt niet klopt, vergeet dit apparaat hem. */
+function codeEchtFout(res) {
+  return res && (res.reden === 'fout' || (!res.reden && res.fout === 'Deze code klopt niet.'));
+}
+function vergeetCode() {
+  gezinscode = '';
+  try { localStorage.removeItem('gezinsdashboard-code'); localStorage.removeItem(DATA_SLEUTEL); } catch (e) {}
+}
 var slotFout = '', slotBezig = false;
 var tab = 'vandaag';
 var toast = null, toastTimer = null;
@@ -1282,41 +1304,53 @@ function zegt(tekst, kleur) {
 function renderSlot() {
   document.getElementById('app').innerHTML = '<main class="slotscherm"><section class="card">' +
     '<span class="av" style="width:72px;height:72px;background:#9CC2FF">' + svg('slot', 34) + '</span>' +
-    '<h2>Gezinsdashboard</h2><div class="klein" style="font-size:15px">Typ de gezinscode. Dit apparaat onthoudt hem, dus je hoeft dit maar één keer te doen.</div>' +
+    '<h2>Gezinsdashboard</h2>' + (slotAuto ? '' : '<div class="klein" style="font-size:15px">Typ de gezinscode. Dit apparaat onthoudt hem, dus je hoeft dit maar één keer te doen.</div>') +
+    (slotAuto ? '<div class="klein" style="font-size:17px;font-weight:800;margin-top:6px">Dashboard laden…</div>' :
     '<form data-form="slot"><label class="sr" for="slotcode">Gezinscode</label>' +
     '<input id="slotcode" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false" placeholder="Gezinscode"' + (slotBezig ? ' disabled' : '') + '>' +
-    '<button type="submit" class="knop"' + (slotBezig ? ' disabled' : '') + '>' + (slotBezig ? 'Even controleren…' : 'Openen') + '</button></form>' +
+    '<button type="submit" class="knop"' + (slotBezig ? ' disabled' : '') + '>' + (slotBezig ? 'Even controleren…' : 'Openen') + '</button></form>') +
     '<div class="fout" aria-live="assertive">' + esc(slotFout) + '</div></section></main>';
   document.getElementById('laag').innerHTML = '';
   var veld = document.getElementById('slotcode');
   if (veld && !slotBezig) veld.focus();
 }
 
-function probeerCode(code) {
-  slotBezig = true; slotFout = ''; render();
+var slotAuto = false;   // de bewaarde code wordt automatisch gecontroleerd (geen invoer nodig)
+function probeerCode(code, auto) {
+  slotBezig = true; slotAuto = !!auto; slotFout = ''; render();
   google.script.run
     .withSuccessHandler(function (res) {
-      slotBezig = false;
+      slotBezig = false; slotAuto = false;
       if (!res || res.slot) {
         slotFout = (res && res.fout) || '';
-        gezinscode = ''; try { localStorage.removeItem('gezinsdashboard-code'); } catch (e) {}
+        if (codeEchtFout(res) || !auto) vergeetCode();
+        else if (auto) { slotFout = (slotFout ? slotFout + ' ' : '') + 'Ik probeer het zo opnieuw…'; setTimeout(function () { if (vergrendeld && gezinscode) probeerCode(gezinscode, true); }, 15000); }
         render(); return;
       }
       gezinscode = code; try { localStorage.setItem('gezinsdashboard-code', code); } catch (e) {}
-      D = res; vergrendeld = false;
+      nieuweData(res); vergrendeld = false;
       if (isMobiel() && !ik) wieKiezen = true;
       render();
     })
-    .withFailureHandler(function (err) { slotBezig = false; slotFout = err && err.toonbaar ? err.message : 'Geen verbinding. Probeer het opnieuw.'; render(); })
+    .withFailureHandler(function (err) {
+      slotBezig = false; slotAuto = false;
+      slotFout = err && err.toonbaar ? err.message : 'Geen verbinding. Probeer het opnieuw.';
+      if (auto) { slotFout = 'Geen verbinding, ik probeer het zo opnieuw…'; setTimeout(function () { if (vergrendeld && gezinscode) probeerCode(gezinscode, true); }, 10000); }
+      render();
+    })
     .api(code, 'getData', []);
 }
 
 /** Het script gaf { slot: true } terug: de code is gewijzigd of ontbreekt. Terug naar het codescherm. */
-function toonSlot(fout) {
+function toonSlot(res) {
+  var fout = res && res.fout;
+  // Tijdelijk probleem (te veel foute pogingen door iemand anders, instelling even niet leesbaar):
+  // dit apparaat houdt zijn code en blijft gewoon werken.
+  if (gezinscode && !codeEchtFout(res) && !(res && res.reden === 'leeg')) { if (fout) zegt(fout, '#FF8A7A'); return; }
   vergrendeld = true; slotFout = fout || 'Typ de (nieuwe) gezinscode.';
   pin = null; keuze = null; detail = null; bewerkA = null; menuEdit = null; klusForm = null; helpDag = null;
   meeForm = null; wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null;
-  gezinscode = ''; try { localStorage.removeItem('gezinsdashboard-code'); } catch (e) {}
+  vergeetCode();
   render();
 }
 
@@ -1327,9 +1361,9 @@ function bewaar(fn, args) {
   var run = google.script.run
     .withSuccessHandler(function (res) {
       bezig--;
-      if (res && res.slot) { toonSlot(res.fout); return; }
+      if (res && res.slot) { toonSlot(res); return; }
       if (res && res.fout) { ouderSessie = null; zegt(res.fout, '#FF8A7A'); ververs(); return; }
-      if (bezig === 0 && res && res.gezin) { D = res; render(); }
+      if (bezig === 0 && res && res.gezin) { nieuweData(res); render(); }
     })
     .withFailureHandler(function () { bezig--; zegt('Opslaan mislukt, probeer opnieuw', '#FF8A7A'); ververs(); });
   run.api(gezinscode, fn, args);
@@ -1338,8 +1372,8 @@ function bewaar(fn, args) {
 function ververs() {
   if (vergrendeld || pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || bezig) return;
   google.script.run.withSuccessHandler(function (res) {
-    if (res && res.slot) { toonSlot(res.fout); return; }
-    if (!pin && !keuze && !detail && !menuEdit && !klusForm && !helpDag && !meeForm && !wieKiezen && !extraForm && !beoordeel && !spaarForm && !bezig && res && res.gezin) { D = res; render(); }
+    if (res && res.slot) { toonSlot(res); return; }
+    if (!pin && !keuze && !detail && !menuEdit && !klusForm && !helpDag && !meeForm && !wieKiezen && !extraForm && !beoordeel && !spaarForm && !bezig && res && res.gezin) { nieuweData(res); render(); }
   }).api(gezinscode, 'getData', []);
 }
 
@@ -1439,13 +1473,13 @@ function drukServer() {
     var p0 = pin;
     var runner = google.script.run
       .withSuccessHandler(function (res) {
-        if (res && res.slot) { toonSlot(res.fout); return; }
+        if (res && res.slot) { toonSlot(res); return; }
         if (res && res.fout) {
           p0.bezig = false; p0.digits = ''; p0.schud = res.fout === 'Verkeerde pincode';
           p0.fout = res.fout === 'Verkeerde pincode' ? 'Verkeerde pincode, probeer het nog eens' : res.fout;
           renderPin(); return;
         }
-        pin = null; if (res && res.gezin) D = res;
+        pin = null; if (res && res.gezin) nieuweData(res);
         zegt(p0.gelukt, (persoon(p0.kind) || {}).kleur || '#9CC2FF');
       })
       .withFailureHandler(function (err) { p0.bezig = false; p0.digits = ''; p0.fout = (err && err.message) || 'Opslaan mislukt, probeer opnieuw'; renderPin(); });
@@ -1456,7 +1490,7 @@ function drukServer() {
     var code = pin.digits;
     google.script.run
       .withSuccessHandler(function (res) {
-        if (res && res.slot) { toonSlot(res.fout); return; }
+        if (res && res.slot) { toonSlot(res); return; }
         if (!res || !res.ok) {
           pin.bezig = false; pin.digits = ''; pin.schud = true;
           pin.fout = res && res.fout && res.fout !== 'Verkeerde pincode' ? res.fout : 'Verkeerde pincode, probeer het nog eens';
@@ -1474,12 +1508,12 @@ function drukServer() {
   var klus = pin.klus;
   google.script.run
     .withSuccessHandler(function (res) {
-      if (res && res.slot) { toonSlot(res.fout); return; }
+      if (res && res.slot) { toonSlot(res); return; }
       if (res && res.fout) {
         pin.bezig = false; pin.digits = ''; pin.fout = res.fout === 'Verkeerde pincode' ? 'Verkeerde pincode, probeer het nog eens' : res.fout; pin.schud = true;
         renderPin(); return;
       }
-      pin = null; D = res;
+      pin = null; nieuweData(res);
       var k = persoon(klus.kind) || { naam: '', kleur: '#ECEEF3' };
       zegt('+' + klus.punten + (klus.punten === 1 ? ' punt' : ' punten') + ' voor ' + k.naam + '!', k.kleur);
     })
@@ -1755,7 +1789,8 @@ var wasMobiel = isMobiel();
 window.addEventListener('resize', function () {
   if (isMobiel() !== wasMobiel) { wasMobiel = isMobiel(); render(); }
 });
-if (vergrendeld && gezinscode) probeerCode(gezinscode);
+if (vergrendeld && gezinscode) probeerCode(gezinscode, true);
+if (uitGeheugen) setTimeout(ververs, 50);   // meteen tonen wat er was, en direct bijwerken
 if (!vergrendeld && isMobiel() && !ik) wieKiezen = true;
 render();
 </script>
