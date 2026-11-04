@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gezinsdashboard</title>
+<meta name="theme-color" content="#101218">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gezin">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#101218;--card:#191C24;--card2:#20242E;--line:#2A2E39;--text:#ECEEF3;--muted:#A3AABA;--dim:#8F97A8;--ja:#4ADE80;--nee:#FF8A7A;--onb:#B4BAC8;--warn:#F2C14E}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Nunito,system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input{font-family:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #9CC2FF;outline-offset:2px}
+.app{max-width:1400px;margin:0 auto;padding:22px 28px 28px;display:flex;flex-direction:column;gap:18px;min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.datum{font-size:30px;font-weight:900;letter-spacing:-.5px}
+.sub{font-size:15px;color:var(--muted);font-weight:700}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+.tab{display:inline-flex;align-items:center;gap:8px;height:52px;padding:0 18px;border-radius:26px;border:none;background:#1E222C;color:#C9CEDA;font-size:16px;font-weight:800}
+.tab[aria-selected="true"]{background:var(--text);color:var(--bg)}
+.status{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:190px}
+.toast{font-size:18px;font-weight:900;padding:10px 16px;border-radius:14px}
+.card{background:var(--card);border-radius:20px;padding:22px 24px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card h2{margin:0;font-size:22px;font-weight:900}
+.kop{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.klein{font-size:13px;color:var(--muted);font-weight:700}
+.grid-vandaag{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;align-items:start}
+.kolom{display:flex;flex-direction:column;gap:20px;min-width:0}
+.event{display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.tijd{width:72px;font-size:18px;font-weight:900}
+.etitel{flex:1 1 160px;min-width:0}
+.etitel b{display:block;font-size:18px;font-weight:800}
+.wie{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--muted);font-weight:700;margin-top:4px;flex-wrap:wrap}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:44px;padding:0 14px;border-radius:22px;border:1.5px solid;font-size:14px;font-weight:800;white-space:nowrap}
+.chip.open{border-style:dashed}
+.eters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.eter{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 4px;border-radius:16px;border:1.5px solid}
+.eter .n{font-size:14px;font-weight:800;color:var(--text);max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.eter .s{font-size:13px;font-weight:800}
+.av{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:var(--bg);flex:0 0 auto}
+.rij{display:flex;align-items:center;gap:12px}
+.rij .n{width:100px;font-size:15px;font-weight:800}
+.balk{flex:1;height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.balk>div{height:100%;border-radius:5px}
+.frac{width:40px;text-align:right;font-size:14px;font-weight:800;color:var(--muted)}
+.kids{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;align-items:start}
+.spaar{background:#12141A;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.spaar .pts{font-size:34px;font-weight:900;line-height:1}
+.spaar .balk{height:8px;flex:none}
+.klus{display:flex;align-items:center;gap:10px;width:100%;min-height:58px;padding:8px 10px;border-radius:14px;border:1.5px solid #323745;background:var(--card2);color:var(--text);text-align:left}
+.klus[disabled]{background:transparent;border-color:#262A34;cursor:default}
+.klus[disabled] .ktekst{text-decoration:line-through;color:var(--dim)}
+.icoon{border-radius:12px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+.ktekst{flex:1;min-width:0;font-size:15px;font-weight:800;line-height:1.2}
+.ktekst.klein-label{font-size:13px;color:var(--muted)}
+.pdots{display:flex;gap:3px;flex:0 0 auto}
+.pdots span{width:8px;height:8px;border-radius:50%}
+.grid-eten{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.menu{display:flex;align-items:center;gap:14px;min-height:56px;padding:0 16px;border-radius:14px;border:1.5px solid transparent}
+.menu.vandaag{background:#232838;border-color:#5B9DFF}
+.menu .d{width:36px;font-size:16px;font-weight:900;color:var(--muted)}
+.menu .g{flex:1;font-size:18px;font-weight:800}
+.menu .g.leeg{color:var(--dim);font-weight:700;font-size:15px}
+.invoer{display:flex;gap:10px}
+.invoer input{flex:1;min-width:0;height:52px;padding:0 16px;border-radius:14px;border:1.5px solid #3A3F4C;background:#12141A;color:var(--text);font-size:17px;font-weight:700}
+.knop{height:52px;padding:0 20px;border-radius:14px;border:none;background:var(--text);color:var(--bg);font-size:16px;font-weight:900}
+.knop2{height:44px;padding:0 16px;border-radius:12px;border:1.5px solid #3A3F4C;background:transparent;color:var(--muted);font-size:14px;font-weight:800;align-self:flex-start}
+.lijst{display:flex;flex-direction:column;gap:6px}
+.item{display:flex;align-items:center;gap:12px;width:100%;min-height:50px;padding:0 14px;border-radius:12px;border:none;background:var(--card2);color:var(--text);text-align:left}
+.vak{width:26px;height:26px;border-radius:8px;border:2px solid #5A6072;display:inline-flex;align-items:center;justify-content:center;color:var(--ja);flex:0 0 auto}
+.item.gedaan .vak{border-color:var(--ja);background:rgba(74,222,128,.16)}
+.item.gedaan .itekst{text-decoration:line-through;color:var(--dim)}
+.itekst{flex:1;font-size:17px;font-weight:800}
+.overlay{position:fixed;inset:0;background:rgba(6,7,10,.78);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.pinbox{width:360px;max-width:100%;background:#1E222C;border-radius:24px;padding:28px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.pinbox h2{margin:0;font-size:24px;font-weight:900}
+.pindots{display:flex;gap:14px;margin:6px 0}
+.pindots span{width:18px;height:18px;border-radius:50%;border:2px solid}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
+.key{height:60px;border-radius:16px;border:none;background:#323846;color:var(--text);font-size:24px;font-weight:800}
+.key.s{background:#2A2E39;font-size:15px}
+.key[disabled]{opacity:.5}
+.fout{color:var(--nee);font-weight:800;font-size:15px;min-height:20px;text-align:center}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.melding{background:rgba(242,193,78,.10);border:1.5px dashed var(--warn);color:var(--warn);border-radius:14px;padding:12px 14px;font-weight:800;font-size:14px}
+.leegtekst{color:var(--dim);font-weight:700;font-size:15px;padding:8px 0}
+.voet{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--muted);font-weight:700}
+.tab[aria-pressed="true"]{background:var(--text);color:var(--bg)}
+.maal{display:flex;flex-direction:column;gap:8px;background:#12141A;border-radius:14px;padding:12px}
+.mtitel{font-size:16px;font-weight:900}
+.snee{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 12px;border-radius:12px;border:1.5px solid #323745;background:var(--card2);color:var(--text);font-size:15px;font-weight:800;text-align:left}
+.snee.plus{border-style:dashed;color:var(--muted);background:transparent;justify-content:center}
+.kiesbox{width:600px;max-width:100%;background:#1E222C;border-radius:24px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:14px;max-height:92vh;overflow:auto}
+.kiesbox h2{margin:0;font-size:22px;font-weight:900;text-align:center}
+.kiesgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;width:100%}
+.kies{min-height:62px;border-radius:14px;border:2px solid #3A3F4C;background:#2A2E39;color:var(--text);font-size:17px;font-weight:800;padding:8px}
+.kiesknoppen{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.weekkop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.weekgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;align-items:start}
+.dagkol{background:var(--card);border-radius:16px;padding:12px 10px;display:flex;flex-direction:column;gap:8px;min-height:180px;min-width:0}
+.dagkol.nu{outline:2px solid #5B9DFF}
+.dagkol.voorbij{opacity:.6}
+.dagkop{display:flex;align-items:baseline;gap:2px 6px;padding:0 2px 4px;flex-wrap:wrap}
+.dagkop b{font-size:17px;font-weight:900;text-transform:capitalize;white-space:nowrap}
+.dagkop span{font-size:13px;color:var(--muted);font-weight:700}
+.wev{display:flex;flex-direction:column;gap:3px;width:100%;padding:8px 9px;border-radius:12px;border:1.5px solid #323745;background:var(--card2);color:var(--text);text-align:left;min-height:44px}
+.wev .t{font-size:12px;font-weight:800;color:var(--muted)}
+.wev .n{font-size:14px;font-weight:800;line-height:1.2;overflow-wrap:anywhere}
+.wev .r{display:flex;gap:4px;flex-wrap:wrap;font-size:11px;font-weight:800}
+.wev .r span{padding:1px 6px;border-radius:8px;border:1px solid}
+.detailbox{width:520px;max-width:100%;background:#1E222C;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.detailbox h2{margin:0;font-size:24px;font-weight:900}
+@media (max-width:900px){.weekgrid{grid-template-columns:1fr}.dagkol{min-height:0}}
+button.menu{width:100%;background:var(--card2);border:1.5px solid #323745;color:var(--text);text-align:left;cursor:pointer;font-family:inherit}
+.menu .potlood{color:var(--muted);display:inline-flex}
+.krij{display:flex;flex-direction:column;gap:3px;padding:9px 0;border-top:1px solid var(--line)}
+.knog{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:24px}
+.knog.klaar{color:var(--ja)}
+.kgeld{display:flex;gap:4px 14px;font-size:13px;color:var(--muted);font-weight:700;padding-left:24px;flex-wrap:wrap}
+.kgeld b{color:var(--text);font-weight:900}
+.kgeld .tegoed{margin-left:auto}
+.krij{display:flex;flex-direction:column;gap:3px;padding:10px 0;border-top:1px solid var(--line)}
+.knog{font-size:13px;font-weight:700;color:var(--muted);padding-left:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.knog.klaar{color:var(--ja)}
+.kgeld{display:flex;gap:2px 14px;flex-wrap:wrap;padding-left:24px;font-size:13px;font-weight:700;color:var(--muted)}
+.kgeld b{color:var(--text);font-weight:900}
+.klusform{width:660px;align-items:stretch;max-height:92vh;overflow:auto}
+.veldlabel{font-size:15px;font-weight:900;margin-top:4px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.keuze{min-height:44px;padding:0 14px;border-radius:22px;border:1.5px solid #3A3F4C;background:#2A2E39;color:var(--text);font-size:15px;font-weight:800;display:inline-flex;align-items:center;gap:6px}
+.keuze[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.knop-rood{height:44px;padding:0 16px;border-radius:12px;border:1.5px solid var(--nee);background:rgba(255,138,122,.12);color:var(--nee);font-size:14px;font-weight:900}
+input[type=date]{color-scheme:dark}
+.beheer .klus{min-height:54px}
+.beheer .sub{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-top:2px}
+.helpers{display:inline-flex;gap:3px}
+.helpers .av{font-size:11px!important}
+.helpt-niet{font-size:13px;font-weight:800;color:var(--muted);border:1.5px dashed #3A3F4C;border-radius:12px;padding:3px 8px;white-space:nowrap}
+.menu.voorbij{opacity:.6}
+.wens{display:flex;align-items:center;gap:12px;min-height:50px;padding:6px 8px 6px 12px;border-radius:12px;background:var(--card2)}
+.wtekst{flex:1;display:flex;flex-direction:column;min-width:0}
+.wtekst b{font-size:16px;font-weight:800}
+.wis{width:44px;height:44px;border-radius:12px;border:none;background:transparent;color:var(--muted);font-size:24px;font-weight:700}
+.invoer input:disabled,.knop:disabled{opacity:.45;cursor:not-allowed}
+.vakantie{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:48px 24px}
+.vakantie b{font-size:26px;font-weight:900}
+.mee{display:flex;align-items:center;gap:6px;min-height:46px;padding:0 2px 0 6px;border-radius:12px;background:var(--card2)}
+.mee .vak{cursor:pointer}
+.mee .mtekst{flex:1;font-size:15px;font-weight:800;min-width:0;overflow-wrap:break-word;hyphens:auto}
+.mee.ingepakt .mtekst{text-decoration:line-through;color:var(--dim)}
+.mee .wis{width:30px;height:44px;flex:0 0 auto;border-radius:10px;border:none;background:transparent;color:var(--muted);font-size:20px;font-weight:900}
+.mee .vakknop{border:none;background:transparent;padding:4px 2px;min-height:44px;display:inline-flex;align-items:center}
+.event{flex-wrap:nowrap;align-items:flex-start}
+.event .tijd{padding-top:1px}
+.pillen{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.pil{display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:14px;border:1.5px solid;font-size:13px;font-weight:800;white-space:nowrap}
+.pil.open{border-style:dashed}
+.cat{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:10px;background:#262B37;color:#C9CEDA;font-size:12px;font-weight:800}
+.notitie{display:flex;gap:6px;align-items:flex-start;margin-top:5px;font-size:13px;font-weight:700;color:#C9CEDA}
+.notitie svg{flex:0 0 auto;margin-top:1px;color:var(--muted)}
+.potloodknop{flex:0 0 auto;width:44px;height:44px;border-radius:12px;border:1.5px solid #323745;background:var(--card2);color:var(--muted);display:inline-flex;align-items:center;justify-content:center}
+.morgenkop{margin-top:10px;padding-top:12px;border-top:2px solid var(--line);display:flex;justify-content:space-between;align-items:baseline;font-size:15px;font-weight:900;color:var(--muted)}
+.event.morgen{opacity:.7;padding:9px 0}
+.event.morgen b{font-size:15px}
+.event.morgen .tijd{font-size:15px}
+.event.morgen .potloodknop{width:40px;height:40px}
+.wev .t{display:flex;align-items:center;gap:4px}
+textarea.veld{width:100%;min-height:84px;box-sizing:border-box;padding:12px 14px;border-radius:14px;border:1.5px solid #3A3F4C;background:#12141A;color:var(--text);font:inherit;font-size:16px;font-weight:700;resize:vertical}
+.status{display:none}
+.status.heeft-toast{display:flex;position:fixed;top:14px;right:20px;z-index:20}
+.status.heeft-toast .toast{background:#1E222C!important;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.kort{display:none}
+@media (min-width:1181px){
+  header{flex-wrap:nowrap}
+  header>div:first-child{flex:1 1 auto;min-width:0}
+  header nav{flex:0 0 auto;flex-wrap:nowrap}
+}
+.xrij{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:12px;background:#12141A;font-size:14px;font-weight:800}
+.xrij .xw{flex:1;min-width:0}
+.xrij .klein{display:block;font-size:12px;margin-top:2px}
+.xrij.wacht{border:1.5px dashed #3A3F4C}
+.xrij.goed{border:1.5px solid rgba(74,222,128,.4)}
+.xrij.afgewezen{border:1.5px solid rgba(255,138,122,.35);opacity:.8}
+.xknop{width:32px;height:32px;flex:0 0 auto;border:none;border-radius:8px;background:transparent;color:var(--muted);font-size:18px;font-weight:900}
+.wachtbalk{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:rgba(156,194,255,.10);border:1.5px solid rgba(156,194,255,.45);color:#C7DCFF;font-weight:800;font-size:15px}
+.bkaart{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:16px;background:#262B37}
+.bkaart .invoer input{height:46px;font-size:16px}
+.puntveld{width:90px!important;flex:0 0 auto!important;text-align:center}
+.weerbalk{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;padding:10px 14px;border-radius:14px;background:#20242E;font-size:14px;font-weight:800;color:#C9CEDA}
+.weerbalk .nu{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900;color:var(--text)}
+.weerbalk .deel{display:flex;align-items:center;gap:5px;color:var(--muted)}
+.weertip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:12px;background:rgba(156,194,255,.14);color:#C7DCFF;font-size:13px;font-weight:900}
+.rkind{display:flex;flex-direction:column;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.rtegels{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:8px}
+.rtegel{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;min-height:76px;padding:6px 2px;border-radius:16px;border:2px solid #323745;background:var(--card2);color:var(--text);font-size:11px;font-weight:800;line-height:1.1;text-align:center}
+.rtegel.af{border-color:var(--ja);background:rgba(74,222,128,.14);color:var(--dim)}
+.rtegel .vinkje{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--ja);color:#101218;display:flex;align-items:center;justify-content:center}
+.doelblok{display:flex;flex-direction:column;gap:5px;margin-top:6px;padding-top:8px;border-top:1px solid #262A34}
+.doelblok .titel{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:900}
+.doelknop{align-self:flex-start;min-height:36px;padding:0 10px;border-radius:10px;border:1.5px dashed #3A3F4C;background:transparent;color:var(--muted);font-size:13px;font-weight:800;display:inline-flex;align-items:center;gap:6px}
+.dagweer{margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:800;color:#C9CEDA;white-space:nowrap}
+.dagweer .regen{color:#9CC2FF;margin-left:3px}
+.slotscherm{display:flex;justify-content:center;padding-top:10vh}
+.slotscherm .card{width:420px;max-width:100%;align-items:center;text-align:center;gap:14px}
+.slotscherm form{display:flex;flex-direction:column;gap:12px;width:100%}
+.slotscherm input{height:56px;border-radius:14px;border:1.5px solid #3A3F4C;background:#12141A;color:var(--text);font:inherit;font-size:20px;font-weight:800;text-align:center;letter-spacing:2px;padding:0 14px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:900px){
+  .grid-vandaag,.grid-eten{grid-template-columns:1fr}
+  .app{padding:16px;gap:14px}
+  .datum{font-size:24px}
+  .status{align-items:flex-start;min-width:0}
+  .card{padding:18px}
+}
+@media (max-width:480px){
+  .eters{grid-template-columns:repeat(3,minmax(0,1fr))}
+  main .tab{height:46px;padding:0 14px;font-size:15px}
+}
+/* ---------- telefoon ---------- */
+.ikknop{display:none}
+@media (max-width:760px){
+  .app{padding:12px 12px calc(92px + env(safe-area-inset-bottom));gap:12px}
+  header{flex-wrap:nowrap;gap:10px}
+  header .datum{font-size:22px}
+  header .sub{font-size:13px}
+  .ikknop{display:inline-flex;align-items:center;gap:8px;margin-left:auto;min-height:44px;padding:0 12px 0 4px;border-radius:24px;border:1.5px solid #323745;background:var(--card2);color:var(--text);font-size:14px;font-weight:800;flex:0 0 auto}
+  header nav{position:fixed;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:#151821;border-top:1px solid var(--line)}
+  header nav .tab{flex-direction:column;justify-content:center;height:58px;padding:0 2px;gap:3px;font-size:11px;border-radius:14px;background:transparent;color:var(--muted)}
+  header nav .tab svg{display:block}
+  header nav .lang{display:none}
+  header nav .kort{display:inline}
+  .sub .volgende{display:none}
+  header nav .tab[aria-selected="true"]{background:#262B37;color:var(--text)}
+  .status{display:none}
+  .status.heeft-toast{display:flex;position:fixed;top:10px;left:12px;right:12px;align-items:center;z-index:20}
+  .status.heeft-toast .toast{background:#1E222C!important;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+  .card{padding:16px;border-radius:18px}
+  .card h2{font-size:20px}
+  .event{gap:8px 12px}
+  .tijd{width:auto;min-width:48px;font-size:16px}
+  .chips .chip{height:44px;padding:0 12px;font-size:13px}
+  .kids{grid-template-columns:1fr}
+  .weekkop{gap:8px}
+  .dagkol{padding:10px}
+  .kgeld{gap:2px 10px}
+  .overlay{align-items:flex-end;padding:0}
+  .pinbox,.kiesbox,.detailbox{width:100%;max-width:none;border-radius:24px 24px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+  .kiesgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+.wiegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;width:100%}
+.wie-k{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:16px;border:1.5px solid #3A3F4C;background:#2A2E39;color:var(--text);font-size:14px;font-weight:800;min-height:44px}
+.wie-k[aria-pressed="true"]{border-color:var(--text)}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<div id="laag"></div>
+
+<script src="config.js"></script>
+<script>
+/* De web-app-link staat in config.js, zodat je index.html later kunt vervangen zonder hem opnieuw in te vullen. */
+var WEBAPP_LINK = window.WEBAPP_LINK || '';
+
+/* Dit doet hetzelfde als google.script.run in Apps Script, maar dan via internet. */
+window.google = { script: { run: (function maak(gelukt, mislukt) {
+  return {
+    withSuccessHandler: function (f) { return maak(f, mislukt); },
+    withFailureHandler: function (f) { return maak(gelukt, f); },
+    api: function (code, fn, args) {
+      var fout = function (tekst, toonbaar) { var e = new Error(tekst); e.toonbaar = !!toonbaar; if (mislukt) mislukt(e); };
+      if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(WEBAPP_LINK)) {
+        fout('De webapp-link ontbreekt nog in config.js (zie het stappenplan, stap 8).', true); return;
+      }
+      fetch(WEBAPP_LINK, {
+        method: 'POST', redirect: 'follow', credentials: 'omit',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ code: code, fn: fn, args: args || [] })
+      }).then(function (r) { return r.json(); })
+        .then(function (res) { if (res && res.__fout) fout(res.__fout); else if (gelukt) gelukt(res); })
+        .catch(function () { fout('Geen verbinding'); });
+    }
+  };
+})() } };
+</script>
+<script>
+var D = { slot: true };
+var gezinscode = (function () { try { return localStorage.getItem('gezinsdashboard-code') || ''; } catch (e) { return ''; } })();
+var vergrendeld = !!D.slot;   // er is een gezinscode ingesteld en dit apparaat heeft hem (nog) niet
+var slotFout = '', slotBezig = false;
+var tab = 'vandaag';
+var toast = null, toastTimer = null;
+var pin = null;          // {klus, digits, fout, bezig}
+var bezig = 0;           // lopende opslag-acties
+var detail = null;       // sleutel van de afspraak in het detailvenster (tabblad Week)
+var weekNr = 0;          // 0 = deze week, 1 = volgende week
+var ouderSessie = null;  // {pin, naam, tot} – na ouderpincode mag het weekmenu een paar minuten aangepast worden
+var menuEdit = null;
+var beheer = false;
+var helpDag = null;      // datum waarvoor de 'wie helpt koken?'-keuze open staat
+var wensKind = null;     // kind dat een eetwens doorgeeft      // klusjes beheren (na ouderpincode)
+var klusForm = null;     // formulier nieuwe/aangepaste klus     // {dag, waarde}
+var keuze = null;        // {kind, maaltijd, index} – open belegkiezer
+var meeForm = null;
+var wieKiezen = false;   // keuzevenster 'Wie ben jij?' (telefoon)
+var ik = (function () { try { return localStorage.getItem('gezinsdashboard-ik') || ''; } catch (e) { return ''; } })();      // {kind} – 'iets mee naar school' toevoegen
+var broodDag = new Date().getHours() < 9 ? 0 : 1;   // 's ochtends vroeg vandaag, daarna morgen
+
+var ST = {
+  ja:  { c: '#4ADE80', bg: 'rgba(74,222,128,.14)' },
+  nee: { c: '#FF8A7A', bg: 'rgba(255,138,122,.14)' },
+  onb: { c: '#B4BAC8', bg: 'rgba(180,186,200,.10)' }
+};
+var VOLGENDE = { ja: 'nee', nee: 'onb', onb: 'ja' };
+var ETEN_L = { ja: 'Eet mee', nee: 'Eet niet mee', onb: 'Weet nog niet' };
+var GAAT_L = { ja: '✓ Gaat', nee: '✕ Gaat niet', onb: '? Onbekend' };
+var DAG_KORT = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
+
+var ICONS = {
+  opruimen: '<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/>',
+  eten: '<path d="M7 3v18M4 3v5a3 3 0 0 0 6 0V3"/><path d="M17 21V3c-2.5 1.5-3 6-3 9h3"/>',
+  was: '<path d="M8 3L3 6l2 5 3-1v11h8V10l3 1 2-5-5-3a4 4 0 0 1-8 0z"/>',
+  kliko: '<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/>',
+  water: '<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/>',
+  schoon: '<path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>',
+  dier: '<circle cx="6" cy="10" r="2"/><circle cx="10" cy="5.5" r="2"/><circle cx="14" cy="5.5" r="2"/><circle cx="18" cy="10" r="2"/><path d="M12 11c-3 0-6 4-6 6.5S8 21 12 21s6-1 6-3.5S15 11 12 11z"/>',
+  overig: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+  vink: '<path d="M5 12l5 5 9-10"/>',
+  week: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M7 14h2M11 14h2M15 14h2M7 17h2M11 17h2"/>',
+  shirt: '<path d="M8 3L3 6l2 5 3-1v11h8V10l3 1 2-5-5-3a4 4 0 0 1-8 0z"/>',
+  tand: '<path d="M7 3c-2 0-3 2-3 4 0 3 1 4 1.5 7S6 21 8 21c1.5 0 1.5-4 4-4s2.5 4 4 4c2 0 2-4 2.5-7S20 10 20 7c0-2-1-4-3-4-2 0-3 1-5 1S9 3 7 3z"/>',
+  kam: '<path d="M3 9h18v3H3z"/><path d="M5 12v6M8 12v6M11 12v6M14 12v6M17 12v6M20 12v6"/>',
+  schoen: '<path d="M3 15V8l5 2 3-2 3 4 6 2a2 2 0 0 1 1 2v1H3z"/><path d="M3 19h18"/>',
+  pyjama: '<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>',
+  wc: '<path d="M6 3h5v8H6zM4 11h16a8 8 0 0 1-16 0z"/><path d="M9 19l-1 2h8l-1-2"/>',
+  boek: '<path d="M12 6c-2-2-5-2-8-2v14c3 0 6 0 8 2 2-2 5-2 8-2V4c-3 0-6 0-8 2z"/><path d="M12 6v14"/>',
+  doel: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  zon: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  halfzon: '<path d="M8 3v1.5M3.5 8H2M4.8 4.8l1 1M13.2 4.8l-1 1"/><path d="M5.5 10.5a3.5 3.5 0 0 1 6.6-1.6"/><path d="M8 20h10a4 4 0 0 0 0-8 5 5 0 0 0-9.6 1.5A3.3 3.3 0 0 0 8 20z"/>',
+  wolk: '<path d="M7 19h11a4 4 0 0 0 0-8 6 6 0 0 0-11.6 1.6A3.3 3.3 0 0 0 7 19z"/>',
+  mist: '<path d="M4 9h16M3 13h18M5 17h14"/>',
+  regen: '<path d="M7 15h11a4 4 0 0 0 0-8 6 6 0 0 0-11.6 1.6A3.3 3.3 0 0 0 7 15z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/>',
+  sneeuw: '<path d="M7 14h11a4 4 0 0 0 0-8 6 6 0 0 0-11.6 1.6A3.3 3.3 0 0 0 7 14z"/><path d="M8 18h.01M12 20h.01M16 18h.01M10 22h.01M14 22h.01"/>',
+  onweer: '<path d="M7 15h11a4 4 0 0 0 0-8 6 6 0 0 0-11.6 1.6A3.3 3.3 0 0 0 7 15z"/><path d="M12 14l-2 4h4l-2 4"/>',
+  slot: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  potlood: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  notitie: '<path d="M5 4h14v12l-4 4H5z"/><path d="M15 20v-4h4M8 9h8M8 13h5"/>',
+  sport: '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6c3.5 3.5 3.5 9.3 0 12.8M18.4 5.6c-3.5 3.5-3.5 9.3 0 12.8"/>',
+  spelen: '<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/>',
+  muziek: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+  scouting: '<path d="M3 20L12 4l9 16z"/><path d="M9 20l3-6 3 6"/>',
+  school: '<path d="M4 5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2z"/><path d="M4 20V5M8 7h8"/>',
+  zorg: '<path d="M12 20s-7-4.4-9-8.6A4.8 4.8 0 0 1 12 7a4.8 4.8 0 0 1 9 4.4C19 15.6 12 20 12 20z"/>',
+  feest: '<rect x="3" y="9" width="18" height="12" rx="2"/><path d="M12 9v12M3 13h18M12 9C10 5 6.5 5 6.5 7.2S12 9 12 9zm0 0c2-4 5.5-4 5.5-1.8S12 9 12 9z"/>',
+  tas: '<path d="M6 9a6 6 0 0 1 12 0v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M9 5.5V3.5h6v2M9 14h6v3H9z"/>',
+  fruit: '<path d="M12 7c-3-2-7 0-7 5s3 9 5 9c1 0 1.5-.5 2-.5s1 .5 2 .5c2 0 5-4 5-9s-4-7-7-5z"/><path d="M12 7c0-2 1-4 3-4"/>',
+  brood: '<path d="M6 21V10.5A4 4 0 0 1 8 3h8a4 4 0 0 1 2 7.5V21z"/>',
+  agenda: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  taken: '<path d="M9 11l3 3 8-8"/><path d="M20 12v6a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h9"/>',
+  kar: '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h12L22 7H6.2"/>'
+};
+
+function svg(naam, maat, dikte) {
+  return '<svg width="' + maat + '" height="' + maat + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' +
+    (dikte || 2) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[naam] || ICONS.overig) + '</svg>';
+}
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+var CATEGORIEEN = [['sport', 'Sport'], ['spelen', 'Spelen'], ['muziek', 'Muziek'], ['scouting', 'Scouting'],
+  ['school', 'School'], ['zorg', 'Arts/zorg'], ['feest', 'Feest'], ['overig', 'Overig']];
+function catNaam(c) { var x = CATEGORIEEN.filter(function (k) { return k[0] === c; })[0]; return x ? x[1] : ''; }
+var bewerkA = null;
+var spaarForm = null;    // {kind, doel, punten}
+var routineMoment = new Date().getHours() < 12 ? 'ochtend' : 'avond';
+var extraForm = null;    // {kind, wat, datum: 'vandaag'|'gisteren', voorstel}
+var beoordeel = null;    // {punten: {id: n}, reden: {id: tekst}, geef: {kind, wat, punten}}
+var EXTRA_SNEL = [1, 2, 3, 5, 10, 25];      // formulier 'afspraak bewerken'
+var ZELF = { id: 'zelf', naam: 'Zelf', kleur: '#8F97A8', rol: 'extra' };
+var OPA_OMA = { id: 'opa_oma', naam: 'Opa/Oma', kleur: '#C9CED8', rol: 'extra' };
+function persoon(id) {
+  if (id === OPA_OMA.id) return OPA_OMA;
+  if (id === ZELF.id) return ZELF;
+  return D.gezin.filter(function (p) { return p.id === id; })[0];
+}
+function kinderen() { return D.gezin.filter(function (p) { return p.rol === 'kind'; }); }
+function isMobiel() { return window.matchMedia('(max-width: 760px)').matches; }
+/** Op een telefoon van een kind: alleen dat kind. Op de tablet en bij ouders: alle kinderen. */
+function mijnKind() {
+  if (!isMobiel() || !ik) return null;
+  var p = persoon(ik);
+  return p && p.rol === 'kind' ? p : null;
+}
+function zichtbareKinderen() { var k = mijnKind(); return k ? [k] : kinderen(); }
+function zetIk(id) {
+  ik = id || 'gezin';
+  try { localStorage.setItem('gezinsdashboard-ik', ik); } catch (e) {}
+}
+function renderWie(laag) {
+  var knoppen = D.gezin.map(function (p) {
+    return '<button type="button" class="wie-k" data-act="ikKies" data-id="' + esc(p.id) + '" aria-pressed="' + (ik === p.id) + '">' + av(p, 48) + esc(p.naam) + '</button>';
+  }).join('');
+  laag.innerHTML = '<div class="overlay"><div class="detailbox" role="dialog" aria-modal="true" aria-label="Wie ben jij?">' +
+    '<h2>Wie ben jij?</h2><div class="klein" style="font-size:15px">Deze telefoon onthoudt het. Kinderen zien dan alleen hun eigen klusjes en schooldag.</div>' +
+    '<div class="wiegrid">' + knoppen + '</div>' +
+    '<button type="button" class="knop2" data-act="ikKies" data-id="gezin">Hele gezin tonen</button></div></div>';
+}
+function ouders() { return D.gezin.filter(function (p) { return p.rol === 'ouder'; }); }
+function av(p, maat) {
+  return '<span class="av" style="width:' + maat + 'px;height:' + maat + 'px;font-size:' + Math.round(maat * .42) +
+    'px;background:' + esc(p.kleur) + '">' + esc(p.naam.charAt(0)) + '</span>';
+}
+function euro(pts) { return '€ ' + (Math.max(0, pts) / 25).toFixed(2).replace('.', ','); }
+function hoofdletter(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+/* ---------------- weergave ---------------- */
+
+function render() {
+  if (vergrendeld) { renderSlot(); return; }
+  var bewaard = ['nieuw', 'wens'].map(function (id) {
+    var el = document.getElementById(id);
+    return el ? { id: id, v: el.value, f: document.activeElement === el } : null;
+  }).filter(Boolean);
+
+  document.getElementById('app').innerHTML = kop() +
+    (tab === 'vandaag' ? vandaag() : tab === 'week' ? week() : tab === 'klusjes' ? klusjes() : tab === 'brood' ? brood() : eten());
+
+  bewaard.forEach(function (b) {
+    var el = document.getElementById(b.id);
+    if (el) { el.value = b.v; if (b.f) el.focus(); }
+  });
+  renderPin();
+}
+
+function kop() {
+  var tabs = [['vandaag', 'Vandaag', 'agenda'], ['week', 'Week', 'week'], ['klusjes', 'Klusjes', 'taken'], ['brood', 'Schooldag', 'tas'], ['eten', 'Eten & boodschappen', 'kar', 'Eten']];
+  var h = new Date().getHours();
+  var volgende = h < D.meldingEten ? D.meldingEten + ':00 · mee-eten' :
+    h < D.meldingOverig ? D.meldingOverig + ':00 · ritten en klusjes' : 'morgen ' + D.meldingEten + ':00 · mee-eten';
+  var rechts = toast ? '<div class="toast" role="status" style="color:' + toast.kleur + '">' + esc(toast.tekst) + '</div>' : '';
+  var mij = ik && ik !== 'gezin' ? persoon(ik) : null;
+  var ikKnop = '<button type="button" class="ikknop" data-act="ikOpen" aria-label="Wie ben jij? Nu: ' + esc(mij ? mij.naam : 'hele gezin') + '">' +
+    (mij ? av(mij, 34) : '<span class="av" style="width:34px;height:34px;background:#9CC2FF;font-size:13px">' + svg('agenda', 18) + '</span>') +
+    '<span>' + esc(mij ? mij.naam : 'Gezin') + '</span></button>';
+  return '<header><div><div class="datum">' + esc(hoofdletter(D.datumTekst)) + '</div><div class="sub">Ons gezin · week ' + D.week +
+    '<span class="volgende"> · volgende melding ' + esc(volgende) + '</span></div></div>' + ikKnop + '<nav aria-label="Onderdelen" role="tablist">' + tabs.map(function (t) {
+      return '<button type="button" class="tab" role="tab" aria-selected="' + (tab === t[0]) + '" data-act="tab" data-id="' + t[0] + '">' +
+        svg(t[2], 22) + (t[3] ? '<span class="lang">' + t[1] + '</span><span class="kort">' + t[3] + '</span>' : '<span>' + t[1] + '</span>') + '</button>';
+    }).join('') + '</nav><div class="status' + (toast ? ' heeft-toast' : '') + '" aria-live="polite">' + rechts + '</div></header>';
+}
+
+function vandaag() {
+  var mk = mijnKind();
+  var a = { fout: (D.agenda || {}).fout, lijst: vandaagEvents().filter(function (e) { return !mk || !e.wie.length || e.wie.indexOf(mk.id) >= 0; }) };
+  var events = a.fout ? '<div class="melding">' + esc(a.fout) + '</div>' :
+    !a.lijst.length ? '<div class="leegtekst">Geen afspraken vandaag.</div>' :
+    a.lijst.map(function (e) { return afspraakRij(e, false); }).join('');
+  var morgenDag = ((D.agenda || {}).dagen || []).filter(function (d) { return d.datum === D.morgen; })[0];
+  var morgenLijst = morgenDag ? morgenDag.events.filter(function (e) { return !mk || !e.wie.length || e.wie.indexOf(mk.id) >= 0; }) : [];
+  var morgenHtml = a.fout || !morgenDag ? '' : '<div class="morgenkop"><span>Morgen · ' + esc(morgenDag.dag + ' ' + morgenDag.nr) + '</span>' +
+    '<span class="klein">' + morgenLijst.length + (morgenLijst.length === 1 ? ' afspraak' : ' afspraken') + '</span></div>' +
+    (function () {
+      var w = weerVoor(D.morgen);
+      if (!w) return '';
+      var deel = function (naam, x) { return x ? '<span class="deel">' + svg(x.icoon, 15) + naam + ' ' + x.temp + '°' + (x.kans >= 20 ? ' · ' + x.kans + '% regen' : '') + '</span>' : ''; };
+      return '<div class="weerbalk" style="opacity:.8;margin-top:6px;font-size:13px"><span class="nu" style="font-size:15px">' + svg(w.icoon, 20) + esc(w.tekst) + ' · ' + w.min + '–' + w.max + '°</span>' +
+        deel('ochtend', w.ochtend) + deel('middag', w.middag) +
+        w.tips.map(function (t) { return '<span class="weertip">' + esc(t) + '</span>'; }).join('') + '</div>';
+    })() +
+    (morgenLijst.map(function (e) { return afspraakRij(e, true); }).join('') || '<div class="leegtekst" style="opacity:.7">Nog niets gepland.</div>');
+
+  var tel = { ja: 0, nee: 0, onb: 0 };
+  var eters = D.gezin.map(function (p) {
+    var st = D.eten[p.id] || 'onb'; tel[st]++;
+    var s = ST[st];
+    return '<button type="button" class="eter" data-act="eet" data-id="' + esc(p.id) + '" style="border-color:' + (st === 'onb' ? '#3A3F4C' : s.c + '66') + ';background:' + s.bg + '" aria-label="' + esc(p.naam) + ': ' + ETEN_L[st] + ', tik om te wijzigen">' +
+      '<span style="opacity:' + (st === 'nee' ? .45 : 1) + '">' + av(p, 38) + '</span><span class="n">' + esc(p.naam) + '</span><span class="s" style="color:' + s.c + '">' + ETEN_L[st] + '</span></button>';
+  }).join('');
+
+  var verdiend = 0;
+  var samenvatting = zichtbareKinderen().map(function (k) {
+    var lijst = D.klusjes.filter(function (c) { return c.kind === k.id; });
+    var open = lijst.filter(function (c) { return !c.gedaan; });
+    lijst.forEach(function (c) { if (c.gedaan) verdiend += c.punten; });
+    var klaar = lijst.length - open.length;
+    var verd = (D.verdiend || {})[k.id] || 0, uit = (D.uitbetaald || {})[k.id] || 0;
+    var nog = !lijst.length ? 'Vandaag geen klusjes' : !open.length ? '✓ Alles gedaan' :
+      'Nog: ' + open.map(function (c) { return c.klus; }).join(', ');
+    return '<div class="krij"><div class="rij"><span class="dot" style="width:12px;height:12px;background:' + esc(k.kleur) + '"></span><span class="n">' + esc(k.naam) + '</span>' +
+      '<div class="balk"><div style="width:' + (lijst.length ? klaar / lijst.length * 100 : 0) + '%;background:' + esc(k.kleur) + '"></div></div>' +
+      '<span class="frac">' + (lijst.length ? klaar + '/' + lijst.length : '–') + '</span></div>' +
+      '<div class="knog' + (lijst.length && !open.length ? ' klaar' : '') + '" title="' + esc(nog) + '">' + esc(nog) + '</div>' +
+      '<div class="kgeld"><span>Verdiend <b>' + euro(verd) + '</b></span><span>Uitbetaald <b>' + euro(uit) + '</b></span>' +
+      '<span class="tegoed">Tegoed <b style="color:' + esc(k.kleur) + '">' + euro(verd - uit) + '</b></span></div></div>';
+  }).join('');
+  var openRitten = (a.lijst || []).filter(function (e) { return e.kind && !e.heleDag; })
+    .reduce(function (n, e) { return n + (e.breng ? 0 : 1) + (e.haal ? 0 : 1); }, 0);
+
+  return '<main class="grid-vandaag">' +
+    '<section class="card"><div class="kop"><h2>Agenda vandaag</h2><span class="klein">Google Agenda · Gezin</span></div>' + weerBalk() + events + morgenHtml +
+    '<div class="klein" style="margin-top:6px">Tik op ✏️ om aan te passen wie er gaat, brengt of haalt, of om een notitie of categorie toe te voegen.</div></section>' +
+    '<div class="kolom">' + routineKaart() +
+    '<section class="card"><div class="kop"><h2>Wie eet er mee?</h2><span class="klein">Melding om ' + D.meldingEten + ':00</span></div>' +
+    '<div class="eters">' + eters + '</div><div style="font-size:15px;font-weight:800;color:#C9CEDA">' + tel.ja + ' eten mee · ' + tel.nee + ' niet · ' + tel.onb + ' weet nog niet</div></section>' +
+    '<section class="card" style="gap:0"><div class="kop" style="padding-bottom:8px"><h2>Klusjes</h2><span class="klein">Vandaag ' + verdiend + (verdiend === 1 ? ' punt' : ' punten') + ' verdiend · 25 punten = € 1</span></div>' +
+    (mijnKind() ? '' : (wachtend().length ? '<div style="padding-top:10px">' + wachtBalk() + '</div>' : '')) + samenvatting + '</section>' +
+    '</div></main>';
+}
+
+function weerVoor(datum) {
+  var w = D.weer;
+  return w && w.dagen ? w.dagen.filter(function (d) { return d.datum === datum; })[0] : null;
+}
+
+/** Klein weerlabel per dag in het weekoverzicht (verder dan een week vooruit iets lichter: minder zeker). */
+function dagWeer(d) {
+  var w = weerVoor(d.datum);
+  if (!w || d.datum < D.vandaag) return '';
+  var p = d.datum.split('-').map(Number), q = D.vandaag.split('-').map(Number);
+  var vooruit = Math.round((Date.UTC(p[0], p[1] - 1, p[2]) - Date.UTC(q[0], q[1] - 1, q[2])) / 86400000);
+  return '<span class="dagweer" title="' + esc(w.tekst + ', ' + w.min + '–' + w.max + '°' + (w.kans >= 30 ? ', ' + w.kans + '% kans op regen' : '') + (w.tips.length ? ' · ' + w.tips.join(' · ') : '')) + '"' +
+    (vooruit > 7 ? ' style="opacity:.6"' : '') + '>' + svg(w.icoon, 16) + w.min + '–' + w.max + '°' + (w.kans >= 30 ? '<span class="regen">' + w.kans + '%</span>' : '') + '</span>';
+}
+
+function weerBalk() {
+  var w = D.weer;
+  if (!w) return '';
+  if (w.fout) return '<div class="weerbalk">' + svg('wolk', 18) + '<span>' + esc(w.fout) + '</span></div>';
+  var d = weerVoor(D.vandaag);
+  if (!d) return '';
+  var deel = function (naam, x) { return x ? '<span class="deel">' + svg(x.icoon, 16) + naam + ' ' + x.temp + '°' + (x.kans >= 20 ? ' · ' + x.kans + '% regen' : '') + '</span>' : ''; };
+  var h = new Date().getHours();
+  return '<div class="weerbalk" aria-label="Weer in ' + esc(w.plaats) + '"><span class="nu">' + svg(w.nu.icoon, 24) + w.nu.temp + '°</span>' +
+    '<span>' + esc(w.nu.tekst) + ' · ' + d.min + '–' + d.max + '°</span>' +
+    (h < 12 ? deel('ochtend', d.ochtend) : '') + (h < 18 ? deel('middag', d.middag) : '') + deel('avond', d.avond) +
+    d.tips.map(function (t) { return '<span class="weertip">' + esc(t) + '</span>'; }).join('') + '</div>';
+}
+
+function routineKaart() {
+  var r = D.routines;
+  if (!r || !r.kinderen || !r.kinderen.length) return '';
+  var mk = mijnKind();
+  var kinderenR = r.kinderen.filter(function (id) { return !mk || id === mk.id; });
+  if (!kinderenR.length) return '';
+  var schakel = '<div class="chips">' + [['ochtend', 'Ochtend'], ['avond', 'Avond']].map(function (m) {
+    return '<button type="button" class="keuze" data-act="rMoment" data-id="' + m[0] + '" aria-pressed="' + (routineMoment === m[0]) + '" style="min-height:40px">' + m[1] + '</button>';
+  }).join('') + '</div>';
+  var rijen = kinderenR.map(function (id) {
+    var k = persoon(id); if (!k) return '';
+    var lijst = (r.stappen[id] || {})[routineMoment] || [];
+    var af = lijst.filter(function (s) { return s.gedaan; }).length;
+    var tegels = lijst.map(function (s) {
+      return '<button type="button" class="rtegel' + (s.gedaan ? ' af' : '') + '" data-act="rStap" data-id="' + esc(id + '|' + s.id) + '" aria-pressed="' + s.gedaan + '" aria-label="' + esc(k.naam + ': ' + s.stap) + (s.gedaan ? ', gedaan' : '') + '"' +
+        (s.gedaan ? '' : ' style="color:' + esc(k.kleur) + '"') + '>' + svg(s.icoon, 30) + '<span style="color:var(--text)">' + esc(s.stap) + '</span>' +
+        (s.gedaan ? '<span class="vinkje">' + svg('vink', 14, 3) + '</span>' : '') + '</button>';
+    }).join('');
+    return '<div class="rkind"><div class="rij" style="gap:10px">' + av(k, 32) + '<b style="font-size:16px">' + esc(k.naam) + '</b>' +
+      '<span class="klein" style="margin-left:auto">' + (lijst.length && af === lijst.length ? '✓ Klaar! +' + r.bonus + (r.bonus === 1 ? ' punt' : ' punten') : af + '/' + lijst.length) + '</span></div>' +
+      '<div class="rtegels">' + (tegels || '<span class="leegtekst">Geen stappen</span>') + '</div></div>';
+  }).join('');
+  return '<section class="card" style="gap:6px"><div class="kop" style="align-items:center"><h2>' + (routineMoment === 'ochtend' ? 'Ochtendroutine' : 'Avondroutine') + '</h2>' + schakel + '</div>' + rijen + '</section>';
+}
+
+function doelBlok(k, tegoed) {
+  var s = (D.spaardoelen || {}), d = (s.doelen || {})[k.id];
+  if (!d) return '<div class="doelblok"><button type="button" class="doelknop" data-act="doelOpen" data-id="' + esc(k.id) + '">' + svg('doel', 16) + 'Spaardoel kiezen</button></div>';
+  var pct = Math.max(0, Math.min(100, tegoed / d.punten * 100));
+  var nog = d.punten - tegoed, tempo = (s.perDag || {})[k.id] || 0;
+  var tekst = nog <= 0 ? '<b style="color:var(--ja)">Doel bereikt!</b>' :
+    'Nog ' + nog + ' punten' + (tempo > 0 ? ' · ' + (Math.ceil(nog / tempo) > 365 ? 'nog meer dan een jaar sparen' : 'ongeveer ' + Math.ceil(nog / tempo) + (Math.ceil(nog / tempo) === 1 ? ' dag' : ' dagen')) : '');
+  return '<div class="doelblok"><button type="button" class="doelknop" data-act="doelOpen" data-id="' + esc(k.id) + '" style="border:none;padding:0;min-height:30px;color:var(--text)" aria-label="Spaardoel aanpassen: ' + esc(d.doel) + '">' +
+    '<span class="titel">' + svg('doel', 16) + esc(d.doel) + '</span></button>' +
+    '<div class="balk" style="height:8px;flex:none"><div style="width:' + pct + '%;background:' + esc(k.kleur) + '"></div></div>' +
+    '<div class="klein" style="font-size:12px">' + tegoed + ' van ' + d.punten + ' punten (' + euro(d.punten) + ') · ' + tekst + '</div></div>';
+}
+
+function renderSpaar(laag) {
+  var f = spaarForm, k = persoon(f.kind) || { naam: '?', kleur: '#ECEEF3' };
+  var heeft = !!((D.spaardoelen || {}).doelen || {})[f.kind];
+  laag.innerHTML = '<div class="overlay"><form class="detailbox klusform" data-form="spaar" role="dialog" aria-modal="true" aria-label="Spaardoel">' +
+    '<div class="rij" style="gap:12px">' + av(k, 48) + '<h2>Waar spaar jij voor?</h2></div>' +
+    '<div class="invoer"><label class="sr" for="s-doel">Spaardoel</label><input id="s-doel" type="text" maxlength="60" autocomplete="off" placeholder="Bijv. LEGO-set" value="' + esc(f.doel) + '"></div>' +
+    '<div class="veldlabel">Hoeveel punten heb je nodig? <span class="klein">25 punten = € 1</span></div>' +
+    '<div class="invoer" style="align-items:center"><label class="sr" for="s-punten">Punten</label><input id="s-punten" class="puntveld" style="width:120px!important" type="number" inputmode="numeric" min="1" max="10000" value="' + esc(f.punten) + '">' +
+    '<span class="klein" id="s-euro">= ' + euro(Number(f.punten) || 0) + '</span></div>' +
+    '<div class="fout" style="text-align:left">' + esc(f.fout || '') + '</div>' +
+    '<div class="chips"><button type="submit" class="knop">Opslaan</button>' +
+    (heeft ? '<button type="button" class="knop2" data-act="doelWeg" style="align-self:center">Doel weghalen</button>' : '') +
+    '<button type="button" class="knop2" data-act="doelSluit" style="align-self:center">Annuleren</button></div></form></div>';
+  if (f.focus) { f.focus = false; document.getElementById('s-doel').focus(); }
+}
+
+function bewaarSpaar(doel, punten) {
+  var f = spaarForm; spaarForm = null;
+  var k = persoon(f.kind) || {};
+  if (ouderActief()) {
+    zegt(punten ? 'Spaardoel opgeslagen' : 'Spaardoel weggehaald', k.kleur);
+    bewaar('zetSpaardoel', [f.kind, doel, punten, ouderSessie.pin]); return;
+  }
+  vraagKindPin(f.kind, punten ? 'Spaardoel: ' + doel + ' (' + punten + ' punten)' : 'Spaardoel weghalen', 'zetSpaardoel', [f.kind, doel, punten],
+    punten ? 'Spaardoel opgeslagen!' : 'Spaardoel weggehaald');
+}
+
+function pil(kleur, tekst, open) {
+  return '<span class="pil' + (open ? ' open' : '') + '" style="color:' + esc(kleur) + ';border-color:' + esc(kleur) + (open ? ';background:rgba(242,193,78,.10)' : '') + '">' + esc(tekst) + '</span>';
+}
+
+/** Eén afspraak op Vandaag: alleen tonen, aanpassen via het potlood. */
+function afspraakRij(e, morgen) {
+  var wie = e.wie.map(persoon).filter(Boolean);
+  var wieHtml = wie.length ? wie.map(function (p) { return '<span class="dot" style="background:' + esc(p.kleur) + '"></span>'; }).join('') +
+    '<span>' + esc(wie.map(function (p) { return p.naam; }).join(' & ')) + '</span>' : '<span>Gezin</span>';
+  var cat = e.categorie ? '<span class="cat">' + svg(e.categorie, 13) + esc(catNaam(e.categorie)) + '</span>' : '';
+  var pillen = '';
+  if (e.kind && !e.heleDag) {
+    var b = e.breng && persoon(e.breng), h = e.haal && persoon(e.haal);
+    pillen = '<div class="pillen">' + pil(ST[e.status].c, GAAT_L[e.status]) +
+      pil(b ? b.kleur : '#F2C14E', 'Breng: ' + (b ? b.naam : '?'), !b) + pil(h ? h.kleur : '#F2C14E', 'Haal: ' + (h ? h.naam : '?'), !h) + '</div>';
+  }
+  var notitie = e.notitie ? '<div class="notitie">' + svg('notitie', 14) + '<span>' + esc(e.notitie) + '</span></div>' : '';
+  return '<div class="event' + (morgen ? ' morgen' : '') + '"><div class="tijd">' + esc(e.tijd) + '</div>' +
+    '<div class="etitel"><b>' + esc(e.titel) + '</b><div class="wie">' + wieHtml + cat + '</div>' + notitie + pillen + '</div>' +
+    '<button type="button" class="potloodknop" data-act="detail" data-id="' + esc(e.sleutel) + '" aria-label="' + esc(e.titel) + ' bewerken">' + svg('potlood', 20) + '</button></div>';
+}
+
+function ritChip(e, veld, label) {
+  var p = e[veld] ? persoon(e[veld]) : null;
+  var stijl = p ? 'color:' + esc(p.kleur) + ';border-color:' + esc(p.kleur) + ';background:rgba(255,255,255,.04)' :
+    'color:var(--warn);border-color:var(--warn);background:rgba(242,193,78,.10)';
+  return '<button type="button" class="chip' + (p ? '' : ' open') + '" data-act="' + veld + '" data-id="' + esc(e.sleutel) + '" style="' + stijl +
+    '" aria-label="' + (veld === 'breng' ? 'Wie brengt' : 'Wie haalt') + ': ' + (p ? esc(p.naam) : 'nog niemand') + ', tik om te wisselen">' + label + ': ' + (p ? esc(p.naam) : '?') + '</button>';
+}
+
+function klusjes() {
+  if (beheer && ouderActief()) return klusBeheer();
+  beheer = false;
+  var kaarten = zichtbareKinderen().map(function (k) {
+    var pts = D.punten[k.id] || 0;
+    var rest = 25 - (((pts % 25) + 25) % 25);
+    var maat = k.leeftijd && k.leeftijd < 6 ? 52 : k.leeftijd && k.leeftijd < 8 ? 46 : 36;
+    var lijst = D.klusjes.filter(function (c) { return c.kind === k.id; });
+    var knoppen = lijst.map(function (c) {
+      var dots = ''; for (var i = 0; i < c.punten; i++) dots += '<span style="background:' + (c.gedaan ? '#4A5060' : esc(k.kleur)) + '"></span>';
+      return '<button type="button" class="klus" data-act="klus" data-id="' + esc(c.id) + '"' + (c.gedaan ? ' disabled' : '') +
+        ' aria-label="' + esc(c.klus) + ', ' + c.punten + (c.punten === 1 ? ' punt' : ' punten') + (c.gedaan ? ', gedaan' : '') + '">' +
+        '<span class="icoon" style="width:' + maat + 'px;height:' + maat + 'px;background:' + (c.gedaan ? 'rgba(74,222,128,.16)' : esc(k.kleur) + '26') + ';color:' + (c.gedaan ? 'var(--ja)' : esc(k.kleur)) + '">' +
+        svg(c.gedaan ? 'vink' : c.icoon, maat > 40 ? 28 : 22, c.gedaan ? 2.5 : 2) + '</span>' +
+        '<span class="ktekst' + (maat === 52 ? ' klein-label' : '') + '">' + esc(c.klus) + '</span><span class="pdots">' + dots + '</span></button>';
+    }).join('');
+    return '<section class="card" style="padding:18px"><div class="rij" style="gap:10px">' + av(k, 44) +
+      '<div><div style="font-size:18px;font-weight:900">' + esc(k.naam) + '</div><div class="klein">' + (k.leeftijd ? k.leeftijd + ' jaar' : '') + '</div></div></div>' +
+      '<div class="spaar"><div><span class="pts" style="color:' + esc(k.kleur) + '">' + pts + '</span> <span class="klein" style="font-size:14px">punten</span></div>' +
+      '<div style="font-size:15px;font-weight:800">' + euro(pts) + ' tegoed</div>' +
+      '<div class="klein" style="font-size:12px">Verdiend ' + euro((D.verdiend || {})[k.id] || 0) + ' · uitbetaald ' + euro((D.uitbetaald || {})[k.id] || 0) + '</div>' +
+      '<div class="balk"><div style="width:' + ((25 - rest) / 25 * 100) + '%;background:' + esc(k.kleur) + '"></div></div>' +
+      '<div class="klein" style="font-size:12px">Nog ' + rest + ' punten tot de volgende euro</div>' + doelBlok(k, pts) + '</div>' +
+      (knoppen || '<div class="leegtekst">Vandaag geen klusjes</div>') + extraLijst(k) + '</section>';
+  }).join('');
+  return '<main style="display:flex;flex-direction:column;gap:14px">' + wachtBalk() + '<div class="kids">' + kaarten + '</div>' +
+    '<div class="voet" style="align-items:center"><span>Tik op een klus en typ je pincode om hem af te vinken. 1–3 punten per klus · 25 punten = € 1</span>' +
+    '<span class="chips"><button type="button" class="knop2" data-act="beoordeelOpen">+ Extra punten geven</button>' +
+    '<button type="button" class="knop2" data-act="beheerAan" style="display:inline-flex;align-items:center;gap:8px">' + svg('potlood', 18) + 'Klusjes beheren</button></span></div></main>';
+}
+
+function wachtend() { return (D.extra || []).filter(function (x) { return x.status === 'wacht'; }); }
+
+function wachtBalk() {
+  var w = wachtend();
+  var mk = mijnKind();
+  if (mk) w = w.filter(function (x) { return x.kind === mk.id; });
+  if (!w.length || mk) return '';
+  return '<div class="wachtbalk"><span>' + w.length + (w.length === 1 ? ' extra klus wacht' : ' extra klusjes wachten') + ' op goedkeuring</span>' +
+    '<button type="button" class="knop" data-act="beoordeelOpen" style="height:44px">Beoordelen</button></div>';
+}
+
+function gisteren() {
+  var p = D.vandaag.split('-').map(Number);
+  var d = new Date(Date.UTC(p[0], p[1] - 1, p[2] - 1));
+  return d.getUTCFullYear() + '-' + ('0' + (d.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + d.getUTCDate()).slice(-2);
+}
+
+function dagLabel(d) { return d === D.vandaag ? 'vandaag' : datumKort(d); }
+
+/** Extra klusjes van één kind (laatste 14 dagen) + knop om er een aan te melden. */
+function extraLijst(k) {
+  var mag = (D.extraKinderen || []).indexOf(k.id) >= 0;
+  var lijst = (D.extra || []).filter(function (x) { return x.kind === k.id; }).slice(0, 4);
+  var rijen = lijst.map(function (x) {
+    var st = x.status === 'goed' ? '<span class="klein" style="color:var(--ja)">✓ Goedgekeurd: +' + x.punten + ' punten</span>' :
+      x.status === 'afgewezen' ? '<span class="klein" style="color:var(--nee)">Afgewezen' + (x.reden ? ': ' + esc(x.reden) : '') + '</span>' :
+      '<span class="klein">Wacht op goedkeuring · voorstel ' + x.voorstel + ' punten</span>';
+    return '<div class="xrij ' + esc(x.status) + '"><span class="xw">' + esc(x.wat) + ' <span class="klein" style="display:inline;color:var(--muted)">(' + dagLabel(x.datum) + ')</span>' + st + '</span>' +
+      (x.status === 'wacht' ? '<button type="button" class="xknop" data-act="extraIntrek" data-id="' + esc(x.id) + '" aria-label="Aanmelding ' + esc(x.wat) + ' intrekken">×</button>' : '') + '</div>';
+  }).join('');
+  if (!mag && !rijen) return '';
+  return '<div class="maal" style="background:transparent;padding:4px 0 0"><div class="kop"><span class="mtitel">Extra gedaan</span></div>' + rijen +
+    (mag ? '<button type="button" class="snee plus" data-act="extraNieuw" data-id="' + esc(k.id) + '">+ Ik heb iets extra gedaan</button>' : '') + '</div>';
+}
+
+function puntKeuze(act, id, huidig) {
+  return '<div class="chips">' + EXTRA_SNEL.map(function (n) {
+    return '<button type="button" class="keuze" data-act="' + act + '" data-id="' + esc(id + '|' + n) + '" aria-pressed="' + (Number(huidig) === n) + '">' + n + '</button>';
+  }).join('') + '</div>';
+}
+
+function renderExtraForm(laag) {
+  var f = extraForm, k = persoon(f.kind) || { naam: '?', kleur: '#ECEEF3' };
+  laag.innerHTML = '<div class="overlay"><form class="detailbox klusform" data-form="extra" role="dialog" aria-modal="true" aria-label="Extra klus aanmelden">' +
+    '<div class="rij" style="gap:12px">' + av(k, 48) + '<h2>Wat heb je extra gedaan?</h2></div>' +
+    '<div class="invoer"><label class="sr" for="x-wat">Wat heb je gedaan?</label><input id="x-wat" type="text" maxlength="80" autocomplete="off" placeholder="Bijv. auto gewassen, oppassen op Iselin" value="' + esc(f.wat) + '"></div>' +
+    '<div class="veldlabel">Wanneer?</div><div class="chips">' + [['vandaag', 'Vandaag'], ['gisteren', 'Gisteren']].map(function (o) {
+      return '<button type="button" class="keuze" data-act="xDatum" data-id="' + o[0] + '" aria-pressed="' + (f.datum === o[0]) + '">' + o[1] + '</button>';
+    }).join('') + '</div>' +
+    '<div class="veldlabel">Hoeveel punten vind jij het waard? <span class="klein">Papa of mama beslist (25 punten = € 1)</span></div>' +
+    puntKeuze('xPunt', 'x', f.voorstel) +
+    '<div class="invoer" style="align-items:center"><label class="sr" for="x-punten">Ander aantal punten</label><input id="x-punten" class="puntveld" type="number" inputmode="numeric" min="1" max="50" value="' + esc(f.voorstel) + '"><span class="klein">punten (1–50)</span></div>' +
+    '<div class="fout" style="text-align:left">' + esc(f.fout || '') + '</div>' +
+    '<div class="chips"><button type="submit" class="knop">Verder</button><button type="button" class="knop2" data-act="xSluit" style="align-self:center">Annuleren</button></div></form></div>';
+  if (f.focus) { f.focus = false; document.getElementById('x-wat').focus(); }
+}
+
+function renderBeoordeel(laag) {
+  var b = beoordeel;
+  var items = wachtend().map(function (x) {
+    var k = persoon(x.kind) || { naam: x.kind, kleur: '#9AA1B2' };
+    var p = b.punten[x.id] !== undefined ? b.punten[x.id] : x.voorstel;
+    return '<div class="bkaart"><div class="rij" style="gap:10px">' + av(k, 36) + '<div><b style="font-size:16px">' + esc(x.wat) + '</b>' +
+      '<div class="klein">' + esc(k.naam) + ' · ' + dagLabel(x.datum) + ' · voorstel ' + x.voorstel + ' punten</div></div></div>' +
+      puntKeuze('bPunt', x.id, p) +
+      '<div class="invoer" style="align-items:center"><label class="sr" for="bp-' + esc(x.id) + '">Punten</label>' +
+      '<input id="bp-' + esc(x.id) + '" data-bp="' + esc(x.id) + '" class="puntveld" type="number" inputmode="numeric" min="1" max="50" value="' + esc(p) + '">' +
+      '<label class="sr" for="br-' + esc(x.id) + '">Reden (optioneel)</label><input id="br-' + esc(x.id) + '" data-br="' + esc(x.id) + '" type="text" maxlength="120" placeholder="Opmerking (optioneel)" value="' + esc(b.reden[x.id] || '') + '"></div>' +
+      '<div class="chips"><button type="button" class="knop" data-act="bGoed" data-id="' + esc(x.id) + '">Goedkeuren</button>' +
+      '<button type="button" class="knop2" data-act="bAf" data-id="' + esc(x.id) + '" style="align-self:center">Afwijzen</button></div></div>';
+  }).join('');
+  var g = b.geef;
+  var kids = kinderen().map(function (k) {
+    var aan = g.kind === k.id;
+    return '<button type="button" class="keuze" data-act="gKind" data-id="' + esc(k.id) + '" aria-pressed="' + aan + '"' +
+      (aan ? ' style="background:' + esc(k.kleur) + ';border-color:' + esc(k.kleur) + ';color:#101218"' : '') + '>' + esc(k.naam) + '</button>';
+  }).join('');
+  laag.innerHTML = '<div class="overlay"><div class="detailbox klusform" role="dialog" aria-modal="true" aria-label="Extra klusjes beoordelen">' +
+    '<div class="rij" style="justify-content:space-between;width:100%"><h2>Extra klusjes</h2><span class="klein">Als ' + esc(ouderSessie.naam) + '</span></div>' +
+    (items || '<div class="leegtekst">Er wacht niets op goedkeuring.</div>') +
+    '<div class="veldlabel" style="margin-top:8px">Zelf extra punten geven <span class="klein">bijv. voor de jongsten</span></div>' +
+    '<div class="chips">' + kids + '</div>' +
+    '<div class="invoer" style="align-items:center"><label class="sr" for="g-wat">Waarvoor?</label><input id="g-wat" type="text" maxlength="80" placeholder="Waarvoor?" value="' + esc(g.wat) + '">' +
+    '<label class="sr" for="g-punten">Punten</label><input id="g-punten" class="puntveld" type="number" inputmode="numeric" min="1" max="50" value="' + esc(g.punten) + '"></div>' +
+    '<div class="fout" style="text-align:left">' + esc(b.fout || '') + '</div>' +
+    '<div class="chips"><button type="button" class="knop" data-act="gGeef">Punten geven</button>' +
+    '<button type="button" class="knop2" data-act="bSluit" style="align-self:center">Klaar</button></div></div></div>';
+}
+
+function openBeoordeel() {
+  var open = function () { beoordeel = { punten: {}, reden: {}, geef: { kind: '', wat: '', punten: 5 }, fout: '' }; render(); };
+  if (ouderActief()) open(); else vraagOuderPin(open, 'Extra klusjes');
+}
+
+/** Pincodevenster dat een serverfunctie aanroept met de pincode als laatste argument. */
+function vraagKindPin(kind, sub, fn, args, gelukt) {
+  pin = { server: { fn: fn, args: args }, kind: kind, sub: sub, gelukt: gelukt, digits: '', fout: '', bezig: false };
+  render();
+}
+
+var MAAND_KORT = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
+function datumKort(d) { var p = String(d).split('-'); return p.length === 3 ? Number(p[2]) + ' ' + MAAND_KORT[Number(p[1]) - 1] : d; }
+function wanneerTekst(c) {
+  return c.datum ? 'eenmalig ' + datumKort(c.datum) : c.dagen.length ? c.dagen.join(', ') : 'elke dag';
+}
+
+function klusBeheer() {
+  var alle = D.alleKlusjes || [];
+  var rij = function (c, kleur) {
+    var sub = c.punten + (c.punten === 1 ? ' punt' : ' punten') + ' · ' + wanneerTekst(c) +
+      (c.kinderen.length > 1 ? ' · ' + c.kinderen.map(function (id) { var p = persoon(id); return p ? p.naam : id; }).join(' → ') : '') +
+      (c.actief ? '' : ' · staat uit');
+    return '<button type="button" class="klus" data-act="klusEdit" data-id="' + esc(c.id) + '" style="' + (c.actief ? '' : 'opacity:.55') + '" aria-label="' + esc(c.klus) + ', ' + esc(sub) + ', tik om aan te passen">' +
+      '<span class="icoon" style="width:36px;height:36px;background:' + esc(kleur) + '26;color:' + esc(kleur) + '">' + svg(c.icoon, 22) + '</span>' +
+      '<span class="ktekst">' + esc(c.klus) + '<span class="sub">' + esc(sub) + '</span></span>' +
+      '<span class="potlood" style="color:var(--muted);display:inline-flex">' + svg('potlood', 18) + '</span></button>';
+  };
+  var kaart = function (kop, lijst, kleur) {
+    return '<section class="card" style="padding:18px">' + kop + (lijst.map(function (c) { return rij(c, kleur); }).join('') ||
+      '<div class="leegtekst">Nog geen klusjes</div>') + '</section>';
+  };
+  var kaarten = kinderen().map(function (k) {
+    var lijst = alle.filter(function (c) { return c.kinderen.length === 1 && c.kinderen[0] === k.id; });
+    return kaart('<div class="rij" style="gap:10px">' + av(k, 36) + '<div style="font-size:18px;font-weight:900">' + esc(k.naam) + '</div></div>', lijst, k.kleur);
+  }).join('');
+  var wissel = alle.filter(function (c) { return c.kinderen.length > 1; });
+  kaarten += kaart('<div class="rij" style="gap:10px"><span class="av" style="width:36px;height:36px;background:#9CC2FF;font-size:18px">↻</span>' +
+    '<div style="font-size:18px;font-weight:900">Wisselt per week</div></div>', wissel, '#9CC2FF');
+  return '<main class="beheer" style="display:flex;flex-direction:column;gap:14px">' +
+    '<div class="weekkop"><div><div style="font-size:22px;font-weight:900">Klusjes beheren</div><div class="klein" style="font-size:14px">Als ' + esc(ouderSessie.naam) +
+    ' · wijzigingen gelden meteen · tik op een klus om hem aan te passen</div></div>' +
+    '<div class="chips"><button type="button" class="knop" data-act="klusNieuw">+ Nieuwe klus</button>' +
+    '<button type="button" class="knop2" data-act="beheerUit" style="align-self:center">Klaar</button></div></div>' +
+    '<div class="kids">' + kaarten + '</div></main>';
+}
+
+function openKlusForm(c) {
+  klusForm = c ? {
+    id: c.id, klus: c.klus, kinderen: c.kinderen.slice(), punten: c.punten, icoon: c.icoon,
+    wanneer: c.datum ? 'eenmalig' : c.dagen.length ? 'dagen' : 'elke', dagen: c.dagen.slice(), datum: c.datum || '', fout: '', bevestig: false, focus: true
+  } : { id: '', klus: '', kinderen: [], punten: 1, icoon: 'opruimen', wanneer: 'elke', dagen: [], datum: D.vandaag, fout: '', bevestig: false, focus: true };
+  render();
+}
+
+function renderKlusForm(laag) {
+  var f = klusForm;
+  var kids = kinderen().map(function (k) {
+    var aan = f.kinderen.indexOf(k.id) >= 0;
+    return '<button type="button" class="keuze" data-act="kfKind" data-id="' + esc(k.id) + '" aria-pressed="' + aan + '"' +
+      (aan ? ' style="background:' + esc(k.kleur) + ';border-color:' + esc(k.kleur) + ';color:#101218"' : '') + '>' + esc(k.naam) + '</button>';
+  }).join('');
+  var punten = [1, 2, 3].map(function (n) {
+    return '<button type="button" class="keuze" data-act="kfPunten" data-id="' + n + '" aria-pressed="' + (f.punten === n) + '">' + n + (n === 1 ? ' punt' : ' punten') + '</button>';
+  }).join('');
+  var iconen = ['opruimen', 'eten', 'was', 'kliko', 'water', 'schoon', 'dier', 'overig'].map(function (i) {
+    return '<button type="button" class="keuze" data-act="kfIcoon" data-id="' + i + '" aria-pressed="' + (f.icoon === i) + '" aria-label="Icoon ' + i + '">' + svg(i, 22) + '</button>';
+  }).join('');
+  var wanneer = [['elke', 'Elke dag'], ['dagen', 'Vaste dagen'], ['eenmalig', 'Eenmalig']].map(function (w) {
+    return '<button type="button" class="keuze" data-act="kfWanneer" data-id="' + w[0] + '" aria-pressed="' + (f.wanneer === w[0]) + '">' + w[1] + '</button>';
+  }).join('');
+  var extra = f.wanneer === 'dagen' ? '<div class="chips" role="group" aria-label="Dagen">' + DAG_KORT.map(function (d) {
+      return '<button type="button" class="keuze" data-act="kfDag" data-id="' + d + '" aria-pressed="' + (f.dagen.indexOf(d) >= 0) + '">' + d + '</button>';
+    }).join('') + '</div>' :
+    f.wanneer === 'eenmalig' ? '<div class="invoer"><label class="sr" for="kf-datum">Datum</label><input id="kf-datum" type="date" value="' + esc(f.datum) + '"></div>' : '';
+  var weg = f.id ? (f.bevestig ? '<button type="button" class="knop-rood" data-act="kfVerwijder">Ja, verwijderen</button>' :
+    '<button type="button" class="knop2" data-act="kfVerwijder" style="align-self:center">Verwijderen</button>') : '';
+  laag.innerHTML = '<div class="overlay"><form class="detailbox klusform" data-form="klus" role="dialog" aria-modal="true" aria-label="Klus">' +
+    '<h2>' + (f.id ? 'Klus aanpassen' : 'Nieuwe klus') + '</h2>' +
+    '<label class="veldlabel" for="kf-klus">Wat moet er gebeuren?</label>' +
+    '<div class="invoer"><input id="kf-klus" type="text" maxlength="40" autocomplete="off" placeholder="Bijv. tafel dekken" value="' + esc(f.klus) + '"></div>' +
+    '<div class="veldlabel">Voor wie? <span class="klein">Kies je er meer, dan wisselt de klus elke week</span></div><div class="chips">' + kids + '</div>' +
+    '<div class="veldlabel">Hoeveel punten?</div><div class="chips">' + punten + '</div>' +
+    '<div class="veldlabel">Icoon</div><div class="chips">' + iconen + '</div>' +
+    '<div class="veldlabel">Wanneer?</div><div class="chips">' + wanneer + '</div>' + extra +
+    '<div class="fout" style="text-align:left" aria-live="assertive">' + esc(f.fout || '') + '</div>' +
+    '<div class="kiesknoppen" style="justify-content:space-between;width:100%"><div class="chips"><button type="submit" class="knop">Opslaan</button>' +
+    '<button type="button" class="knop2" data-act="kfSluit" style="align-self:center">Annuleren</button></div>' + weg + '</div></form></div>';
+  if (f.focus) { f.focus = false; if (!f.id) document.getElementById('kf-klus').focus(); }
+}
+
+function bewaarKlus() {
+  var f = klusForm;
+  f.klus = f.klus.trim();
+  f.fout = !f.klus ? 'Geef de klus een naam' : !f.kinderen.length ? 'Kies minstens één kind' :
+    f.wanneer === 'dagen' && !f.dagen.length ? 'Kies minstens één dag' : f.wanneer === 'eenmalig' && !f.datum ? 'Kies een datum' : '';
+  if (f.fout) { render(); return; }
+  if (!ouderActief()) { vraagOuderPin(function () { render(); bewaarKlus(); }, 'Klusjes beheren'); return; }
+  ouderSessie.tot = Date.now() + 5 * 60000;
+  var data = { id: f.id, klus: f.klus, kinderen: f.kinderen, punten: f.punten, icoon: f.icoon,
+    dagen: f.wanneer === 'dagen' ? f.dagen : [], datum: f.wanneer === 'eenmalig' ? f.datum : '' };
+  klusForm = null;
+  zegt(f.id ? 'Klus aangepast' : 'Klus toegevoegd', '#9CC2FF');
+  bewaar('zetKlus', [data, ouderSessie.pin]);
+}
+
+function eten() {
+  var vandaagKort = DAG_KORT[D.dagIndex];
+  var aantal = D.gezin.filter(function (p) { return D.eten[p.id] === 'ja'; }).length;
+  var bewerk = ouderActief();
+  var menu = D.menu.map(function (m) {
+    var isVandaag = m.dag.toLowerCase().slice(0, 2) === vandaagKort;
+    var datum = menuDatum(m.dag);
+    var helpers = ((D.helpers || {})[datum] || []).map(persoon).filter(Boolean);
+    var kanHelpen = datum && datum >= D.vandaag;
+    var binnen = '<span class="d">' + esc(m.dag) + '</span>' +
+      (m.gerecht ? '<span class="g">' + esc(m.gerecht) + '</span>' : '<span class="g leeg">Nog niets gepland</span>') +
+      (isVandaag ? '<span style="font-size:14px;font-weight:800;color:#9CC2FF">Vanavond · ' + aantal + ' eters</span>' : '') +
+      (helpers.length ? '<span class="helpers" title="Helpt koken">' + helpers.map(function (p) { return av(p, 24); }).join('') + '</span>' :
+        !bewerk && kanHelpen ? '<span class="helpt-niet">+ helpen</span>' : '');
+    if (!bewerk && kanHelpen) {
+      return '<button type="button" class="menu' + (isVandaag ? ' vandaag' : '') + '" data-act="helpDag" data-id="' + esc(datum) + '" aria-label="' +
+        esc(volDag(m.dag)) + ': ' + esc(m.gerecht || 'nog niets gepland') + '. Tik om te helpen koken">' + binnen + '</button>';
+    }
+    return bewerk ?
+      '<button type="button" class="menu' + (isVandaag ? ' vandaag' : '') + '" data-act="menuDag" data-id="' + esc(m.dag) + '" aria-label="' +
+        esc(volDag(m.dag)) + ': ' + esc(m.gerecht || 'nog niets gepland') + ', tik om aan te passen">' + binnen + '<span class="potlood">' + svg('potlood', 20) + '</span></button>' :
+      '<div class="menu voorbij' + (isVandaag ? ' vandaag' : '') + '">' + binnen + '</div>';
+  }).join('');
+  var wensKinderen = kinderen().map(function (k) {
+    var aan = wensKind === k.id;
+    return '<button type="button" class="keuze" data-act="wensKind" data-id="' + esc(k.id) + '" aria-pressed="' + aan + '"' +
+      (aan ? ' style="background:' + esc(k.kleur) + ';border-color:' + esc(k.kleur) + ';color:#101218"' : '') + '>' + esc(k.naam) + '</button>';
+  }).join('');
+  var wensen = (D.wensen || []).map(function (w) {
+    var k = persoon(w.kind) || { naam: w.kind, kleur: '#9AA1B2' };
+    return '<div class="wens">' + av(k, 32) + '<span class="wtekst"><b>' + esc(w.wens) + '</b><span class="klein">' + esc(k.naam) + ' · ' + esc(datumKort(w.datum)) + '</span></span>' +
+      '<button type="button" class="wis" data-act="wensWeg" data-id="' + esc(w.id) + '" aria-label="Wens ' + esc(w.wens) + ' weghalen (ouderpincode)">×</button></div>';
+  }).join('');
+  var menuKop = bewerk ?
+    '<span style="display:flex;align-items:center;gap:10px"><span class="klein">Bewerken als ' + esc(ouderSessie.naam) + '</span>' +
+      '<button type="button" class="knop2" data-act="menuKlaar">Klaar</button></span>' :
+    '<button type="button" class="knop2" data-act="menuAan" style="display:inline-flex;align-items:center;gap:8px">' + svg('potlood', 18) + 'Aanpassen</button>';
+  var open = D.boodschappen.filter(function (b) { return !b.gedaan; }).length;
+  var heeftGedaan = D.boodschappen.some(function (b) { return b.gedaan; });
+  var items = D.boodschappen.map(function (b) {
+    return '<button type="button" class="item' + (b.gedaan ? ' gedaan' : '') + '" data-act="item" data-id="' + esc(b.id) + '" aria-label="' + esc(b.item) + (b.gedaan ? ', in het mandje' : ', nog halen') + '">' +
+      '<span class="vak">' + (b.gedaan ? svg('vink', 16, 3) : '') + '</span><span class="itekst">' + esc(b.item) + '</span></button>';
+  }).join('');
+  return '<main class="grid-eten"><div class="kolom">' +
+    '<section class="card"><div class="kop" style="align-items:center"><div><h2>Weekmenu</h2>' +
+    '<div class="klein" style="font-size:14px;margin-top:2px">Dit is de planning. Hebben we nog iets over dat op moet, dan kan het anders worden.</div></div>' + menuKop + '</div>' +
+    menu + (bewerk ? '' : '<div class="klein" style="font-size:14px">Tik op een dag om te helpen koken: dat is een klus van 3 punten.</div>') + '</section>' +
+    '<section class="card"><div class="kop"><h2>Wensen</h2><span class="klein">Wat wil jij graag eten?</span></div>' +
+    '<div class="chips" role="group" aria-label="Wie heeft een wens?">' + wensKinderen + '</div>' +
+    '<form class="invoer" data-form="wens"><label class="sr" for="wens">Eetwens</label>' +
+    '<input id="wens" type="text" autocomplete="off" maxlength="60" placeholder="' + (wensKind ? 'Bijv. pannenkoeken' : 'Kies eerst wie je bent') + '"' + (wensKind ? '' : ' disabled') + '>' +
+    '<button type="submit" class="knop"' + (wensKind ? '' : ' disabled') + '>Doorgeven</button></form>' +
+    '<div class="lijst">' + (wensen || '<div class="leegtekst">Nog geen wensen.</div>') + '</div></section></div>' +
+    '<section class="card"><div class="kop"><h2>Boodschappen</h2><span class="klein">' + open + ' nog te halen</span></div>' +
+    '<form class="invoer" data-form="toevoegen"><label class="sr" for="nieuw">Nieuw boodschappen-item</label>' +
+    '<input id="nieuw" type="text" autocomplete="off" maxlength="80" placeholder="Wat moet er nog bij?"><button type="submit" class="knop">Toevoegen</button></form>' +
+    '<div class="lijst">' + (items || '<div class="leegtekst">De lijst is leeg.</div>') + '</div>' +
+    (heeftGedaan ? '<button type="button" class="knop2" data-act="wis">Afgevinkte items wissen</button>' : '') +
+    '</section></main>';
+}
+
+function brood() {
+  if (!D.dagen.length) {
+    var v = D.schoolVrij || {};
+    return '<main><section class="card vakantie">' + '<span style="color:#9CC2FF">' + svg('tas', 48) + '</span>' +
+      '<b>' + (v.naam ? 'Het is ' + esc(v.naam.toLowerCase().indexOf('vakantie') >= 0 ? v.naam.toLowerCase() : v.naam) + '!' : 'Geen schooldag') + '</b>' +
+      '<div class="klein" style="font-size:16px">Er hoeft nu niets klaargezet te worden.' + (v.weer ? ' De school begint weer op <b style="font-size:16px">' + esc(v.weer) + '</b>.' : '') + '</div>' +
+      '<div class="klein">Vanaf het weekend ervoor kun je hier weer brood, fruit en spullen kiezen.</div></section></main>';
+  }
+  if (broodDag >= D.dagen.length) broodDag = D.dagen.length - 1;
+  var dag = D.dagen[broodDag];
+  var data = D.brood[dag.datum] || {};
+  var schakel = '<div class="chips" role="group" aria-label="Dag kiezen">' + D.dagen.map(function (d, i) {
+    return '<button type="button" class="tab" aria-pressed="' + (i === broodDag) + '" data-act="broodDag" data-id="' + i + '">' +
+      esc(d.label) + ' · ' + esc(d.dag) + ' ' + d.nr + '</button>';
+  }).join('') + '</div>';
+
+  var M = ['ontbijt', 'lunch', 'fruit'];
+  var telling = { ontbijt: {}, lunch: {}, fruit: {} }, totaal = { ontbijt: 0, lunch: 0, fruit: 0 }, nog = [];
+  var mee = (D.meenemen || []).filter(function (x) { return x.datum === dag.datum; });
+  var kaarten = zichtbareKinderen().map(function (k) {
+    var b = data[k.id] || { ontbijt: [], lunch: [], fruit: [] };
+    M.forEach(function (m) {
+      b[m] = b[m] || [];
+      if (!b[m].length) nog.push(k.naam + ' (' + m + ')');
+      b[m].forEach(function (x) { telling[m][x] = (telling[m][x] || 0) + 1; totaal[m]++; });
+    });
+    var spullen = mee.filter(function (x) { return x.kind === k.id; }).map(function (x) {
+      return '<div class="mee' + (x.ingepakt ? ' ingepakt' : '') + '">' +
+        '<button type="button" class="vakknop" data-act="meeWissel" data-id="' + esc(x.id) + '" aria-label="' + esc(x.wat) + (x.ingepakt ? ', ingepakt' : ', nog inpakken') + '">' +
+        '<span class="vak"' + (x.ingepakt ? ' style="border-color:var(--ja);background:rgba(74,222,128,.16)"' : '') + '>' + (x.ingepakt ? svg('vink', 16, 3) : '') + '</span></button>' +
+        '<span class="mtekst">' + esc(x.wat) + '</span>' +
+        '<button type="button" class="wis" data-act="meeWeg" data-id="' + esc(x.id) + '" aria-label="' + esc(x.wat) + ' weghalen">×</button></div>';
+    }).join('');
+    return '<section class="card" style="padding:18px"><div class="rij" style="gap:10px">' + av(k, 44) +
+      '<div style="font-size:18px;font-weight:900">' + esc(k.naam) + '</div></div>' +
+      maal(k, 'ontbijt', 'Ontbijt', b.ontbijt) + maal(k, 'lunch', 'Lunch op school', b.lunch) + maal(k, 'fruit', 'Fruit', b.fruit) +
+      '<div class="maal"><div class="kop"><span class="mtitel">Mee naar school</span></div>' + spullen +
+      '<button type="button" class="snee plus" data-act="meeNieuw" data-id="' + esc(k.id) + '" aria-label="Iets mee naar school voor ' + esc(k.naam) + '">+ iets meenemen</button></div>' +
+      '</section>';
+  }).join('');
+
+  var titels = { ontbijt: 'Ontbijt', lunch: 'Lunch op school', fruit: 'Fruit' };
+  var overzicht = M.map(function (m) {
+    var delen = Object.keys(telling[m]).sort(function (a, b) { return telling[m][b] - telling[m][a]; })
+      .map(function (x) { return telling[m][x] + '× ' + esc(x); }).join(' · ');
+    var eenheid = m === 'fruit' ? (totaal[m] === 1 ? ' stuk' : ' stuks') : (totaal[m] === 1 ? ' boterham' : ' boterhammen');
+    return '<div><span style="font-size:17px;font-weight:900">' + titels[m] + ': ' + totaal[m] + eenheid +
+      '</span><div class="klein" style="font-size:15px;margin-top:2px">' + (delen || 'nog niets gekozen') + '</div></div>';
+  }).join('');
+  var meeTekst = mee.map(function (x) { var p = persoon(x.kind); return (p ? p.naam : x.kind) + ': ' + x.wat + (x.ingepakt ? ' ✓' : ''); });
+  overzicht += '<div><span style="font-size:17px;font-weight:900">Mee naar school: ' + mee.length + '</span><div class="klein" style="font-size:15px;margin-top:2px">' +
+    (meeTekst.length ? esc(meeTekst.join(' · ')) : 'niets extra') + '</div></div>';
+
+  return '<main style="display:flex;flex-direction:column;gap:16px">' +
+    '<div class="kop" style="align-items:center">' + schakel + '<span class="klein" style="font-size:15px">Kies je brood en fruit, en zet erbij wat er mee moet</span></div>' +
+    (function () {
+      var w = weerVoor(dag.datum);
+      return w ? '<div class="weerbalk"><span class="nu" style="font-size:16px">' + svg(w.icoon, 22) + esc(w.tekst) + ' · ' + w.min + '–' + w.max + '°</span>' +
+        (w.tips.length ? w.tips.map(function (t) { return '<span class="weertip">' + esc(t) + '</span>'; }).join('') : '<span>Geen bijzonderheden voor onderweg</span>') + '</div>' : '';
+    })() +
+    '<div class="kids">' + kaarten + '</div>' +
+    '<section class="card"><div class="kop"><h2>Klaarzetten voor ' + esc(dag.label === 'Vandaag' || dag.label === 'Morgen' ? dag.label.toLowerCase() : dag.dag) + '</h2>' +
+    '<span class="klein">Staat ook in de mail van ' + D.meldingOverig + ':00 de avond ervoor</span></div>' +
+    '<div class="grid-eten" style="gap:12px 20px">' + overzicht + '</div>' +
+    (nog.length ? '<div class="melding">Nog niet gekozen: ' + esc(nog.join(', ')) + '</div>' : '') + '</section></main>';
+}
+
+function maal(k, m, label, lijst) {
+  var fruit = m === 'fruit';
+  var stuk = fruit ? 'stuk fruit' : 'boterham';
+  var sneden = lijst.map(function (bel, i) {
+    return '<button type="button" class="snee" data-act="snee" data-id="' + esc(k.id + '|' + m + '|' + i) + '" style="border-color:' + esc(k.kleur) + '66"' +
+      ' aria-label="' + esc(label) + ', ' + stuk + ' ' + (i + 1) + ': ' + esc(bel) + ', tik om te wijzigen">' +
+      '<span style="color:' + esc(k.kleur) + ';display:inline-flex">' + svg(fruit ? 'fruit' : 'brood', 20) + '</span><span>' + esc(bel) + '</span></button>';
+  }).join('');
+  var plus = lijst.length < (fruit ? 2 : 4) ? '<button type="button" class="snee plus" data-act="snee" data-id="' + esc(k.id + '|' + m + '|' + lijst.length) +
+    '" aria-label="' + esc(label) + ': ' + stuk + ' toevoegen voor ' + esc(k.naam) + '">' + (fruit ? '+ fruit' : '+ boterham') + '</button>' : '';
+  var aantal = fruit ? lijst.length + (lijst.length === 1 ? ' stuk' : ' stuks') : lijst.length + (lijst.length === 1 ? ' boterham' : ' boterhammen');
+  return '<div class="maal"><div class="kop"><span class="mtitel">' + esc(label) + '</span><span class="klein">' +
+    (lijst.length ? aantal : 'nog kiezen') + '</span></div>' + sneden + plus + '</div>';
+}
+
+function broodLijst(kind, m) {
+  var dag = D.dagen[broodDag];
+  D.brood[dag.datum] = D.brood[dag.datum] || {};
+  D.brood[dag.datum][kind] = D.brood[dag.datum][kind] || { ontbijt: [], lunch: [], fruit: [] };
+  D.brood[dag.datum][kind][m] = D.brood[dag.datum][kind][m] || [];
+  return D.brood[dag.datum][kind][m];
+}
+
+function renderKeuze(laag) {
+  var k = persoon(keuze.kind) || { naam: '?', kleur: '#ECEEF3' };
+  var lijst = broodLijst(keuze.kind, keuze.maaltijd);
+  var huidig = lijst[keuze.index];
+  var fruit = keuze.maaltijd === 'fruit';
+  var opties = fruit ? (D.fruit || []).map(function (f) { return { naam: f }; }) :
+    D.beleg.filter(function (b) { return b.voor === 'beide' || b.voor === keuze.maaltijd; });
+  var maaltijd = keuze.maaltijd === 'ontbijt' ? 'ontbijt' : fruit ? 'fruit mee naar school' : 'lunch op school';
+  laag.innerHTML = '<div class="overlay"><div class="kiesbox" role="dialog" aria-modal="true" aria-label="' + (fruit ? 'Fruit kiezen' : 'Beleg kiezen') + '">' +
+    av(k, 56) + '<h2>' + (fruit ? 'Fruit' : 'Boterham ' + (keuze.index + 1)) + ' voor ' + esc(k.naam) + '</h2>' +
+    '<div class="klein" style="font-size:15px">' + esc(hoofdletter(maaltijd)) + ' · ' + esc(D.dagen[broodDag].label.toLowerCase()) + '</div>' +
+    '<div class="kiesgrid">' + (opties.map(function (b) {
+      var gekozen = b.naam === huidig;
+      return '<button type="button" class="kies" data-act="kies" data-id="' + esc(b.naam) + '" aria-pressed="' + gekozen + '"' +
+        (gekozen ? ' style="border-color:' + esc(k.kleur) + ';background:' + esc(k.kleur) + '33"' : '') + '>' + esc(b.naam) + '</button>';
+    }).join('') || '<div class="leegtekst">' + (fruit ? 'Nog geen fruit. Vul het tabblad Fruit in de Sheet.' : 'Nog geen beleg. Vul het tabblad Beleg in de Sheet.') + '</div>') + '</div>' +
+    '<div class="kiesknoppen">' + (huidig ? '<button type="button" class="knop2" data-act="weg">' + (fruit ? 'Fruit weghalen' : 'Boterham weghalen') + '</button>' : '') +
+    '<button type="button" class="knop2" data-act="sluit">Annuleren</button></div></div></div>';
+}
+
+var MEE_IDEEEN = ['Gymspullen', 'Zwemspullen', 'Bibliotheekboek', 'Briefje terug', 'Traktatie', 'Knutselspullen', 'Laptop/tablet', 'Regenkleding'];
+
+function renderMee(laag) {
+  var k = persoon(meeForm.kind) || { naam: '?', kleur: '#ECEEF3' };
+  var dag = D.dagen[broodDag];
+  laag.innerHTML = '<div class="overlay"><form class="detailbox" data-form="mee" role="dialog" aria-modal="true" aria-label="Iets mee naar school">' +
+    '<div class="rij" style="gap:12px">' + av(k, 48) + '<h2>Wat moet ' + esc(k.naam) + ' meenemen?</h2></div>' +
+    '<div class="klein" style="font-size:15px">' + esc(dag.label) + ' · ' + esc(dag.dag + ' ' + dag.nr + ' ' + dag.maand) + '</div>' +
+    '<div class="chips">' + MEE_IDEEEN.map(function (t) {
+      return '<button type="button" class="keuze" data-act="meeIdee" data-id="' + esc(t) + '">' + esc(t) + '</button>';
+    }).join('') + '</div>' +
+    '<div class="invoer"><label class="sr" for="meeveld">Iets anders</label><input id="meeveld" type="text" maxlength="50" autocomplete="off" placeholder="Of typ zelf iets"></div>' +
+    '<div class="chips"><button type="submit" class="knop">Toevoegen</button><button type="button" class="knop2" data-act="meeSluit" style="align-self:center">Annuleren</button></div>' +
+    '</form></div>';
+}
+
+function voegMeeToe(wat) {
+  wat = String(wat || '').trim().slice(0, 50);
+  if (!wat || !meeForm) return;
+  var dag = D.dagen[broodDag], kind = meeForm.kind;
+  D.meenemen = (D.meenemen || []).concat([{ id: 'tijdelijk' + Date.now(), datum: dag.datum, kind: kind, wat: wat, ingepakt: false }]);
+  meeForm = null; render();
+  bewaar('voegMeenemenToe', [dag.datum, kind, wat]);
+}
+
+function zetBroodLijst(kind, m, lijst) {
+  var dag = D.dagen[broodDag];
+  D.brood[dag.datum][kind][m] = lijst;
+  keuze = null; render();
+  bewaar('zetBrood', [dag.datum, kind, m, lijst]);
+}
+
+function isoWeek(datum) {
+  var p = datum.split('-').map(Number);
+  var dt = new Date(Date.UTC(p[0], p[1] - 1, p[2]));
+  var dag = dt.getUTCDay() || 7;
+  dt.setUTCDate(dt.getUTCDate() + 4 - dag);
+  return Math.ceil(((dt - new Date(Date.UTC(dt.getUTCFullYear(), 0, 1))) / 86400000 + 1) / 7);
+}
+
+function mini(kleur, tekst) {
+  return '<span style="color:' + esc(kleur) + ';border-color:' + esc(kleur) + '66">' + esc(tekst) + '</span>';
+}
+
+function gaatChip(e) {
+  var s = ST[e.status];
+  return '<button type="button" class="chip" data-act="gaat" data-id="' + esc(e.sleutel) + '" style="color:' + s.c + ';border-color:' + s.c + ';background:' + s.bg +
+    '" aria-label="' + esc(e.titel) + ': ' + esc(GAAT_L[e.status].slice(2)) + ', tik om te wijzigen">' + GAAT_L[e.status] + '</button>';
+}
+
+function week() {
+  var a = D.agenda || {};
+  var dagen = (a.dagen || []).slice(weekNr * 7, weekNr * 7 + 7).filter(function (d) { return !isMobiel() || weekNr > 0 || d.datum >= D.vandaag; });
+  if (!dagen.length) return '<main><div class="melding">De weekagenda kon niet geladen worden.</div></main>';
+  var schakel = '<div class="chips" role="group" aria-label="Week kiezen">' + ['Deze week', 'Volgende week'].map(function (l, i) {
+    return '<button type="button" class="tab" aria-pressed="' + (i === weekNr) + '" data-act="weekNr" data-id="' + i + '">' + l + '</button>';
+  }).join('') + '</div>';
+  var eerste = dagen[0], laatste = dagen[dagen.length - 1];
+  var bereik = eerste.nr + (eerste.maand !== laatste.maand ? ' ' + eerste.maand : '') + ' – ' + laatste.nr + ' ' + laatste.maand;
+  var open = 0;
+
+  var kolommen = dagen.map(function (d) {
+    var voorbij = d.datum < D.vandaag;
+    var items = d.events.map(function (e) {
+      var wie = e.wie.map(persoon).filter(Boolean);
+      var dots = wie.map(function (p) { return '<span class="dot" style="width:8px;height:8px;background:' + esc(p.kleur) + '"></span>'; }).join('');
+      var regel = '';
+      if (e.kind && !e.heleDag) {
+        var b = e.breng && persoon(e.breng), h = e.haal && persoon(e.haal);
+        if (!voorbij) open += (b ? 0 : 1) + (h ? 0 : 1);
+        regel = '<span class="r">' + mini(ST[e.status].c, GAAT_L[e.status].charAt(0)) +
+          mini(b ? b.kleur : '#F2C14E', 'B: ' + (b ? b.naam : '?')) + mini(h ? h.kleur : '#F2C14E', 'H: ' + (h ? h.naam : '?')) + '</span>';
+      }
+      return '<button type="button" class="wev" data-act="detail" data-id="' + esc(e.sleutel) + '" aria-label="' + esc(e.tijd + ', ' + e.titel) + ', details openen">' +
+        '<span class="t">' + (e.categorie ? svg(e.categorie, 12) : '') + esc(e.tijd) + (e.eind ? '–' + esc(e.eind) : '') + (e.notitie ? svg('notitie', 12) : '') + '</span><span class="n">' + esc(e.titel) + '</span>' +
+        (dots ? '<span style="display:flex;gap:3px">' + dots + '</span>' : '') + regel + '</button>';
+    }).join('');
+    return '<section class="dagkol' + (d.vandaag ? ' nu' : '') + (voorbij ? ' voorbij' : '') + '" aria-label="' + esc(d.dag + ' ' + d.nr + ' ' + d.maand) + '">' +
+      '<div class="dagkop"><b>' + esc(d.dag) + ' ' + d.nr + '</b><span>' + (d.vandaag ? 'vandaag' : '') + '</span>' +
+      dagWeer(d) + '</div>' +
+      (items || '<div class="klein" style="padding:2px">Niets gepland</div>') + '</section>';
+  }).join('');
+
+  return '<main style="display:flex;flex-direction:column;gap:14px">' +
+    '<div class="weekkop">' + schakel + '<span class="klein" style="font-size:15px">Week ' + isoWeek(eerste.datum) + ' · ' + esc(bereik) +
+    ' · ' + open + (open === 1 ? ' rit' : ' ritten') + ' zonder chauffeur</span></div>' +
+    (a.fout ? '<div class="melding">' + esc(a.fout) + '</div>' : '') +
+    '<div class="weekgrid">' + kolommen + '</div>' +
+    '<div class="klein" style="font-size:14px">Tik op een afspraak om hem te bewerken: gaat het kind, wie brengt (B) en haalt (H), categorie en notitie.</div></main>';
+}
+
+function renderDetail(laag) {
+  var e = vindEvent(detail);
+  if (!e) { detail = null; bewerkA = null; laag.innerHTML = ''; return; }
+  if (!bewerkA) bewerkA = { status: e.status, breng: e.breng || '', haal: e.haal || '', notitie: e.notitie || '', categorie: e.categorie || '' };
+  var f = bewerkA;
+  var dag = ((D.agenda || {}).dagen || []).filter(function (d) { return d.datum === e.datum; })[0] || { dag: '', nr: '', maand: '' };
+  var wie = e.wie.map(persoon).filter(Boolean);
+  var kids = wie.filter(function (p) { return p.rol === 'kind'; });
+  var wieHtml = wie.length ? wie.map(function (p) { return '<span class="dot" style="background:' + esc(p.kleur) + '"></span>'; }).join('') +
+    '<span>' + esc(wie.map(function (p) { return p.naam; }).join(' & ')) + '</span>' : '<span>Gezin</span>';
+  var keuzes = function (act, opties, huidig) {
+    return '<div class="chips">' + opties.map(function (o) {
+      var aan = o.id === huidig;
+      return '<button type="button" class="keuze" data-act="' + act + '" data-id="' + esc(o.id) + '" aria-pressed="' + aan + '"' +
+        (aan && o.kleur ? ' style="background:' + esc(o.kleur) + ';border-color:' + esc(o.kleur) + ';color:#101218"' : '') + '>' + (o.icoon ? svg(o.icoon, 18) : '') + esc(o.naam) + '</button>';
+    }).join('') + '</div>';
+  };
+  var chauffeurs = [{ id: '', naam: 'Nog niemand' }].concat(ouders().map(function (p) { return { id: p.id, naam: p.naam, kleur: p.kleur }; }),
+    [{ id: OPA_OMA.id, naam: OPA_OMA.naam, kleur: OPA_OMA.kleur }, { id: ZELF.id, naam: 'Zelf', kleur: '#C9CED8' }]);
+  var ritten = e.kind && !e.heleDag ?
+    '<div class="veldlabel">Gaat ' + esc(kids.map(function (p) { return p.naam; }).join(' & ')) + '?</div>' +
+    keuzes('aStatus', [{ id: 'ja', naam: 'Gaat', kleur: ST.ja.c }, { id: 'nee', naam: 'Gaat niet', kleur: ST.nee.c }, { id: 'onb', naam: 'Weet nog niet', kleur: ST.onb.c }], f.status) +
+    '<div class="veldlabel">Wie brengt? <span class="klein">Zelf = gaat er zelf heen</span></div>' + keuzes('aBreng', chauffeurs, f.breng) +
+    '<div class="veldlabel">Wie haalt? <span class="klein">Zelf = komt zelf terug</span></div>' + keuzes('aHaal', chauffeurs, f.haal) :
+    (e.kind ? '' : '<div class="klein" style="font-size:14px">Zet de naam van een kind in de afspraak, dan kun je hier ook Gaat, Breng en Haal invullen.</div>');
+  laag.innerHTML = '<div class="overlay"><form class="detailbox klusform" data-form="afspraak" role="dialog" aria-modal="true" aria-label="Afspraak bewerken">' +
+    '<div class="klein" style="font-size:15px">' + esc(hoofdletter(dag.dag) + ' ' + dag.nr + ' ' + dag.maand) + ' · ' + esc(e.tijd) + (e.eind ? '–' + esc(e.eind) : '') + '</div>' +
+    '<h2>' + esc(e.titel) + '</h2><div class="wie" style="margin:0">' + wieHtml + '</div>' + ritten +
+    '<div class="veldlabel">Categorie' + (e.categorieGeraden && f.categorie === e.categorie && f.categorie ? ' <span class="klein">voorstel op basis van de titel</span>' : '') + '</div>' +
+    keuzes('aCat', CATEGORIEEN.map(function (c) { return { id: c[0], naam: c[1], icoon: c[0] === 'overig' ? '' : c[0] }; }), f.categorie) +
+    '<label class="veldlabel" for="a-notitie">Notitie</label>' +
+    '<textarea id="a-notitie" class="veld" maxlength="200" placeholder="Bijv. gymtas mee, ophalen bij de achteringang">' + esc(f.notitie) + '</textarea>' +
+    '<div class="chips"><button type="submit" class="knop">Opslaan</button>' +
+    '<button type="button" class="knop2" data-act="sluitDetail" style="align-self:center">Annuleren</button></div></form></div>';
+}
+
+function bewaarAfspraak() {
+  var e = vindEvent(detail);
+  if (!e || !bewerkA) { detail = null; bewerkA = null; render(); return; }
+  var f = bewerkA, w = { notitie: f.notitie.trim().slice(0, 200), categorie: f.categorie };
+  if (e.kind && !e.heleDag) { w.status = f.status; w.breng = f.breng; w.haal = f.haal; }
+  Object.keys(w).forEach(function (k) { e[k] = w[k]; });
+  e.categorieGeraden = false;
+  detail = null; bewerkA = null;
+  zegt('Afspraak opgeslagen', '#9CC2FF');
+  bewaar('zetAfspraak', [e.sleutel, e.titel, e.datum, w]);
+}
+
+var DAG_VOL = { ma: 'maandag', di: 'dinsdag', wo: 'woensdag', do: 'donderdag', vr: 'vrijdag', za: 'zaterdag', zo: 'zondag' };
+function volDag(dag) { return DAG_VOL[String(dag).toLowerCase().slice(0, 2)] || dag; }
+
+function ouderActief() {
+  if (ouderSessie && Date.now() > ouderSessie.tot) ouderSessie = null;
+  return !!ouderSessie;
+}
+
+function vraagOuderPin(daarna, titel) {
+  pin = { ouder: true, titel: titel || 'Weekmenu aanpassen', digits: '', fout: '', bezig: false, daarna: daarna || null };
+  render();
+}
+
+function renderMenuEdit(laag) {
+  laag.innerHTML = '<div class="overlay"><form class="detailbox" data-form="menu" role="dialog" aria-modal="true" aria-label="Gerecht aanpassen">' +
+    '<h2>Wat eten we op ' + esc(volDag(menuEdit.dag)) + '?</h2>' +
+    '<div class="invoer"><label class="sr" for="menuveld">Gerecht</label>' +
+    '<input id="menuveld" type="text" autocomplete="off" maxlength="60" placeholder="Bijv. pannenkoeken" value="' + esc(menuEdit.waarde) + '"></div>' +
+    '<div class="kiesknoppen" style="justify-content:flex-start"><button type="submit" class="knop">Opslaan</button>' +
+    (menuEdit.waarde ? '<button type="button" class="knop2" data-act="menuLeeg" style="align-self:center">Leegmaken</button>' : '') +
+    '<button type="button" class="knop2" data-act="menuSluit" style="align-self:center">Annuleren</button></div></form></div>';
+  var veld = document.getElementById('menuveld');
+  veld.focus();
+  veld.setSelectionRange(veld.value.length, veld.value.length);
+}
+
+function opslaanMenu(dag, waarde) {
+  if (!ouderActief()) { menuEdit = null; vraagOuderPin(function () { opslaanMenu(dag, waarde); }); return; }
+  ouderSessie.tot = Date.now() + 5 * 60000;
+  D.menu.forEach(function (m) { if (m.dag === dag) m.gerecht = waarde; });
+  menuEdit = null; render();
+  bewaar('zetMenu', [dag, waarde, ouderSessie.pin]);
+}
+
+function menuDatum(dag) {
+  var i = DAG_KORT.indexOf(String(dag).toLowerCase().slice(0, 2));
+  var dagen = (D.agenda || {}).dagen || [];
+  return i >= 0 && dagen[i] ? dagen[i].datum : '';
+}
+
+function renderHelp(laag) {
+  var dag = ((D.agenda || {}).dagen || []).filter(function (d) { return d.datum === helpDag; })[0] || { dag: '', nr: '', maand: '' };
+  var m = D.menu.filter(function (x) { return menuDatum(x.dag) === helpDag; })[0];
+  var nu = (D.helpers || {})[helpDag] || [];
+  var kids = kinderen().map(function (k) {
+    var aan = nu.indexOf(k.id) >= 0;
+    return '<button type="button" class="keuze" data-act="helpKind" data-id="' + esc(k.id) + '" aria-pressed="' + aan + '"' +
+      (aan ? ' style="background:' + esc(k.kleur) + ';border-color:' + esc(k.kleur) + ';color:#101218"' : '') + '>' + (aan ? '✓ ' : '') + esc(k.naam) + '</button>';
+  }).join('');
+  laag.innerHTML = '<div class="overlay"><div class="detailbox" role="dialog" aria-modal="true" aria-label="Helpen koken">' +
+    '<div class="klein" style="font-size:15px">' + esc(hoofdletter(dag.dag) + ' ' + dag.nr + ' ' + dag.maand) + (m && m.gerecht ? ' · ' + esc(m.gerecht) : '') + '</div>' +
+    '<h2>Wie helpt koken?</h2>' +
+    '<div class="klein" style="font-size:15px">Tik op je naam. Je krijgt <b style="color:var(--text)">3 punten</b> als je de klus <i>Helpen met koken</i> later die dag afvinkt bij Klusjes, met je pincode.</div>' +
+    '<div class="chips">' + kids + '</div>' +
+    '<button type="button" class="knop" data-act="helpSluit" style="align-self:flex-start">Klaar</button></div></div>';
+}
+
+function renderPin() {
+  var laag = document.getElementById('laag');
+  if (!pin && keuze) { renderKeuze(laag); return; }
+  if (!pin && detail) { renderDetail(laag); return; }
+  if (!pin && menuEdit) { renderMenuEdit(laag); return; }
+  if (!pin && klusForm) { renderKlusForm(laag); return; }
+  if (!pin && meeForm) { renderMee(laag); return; }
+  if (!pin && wieKiezen) { renderWie(laag); return; }
+  if (!pin && helpDag) { renderHelp(laag); return; }
+  if (!pin && extraForm) { renderExtraForm(laag); return; }
+  if (!pin && spaarForm) { renderSpaar(laag); return; }
+  if (!pin && beoordeel) { renderBeoordeel(laag); return; }
+  if (!pin) { laag.innerHTML = ''; return; }
+  var k = pin.ouder ? { naam: '', kleur: '#ECEEF3' } : (persoon(pin.server ? pin.kind : pin.klus.kind) || { naam: '?', kleur: '#ECEEF3' });
+  var dots = ''; for (var i = 0; i < 4; i++) dots += '<span style="border-color:' + esc(k.kleur) + ';background:' + (i < pin.digits.length ? esc(k.kleur) : 'transparent') + '"></span>';
+  var keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'Annuleer', '0', 'Wis'].map(function (t) {
+    var s = t === 'Annuleer' || t === 'Wis';
+    return '<button type="button" class="key' + (s ? ' s' : '') + '" data-act="key" data-id="' + t + '"' + (pin.bezig ? ' disabled' : '') +
+      ' aria-label="' + (t === 'Wis' ? 'Laatste cijfer wissen' : t === 'Annuleer' ? 'Annuleren' : 'Cijfer ' + t) + '">' + t + '</button>';
+  }).join('');
+  laag.innerHTML = '<div class="overlay"><div class="pinbox' + (pin.schud ? ' shake' : '') + '" role="dialog" aria-modal="true" aria-label="Pincode invoeren">' +
+    (pin.ouder ?
+      '<span class="av" style="width:64px;height:64px;background:#ECEEF3">' + svg('potlood', 30) + '</span><h2>' + esc(pin.titel || 'Ouderpincode') + '</h2>' +
+      '<div style="font-size:15px;color:#C9CEDA;font-weight:700;text-align:center">Pincode van ' + esc(ouders().map(function (o) { return o.naam; }).join(' of ')) + '</div>' :
+      av(k, 64) + '<h2>Hoi ' + esc(k.naam) + '!</h2>' +
+      '<div style="font-size:15px;color:#C9CEDA;font-weight:700;text-align:center">' + (pin.server ? esc(pin.sub) : esc(pin.klus.klus) + ' · +' + pin.klus.punten + (pin.klus.punten === 1 ? ' punt' : ' punten')) + '</div>') +
+    '<div class="pindots" aria-label="' + pin.digits.length + ' van 4 cijfers">' + dots + '</div>' +
+    '<div class="fout" aria-live="assertive">' + esc(pin.bezig ? 'Even controleren…' : pin.fout || '') + '</div>' +
+    '<div class="keys">' + keys + '</div></div></div>';
+  pin.schud = false;
+}
+
+function zegt(tekst, kleur) {
+  toast = { tekst: tekst, kleur: kleur || '#ECEEF3' };
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { toast = null; render(); }, 4000);
+  render();
+}
+
+/* ---------------- gezinscode ---------------- */
+
+function renderSlot() {
+  document.getElementById('app').innerHTML = '<main class="slotscherm"><section class="card">' +
+    '<span class="av" style="width:72px;height:72px;background:#9CC2FF">' + svg('slot', 34) + '</span>' +
+    '<h2>Gezinsdashboard</h2><div class="klein" style="font-size:15px">Typ de gezinscode. Dit apparaat onthoudt hem, dus je hoeft dit maar één keer te doen.</div>' +
+    '<form data-form="slot"><label class="sr" for="slotcode">Gezinscode</label>' +
+    '<input id="slotcode" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false" placeholder="Gezinscode"' + (slotBezig ? ' disabled' : '') + '>' +
+    '<button type="submit" class="knop"' + (slotBezig ? ' disabled' : '') + '>' + (slotBezig ? 'Even controleren…' : 'Openen') + '</button></form>' +
+    '<div class="fout" aria-live="assertive">' + esc(slotFout) + '</div></section></main>';
+  document.getElementById('laag').innerHTML = '';
+  var veld = document.getElementById('slotcode');
+  if (veld && !slotBezig) veld.focus();
+}
+
+function probeerCode(code) {
+  slotBezig = true; slotFout = ''; render();
+  google.script.run
+    .withSuccessHandler(function (res) {
+      slotBezig = false;
+      if (!res || res.slot) {
+        slotFout = (res && res.fout) || '';
+        gezinscode = ''; try { localStorage.removeItem('gezinsdashboard-code'); } catch (e) {}
+        render(); return;
+      }
+      gezinscode = code; try { localStorage.setItem('gezinsdashboard-code', code); } catch (e) {}
+      D = res; vergrendeld = false;
+      if (isMobiel() && !ik) wieKiezen = true;
+      render();
+    })
+    .withFailureHandler(function (err) { slotBezig = false; slotFout = err && err.toonbaar ? err.message : 'Geen verbinding. Probeer het opnieuw.'; render(); })
+    .api(code, 'getData', []);
+}
+
+/** Het script gaf { slot: true } terug: de code is gewijzigd of ontbreekt. Terug naar het codescherm. */
+function toonSlot(fout) {
+  vergrendeld = true; slotFout = fout || 'Typ de (nieuwe) gezinscode.';
+  pin = null; keuze = null; detail = null; bewerkA = null; menuEdit = null; klusForm = null; helpDag = null;
+  meeForm = null; wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null;
+  gezinscode = ''; try { localStorage.removeItem('gezinsdashboard-code'); } catch (e) {}
+  render();
+}
+
+/* ---------------- opslaan ---------------- */
+
+function bewaar(fn, args) {
+  bezig++;
+  var run = google.script.run
+    .withSuccessHandler(function (res) {
+      bezig--;
+      if (res && res.slot) { toonSlot(res.fout); return; }
+      if (res && res.fout) { ouderSessie = null; zegt(res.fout, '#FF8A7A'); ververs(); return; }
+      if (bezig === 0 && res && res.gezin) { D = res; render(); }
+    })
+    .withFailureHandler(function () { bezig--; zegt('Opslaan mislukt, probeer opnieuw', '#FF8A7A'); ververs(); });
+  run.api(gezinscode, fn, args);
+}
+
+function ververs() {
+  if (vergrendeld || pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || bezig) return;
+  google.script.run.withSuccessHandler(function (res) {
+    if (res && res.slot) { toonSlot(res.fout); return; }
+    if (!pin && !keuze && !detail && !menuEdit && !klusForm && !helpDag && !meeForm && !wieKiezen && !extraForm && !beoordeel && !spaarForm && !bezig && res && res.gezin) { D = res; render(); }
+  }).api(gezinscode, 'getData', []);
+}
+
+function alleEvents() {
+  return ((D.agenda || {}).dagen || []).reduce(function (alle, d) { return alle.concat(d.events); }, []);
+}
+function vandaagEvents() {
+  var dag = ((D.agenda || {}).dagen || []).filter(function (d) { return d.vandaag; })[0];
+  return dag ? dag.events : [];
+}
+function vindEvent(sleutel) { return alleEvents().filter(function (e) { return e.sleutel === sleutel; })[0]; }
+
+function volgendeChauffeur(huidig) {
+  var opties = [''].concat(ouders().map(function (p) { return p.id; }), [OPA_OMA.id]);
+  return opties[(opties.indexOf(huidig || '') + 1) % opties.length];
+}
+
+function druk(t) {
+  if (!pin || pin.bezig) return;
+  if (t === 'Annuleer') { pin = null; render(); return; }
+  if (t === 'Wis') { pin.digits = pin.digits.slice(0, -1); renderPin(); return; }
+  if (pin.digits.length >= 4) return;
+  pin.digits += t; pin.fout = '';
+  if (pin.digits.length < 4) { renderPin(); return; }
+  pin.bezig = true; renderPin();
+  if (pin.server) {
+    var p0 = pin;
+    var runner = google.script.run
+      .withSuccessHandler(function (res) {
+        if (res && res.slot) { toonSlot(res.fout); return; }
+        if (res && res.fout) {
+          p0.bezig = false; p0.digits = ''; p0.schud = res.fout === 'Verkeerde pincode';
+          p0.fout = res.fout === 'Verkeerde pincode' ? 'Verkeerde pincode, probeer het nog eens' : res.fout;
+          renderPin(); return;
+        }
+        pin = null; if (res && res.gezin) D = res;
+        zegt(p0.gelukt, (persoon(p0.kind) || {}).kleur || '#9CC2FF');
+      })
+      .withFailureHandler(function (err) { p0.bezig = false; p0.digits = ''; p0.fout = (err && err.message) || 'Opslaan mislukt, probeer opnieuw'; renderPin(); });
+    runner.api(gezinscode, p0.server.fn, p0.server.args.concat([p0.digits]));
+    return;
+  }
+  if (pin.ouder) {
+    var code = pin.digits;
+    google.script.run
+      .withSuccessHandler(function (res) {
+        if (res && res.slot) { toonSlot(res.fout); return; }
+        if (!res || !res.ok) {
+          pin.bezig = false; pin.digits = ''; pin.schud = true;
+          pin.fout = res && res.fout && res.fout !== 'Verkeerde pincode' ? res.fout : 'Verkeerde pincode, probeer het nog eens';
+          renderPin(); return;
+        }
+        var daarna = pin.daarna;
+        ouderSessie = { pin: code, naam: res.naam, tot: Date.now() + 5 * 60000 };
+        pin = null;
+        if (daarna) daarna(); else zegt('Hoi ' + res.naam + '!', '#9CC2FF');
+      })
+      .withFailureHandler(function () { pin.bezig = false; pin.digits = ''; pin.fout = 'Controleren mislukt, probeer opnieuw'; renderPin(); })
+      .api(gezinscode, 'controleerOuderPin', [code]);
+    return;
+  }
+  var klus = pin.klus;
+  google.script.run
+    .withSuccessHandler(function (res) {
+      if (res && res.slot) { toonSlot(res.fout); return; }
+      if (res && res.fout) {
+        pin.bezig = false; pin.digits = ''; pin.fout = res.fout === 'Verkeerde pincode' ? 'Verkeerde pincode, probeer het nog eens' : res.fout; pin.schud = true;
+        renderPin(); return;
+      }
+      pin = null; D = res;
+      var k = persoon(klus.kind) || { naam: '', kleur: '#ECEEF3' };
+      zegt('+' + klus.punten + (klus.punten === 1 ? ' punt' : ' punten') + ' voor ' + k.naam + '!', k.kleur);
+    })
+    .withFailureHandler(function () { pin.bezig = false; pin.digits = ''; pin.fout = 'Opslaan mislukt, probeer opnieuw'; renderPin(); })
+    .api(gezinscode, 'vinkAf', [klus.id, pin.digits]);
+}
+
+/* ---------------- bediening ---------------- */
+
+document.addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-act]');
+  if (!b || b.disabled) return;
+  var act = b.getAttribute('data-act'), id = b.getAttribute('data-id');
+  if (act === 'tab') { tab = id; toast = null; render(); window.scrollTo(0, 0); return; }
+  if (act === 'key') { druk(id); return; }
+  if (act === 'weekNr') { weekNr = Number(id); render(); return; }
+  if (act === 'detail') { detail = id; bewerkA = null; render(); return; }
+  if (bewerkA && (act === 'aStatus' || act === 'aBreng' || act === 'aHaal' || act === 'aCat')) {
+    var veldA = { aStatus: 'status', aBreng: 'breng', aHaal: 'haal', aCat: 'categorie' }[act];
+    bewerkA[veldA] = act === 'aCat' && bewerkA.categorie === id ? '' : id;
+    render(); return;
+  }
+  if (act === 'sluitDetail') { detail = null; bewerkA = null; render(); return; }
+  if (act === 'ikOpen') { wieKiezen = true; render(); return; }
+  if (act === 'ikKies') { zetIk(id); wieKiezen = false; render(); window.scrollTo(0, 0); return; }
+  if (act === 'broodDag') { broodDag = Number(id); render(); return; }
+  if (act === 'meeNieuw') { meeForm = { kind: id }; render(); document.getElementById('meeveld').focus(); return; }
+  if (act === 'meeSluit') { meeForm = null; render(); return; }
+  if (act === 'meeIdee') { voegMeeToe(id); return; }
+  if (act === 'meeWissel') {
+    (D.meenemen || []).forEach(function (x) { if (x.id === id) x.ingepakt = !x.ingepakt; });
+    render(); bewaar('wisselMeenemen', [id]); return;
+  }
+  if (act === 'meeWeg') {
+    D.meenemen = (D.meenemen || []).filter(function (x) { return x.id !== id; });
+    render(); bewaar('verwijderMeenemen', [id]); return;
+  }
+  if (act === 'snee') {
+    var deel = id.split('|');
+    keuze = { kind: deel[0], maaltijd: deel[1], index: Number(deel[2]) }; render(); return;
+  }
+  if (act === 'kies' && keuze) {
+    var nieuweLijst = broodLijst(keuze.kind, keuze.maaltijd).slice();
+    nieuweLijst[keuze.index] = id;
+    zetBroodLijst(keuze.kind, keuze.maaltijd, nieuweLijst.filter(Boolean)); return;
+  }
+  if (act === 'weg' && keuze) {
+    var rest = broodLijst(keuze.kind, keuze.maaltijd).slice();
+    rest.splice(keuze.index, 1);
+    zetBroodLijst(keuze.kind, keuze.maaltijd, rest); return;
+  }
+  if (act === 'sluit') { keuze = null; render(); return; }
+  if (act === 'helpDag') { helpDag = id; render(); return; }
+  if (act === 'helpSluit') { helpDag = null; render(); return; }
+  if (act === 'helpKind' && helpDag) {
+    D.helpers = D.helpers || {};
+    var lijstH = (D.helpers[helpDag] || []).slice();
+    var plek = lijstH.indexOf(id), aanH = plek < 0;
+    if (aanH) lijstH.push(id); else lijstH.splice(plek, 1);
+    D.helpers[helpDag] = lijstH; render();
+    bewaar('zetHelpen', [helpDag, id, aanH]); return;
+  }
+  if (act === 'wensKind') { wensKind = wensKind === id ? null : id; render(); if (wensKind) document.getElementById('wens').focus(); return; }
+  if (act === 'wensWeg') {
+    var weg = function () {
+      ouderSessie.tot = Date.now() + 5 * 60000;
+      D.wensen = (D.wensen || []).filter(function (w) { return w.id !== id; }); render();
+      bewaar('verwijderWens', [id, ouderSessie.pin]);
+    };
+    if (ouderActief()) weg(); else vraagOuderPin(weg, 'Wens weghalen');
+    return;
+  }
+  if (act === 'rMoment') { routineMoment = id; render(); return; }
+  if (act === 'rStap') {
+    var rp = id.split('|'), rk = rp[0], rs = rp[1];
+    var rl = ((D.routines.stappen[rk] || {})[routineMoment] || []);
+    var stap = rl.filter(function (s) { return s.id === rs; })[0]; if (!stap) return;
+    stap.gedaan = !stap.gedaan;
+    var klaar = rl.every(function (s) { return s.gedaan; });
+    if (stap.gedaan && klaar) zegt((routineMoment === 'ochtend' ? 'Ochtendroutine' : 'Avondroutine') + ' klaar! Goed zo ' + (persoon(rk) || {}).naam + '!', (persoon(rk) || {}).kleur);
+    else render();
+    bewaar('zetRoutine', [rk, rs, stap.gedaan]); return;
+  }
+  if (act === 'doelOpen') {
+    var dd = ((D.spaardoelen || {}).doelen || {})[id];
+    spaarForm = { kind: id, doel: dd ? dd.doel : '', punten: dd ? dd.punten : 250, fout: '', focus: true }; render(); return;
+  }
+  if (act === 'doelSluit') { spaarForm = null; render(); return; }
+  if (act === 'doelWeg' && spaarForm) { bewaarSpaar('', 0); return; }
+  if (act === 'extraNieuw') { extraForm = { kind: id, wat: '', datum: 'vandaag', voorstel: 2, fout: '', focus: true }; render(); return; }
+  if (act === 'xSluit') { extraForm = null; render(); return; }
+  if (act === 'xDatum' && extraForm) { extraForm.datum = id; render(); return; }
+  if (act === 'xPunt' && extraForm) { extraForm.voorstel = Number(id.split('|')[1]); render(); return; }
+  if (act === 'extraIntrek') {
+    var xi = (D.extra || []).filter(function (x) { return x.id === id; })[0];
+    if (!xi) return;
+    if (ouderActief()) { D.extra = D.extra.filter(function (x) { return x.id !== id; }); render(); bewaar('trekExtraIn', [id, ouderSessie.pin]); return; }
+    vraagKindPin(xi.kind, 'Aanmelding intrekken: ' + xi.wat, 'trekExtraIn', [id], 'Aanmelding ingetrokken');
+    return;
+  }
+  if (act === 'beoordeelOpen') { openBeoordeel(); return; }
+  if (act === 'bSluit') { beoordeel = null; render(); return; }
+  if (beoordeel && act === 'bPunt') { var bp = id.split('|'); beoordeel.punten[bp[0]] = Number(bp[1]); render(); return; }
+  if (beoordeel && (act === 'bGoed' || act === 'bAf')) {
+    if (!ouderActief()) { var nu = beoordeel; beoordeel = null; vraagOuderPin(function () { beoordeel = nu; render(); }, 'Extra klusjes'); return; }
+    var x = wachtend().filter(function (y) { return y.id === id; })[0];
+    if (!x) return;
+    var n = beoordeel.punten[id] !== undefined ? beoordeel.punten[id] : x.voorstel;
+    if (act === 'bGoed' && !(n >= 1 && n <= 50)) { beoordeel.fout = 'Kies 1 tot 50 punten'; render(); return; }
+    ouderSessie.tot = Date.now() + 5 * 60000;
+    x.status = act === 'bGoed' ? 'goed' : 'afgewezen'; x.punten = act === 'bGoed' ? n : 0; x.reden = beoordeel.reden[id] || '';
+    beoordeel.fout = '';
+    zegt(act === 'bGoed' ? '+' + n + ' punten voor ' + (persoon(x.kind) || {}).naam : 'Afgewezen', act === 'bGoed' ? (persoon(x.kind) || {}).kleur : '#FF8A7A');
+    bewaar('beoordeelExtra', [id, act === 'bGoed', n, x.reden, ouderSessie.pin]); return;
+  }
+  if (beoordeel && act === 'gKind') { beoordeel.geef.kind = id; render(); return; }
+  if (beoordeel && act === 'gGeef') {
+    var g = beoordeel.geef;
+    g.wat = (g.wat || '').trim();
+    beoordeel.fout = !g.kind ? 'Kies een kind' : !g.wat ? 'Vul in waarvoor de punten zijn' : !(g.punten >= 1 && g.punten <= 50) ? 'Kies 1 tot 50 punten' : '';
+    if (beoordeel.fout) { render(); return; }
+    if (!ouderActief()) { var nu2 = beoordeel; beoordeel = null; vraagOuderPin(function () { beoordeel = nu2; render(); }, 'Extra klusjes'); return; }
+    ouderSessie.tot = Date.now() + 5 * 60000;
+    var gk = persoon(g.kind) || {};
+    zegt('+' + g.punten + ' punten voor ' + gk.naam, gk.kleur);
+    bewaar('geefExtra', [g.kind, g.wat, g.punten, ouderSessie.pin]);
+    beoordeel.geef = { kind: '', wat: '', punten: 5 }; render(); return;
+  }
+  if (act === 'beheerAan') {
+    if (ouderActief()) { beheer = true; render(); } else vraagOuderPin(function () { beheer = true; render(); }, 'Klusjes beheren');
+    return;
+  }
+  if (act === 'beheerUit') { beheer = false; render(); return; }
+  if (act === 'klusNieuw') { openKlusForm(null); return; }
+  if (act === 'klusEdit') { openKlusForm((D.alleKlusjes || []).filter(function (c) { return c.id === id; })[0]); return; }
+  if (klusForm && act.indexOf('kf') === 0) {
+    var f = klusForm;
+    if (act === 'kfSluit') { klusForm = null; render(); return; }
+    if (act === 'kfKind') { var i = f.kinderen.indexOf(id); if (i >= 0) f.kinderen.splice(i, 1); else f.kinderen.push(id); }
+    if (act === 'kfPunten') f.punten = Number(id);
+    if (act === 'kfIcoon') f.icoon = id;
+    if (act === 'kfWanneer') f.wanneer = id;
+    if (act === 'kfDag') { var j = f.dagen.indexOf(id); if (j >= 0) f.dagen.splice(j, 1); else f.dagen.push(id); }
+    if (act === 'kfVerwijder') {
+      if (!f.bevestig) { f.bevestig = true; render(); return; }
+      if (!ouderActief()) { vraagOuderPin(function () { render(); }, 'Klusjes beheren'); return; }
+      ouderSessie.tot = Date.now() + 5 * 60000;
+      klusForm = null; zegt('Klus verwijderd', '#9CC2FF');
+      bewaar('verwijderKlus', [f.id, ouderSessie.pin]); return;
+    }
+    f.fout = ''; f.bevestig = act === 'kfVerwijder' ? f.bevestig : false; render(); return;
+  }
+  if (act === 'menuAan') { if (ouderActief()) render(); else vraagOuderPin(null, 'Weekmenu aanpassen'); return; }
+  if (act === 'menuKlaar') { ouderSessie = null; render(); return; }
+  if (act === 'menuDag') {
+    var m = D.menu.filter(function (x) { return x.dag === id; })[0];
+    var open = function () { menuEdit = { dag: id, waarde: m ? m.gerecht : '' }; render(); };
+    if (ouderActief()) open(); else vraagOuderPin(open);
+    return;
+  }
+  if (act === 'menuLeeg' && menuEdit) { opslaanMenu(menuEdit.dag, ''); return; }
+  if (act === 'menuSluit') { menuEdit = null; render(); return; }
+  if (act === 'eet') {
+    var nieuw = VOLGENDE[D.eten[id] || 'onb'];
+    D.eten[id] = nieuw; render(); bewaar('zetEten', [id, nieuw]); return;
+  }
+  if (act === 'gaat' || act === 'breng' || act === 'haal') {
+    var e = vindEvent(id); if (!e) return;
+    var veld = act === 'gaat' ? 'status' : act;
+    var waarde = act === 'gaat' ? VOLGENDE[e.status] : volgendeChauffeur(e[act]);
+    e[veld] = waarde; render(); bewaar('zetRit', [e.sleutel, e.titel, veld, waarde, e.datum]); return;
+  }
+  if (act === 'klus') {
+    var c = D.klusjes.filter(function (x) { return x.id === id; })[0];
+    if (!c || c.gedaan) return;
+    pin = { klus: c, digits: '', fout: '', bezig: false }; render(); return;
+  }
+  if (act === 'item') {
+    D.boodschappen.forEach(function (x) { if (x.id === id) x.gedaan = !x.gedaan; });
+    render(); bewaar('wisselBoodschap', [id]); return;
+  }
+  if (act === 'wis') {
+    D.boodschappen = D.boodschappen.filter(function (x) { return !x.gedaan; });
+    render(); bewaar('wisAfgevinkteBoodschappen', []); return;
+  }
+});
+
+document.addEventListener('submit', function (ev) {
+  if (ev.target.matches('[data-form="wens"]')) {
+    ev.preventDefault();
+    var wv = document.getElementById('wens'), wt = wv.value.trim();
+    if (!wt || !wensKind) return;
+    wv.value = '';
+    D.wensen = [{ id: 'tijdelijk' + Date.now(), datum: D.vandaag, kind: wensKind, wens: wt }].concat(D.wensen || []);
+    var wk = wensKind; wensKind = null;
+    zegt('Wens doorgegeven!', (persoon(wk) || {}).kleur);
+    bewaar('voegWensToe', [wk, wt]); return;
+  }
+  if (ev.target.matches('[data-form="slot"]')) {
+    ev.preventDefault();
+    var c = document.getElementById('slotcode').value.trim();
+    if (c && !slotBezig) probeerCode(c);
+    return;
+  }
+  if (ev.target.matches('[data-form="spaar"]')) {
+    ev.preventDefault();
+    var sf = spaarForm; if (!sf) return;
+    sf.doel = document.getElementById('s-doel').value.trim();
+    sf.punten = Math.round(Number(document.getElementById('s-punten').value));
+    sf.fout = !sf.doel ? 'Vul in waar je voor spaart' : !(sf.punten >= 1 && sf.punten <= 10000) ? 'Kies 1 tot 10.000 punten' : '';
+    if (sf.fout) { render(); return; }
+    bewaarSpaar(sf.doel, sf.punten); return;
+  }
+  if (ev.target.matches('[data-form="extra"]')) {
+    ev.preventDefault();
+    var f = extraForm; if (!f) return;
+    f.wat = document.getElementById('x-wat').value.trim();
+    f.voorstel = Math.round(Number(document.getElementById('x-punten').value));
+    f.fout = !f.wat ? 'Vul in wat je gedaan hebt' : !(f.voorstel >= 1 && f.voorstel <= 50) ? 'Kies 1 tot 50 punten' : '';
+    if (f.fout) { render(); return; }
+    var datum = f.datum === 'gisteren' ? gisteren() : D.vandaag;
+    extraForm = null;
+    vraagKindPin(f.kind, f.wat + ' · voorstel ' + f.voorstel + ' punten', 'meldExtra', [f.kind, f.wat, datum, f.voorstel], 'Aangemeld! Papa of mama kijkt ernaar');
+    return;
+  }
+  if (ev.target.matches('[data-form="afspraak"]')) { ev.preventDefault(); bewaarAfspraak(); return; }
+  if (ev.target.matches('[data-form="mee"]')) { ev.preventDefault(); voegMeeToe(document.getElementById('meeveld').value); return; }
+  if (ev.target.matches('[data-form="klus"]')) { ev.preventDefault(); if (klusForm) bewaarKlus(); return; }
+  if (ev.target.matches('[data-form="menu"]')) {
+    ev.preventDefault();
+    if (menuEdit) opslaanMenu(menuEdit.dag, document.getElementById('menuveld').value.trim().slice(0, 60));
+    return;
+  }
+  if (!ev.target.matches('[data-form="toevoegen"]')) return;
+  ev.preventDefault();
+  var veld = document.getElementById('nieuw');
+  var tekst = veld.value.trim();
+  if (!tekst) return;
+  veld.value = '';
+  D.boodschappen.unshift({ id: 'tijdelijk' + Date.now(), item: tekst, gedaan: false });
+  render(); document.getElementById('nieuw').focus();
+  bewaar('voegBoodschapToe', [tekst]);
+});
+
+document.addEventListener('keydown', function (ev) {
+  if ((keuze || detail || menuEdit || klusForm || helpDag || meeForm || extraForm || beoordeel || spaarForm) && !pin && ev.key === 'Escape') { keuze = null; detail = null; bewerkA = null; menuEdit = null; klusForm = null; helpDag = null; meeForm = null; extraForm = null; beoordeel = null; spaarForm = null; render(); return; }
+  if (!pin) return;
+  if (/^[0-9]$/.test(ev.key)) druk(ev.key);
+  else if (ev.key === 'Backspace') druk('Wis');
+  else if (ev.key === 'Escape') druk('Annuleer');
+});
+
+document.addEventListener('input', function (ev) {
+  if (ev.target.id === 'menuveld' && menuEdit) menuEdit.waarde = ev.target.value;
+  if (ev.target.id === 'a-notitie' && bewerkA) bewerkA.notitie = ev.target.value;
+  if (extraForm && ev.target.id === 'x-wat') extraForm.wat = ev.target.value;
+  if (spaarForm && ev.target.id === 's-doel') spaarForm.doel = ev.target.value;
+  if (spaarForm && ev.target.id === 's-punten') { spaarForm.punten = ev.target.value; var se = document.getElementById('s-euro'); if (se) se.textContent = '= ' + euro(Number(ev.target.value) || 0); }
+  if (extraForm && ev.target.id === 'x-punten') extraForm.voorstel = Number(ev.target.value);
+  if (beoordeel && ev.target.getAttribute('data-bp')) beoordeel.punten[ev.target.getAttribute('data-bp')] = Number(ev.target.value);
+  if (beoordeel && ev.target.getAttribute('data-br')) beoordeel.reden[ev.target.getAttribute('data-br')] = ev.target.value;
+  if (beoordeel && ev.target.id === 'g-wat') beoordeel.geef.wat = ev.target.value;
+  if (beoordeel && ev.target.id === 'g-punten') beoordeel.geef.punten = Number(ev.target.value);
+  if (ev.target.id === 'kf-klus' && klusForm) klusForm.klus = ev.target.value;
+  if (ev.target.id === 'kf-datum' && klusForm) klusForm.datum = ev.target.value;
+});
+
+document.addEventListener('visibilitychange', function () { if (!document.hidden) ververs(); });
+setInterval(ververs, 60000);          // elke minuut verversen, zodat tablet en telefoons gelijk lopen
+setInterval(function () { if (!toast) render(); }, 5 * 60000); // "volgende melding" bijwerken
+
+var wasMobiel = isMobiel();
+window.addEventListener('resize', function () {
+  if (isMobiel() !== wasMobiel) { wasMobiel = isMobiel(); render(); }
+});
+if (vergrendeld && gezinscode) probeerCode(gezinscode);
+if (!vergrendeld && isMobiel() && !ik) wieKiezen = true;
+render();
+</script>
+</body>
+</html>
