@@ -1357,6 +1357,32 @@ function volgendeChauffeur(huidig) {
   return opties[(opties.indexOf(huidig || '') + 1) % opties.length];
 }
 
+/* Pincode meteen op het scherm controleren met de vingerafdrukken uit de data (de server controleert bij het
+   opslaan altijd nog een keer). Geeft de persoon terug bij een goede pincode, false bij een foute, en null als
+   het hier niet kan (oude browser of oude serverversie): dan gaat het zoals vroeger via de server. */
+var pinHashGeheugen = {};
+function pinHash(id, digits, klaar) {
+  var tekst = D.pinZout + '|' + id + '|' + digits;
+  if (pinHashGeheugen[tekst]) { klaar(pinHashGeheugen[tekst]); return; }
+  crypto.subtle.digest('SHA-256', new TextEncoder().encode(tekst)).then(function (buf) {
+    var hex = Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+    pinHashGeheugen[tekst] = hex; klaar(hex);
+  }, function () { klaar(null); });
+}
+function controleerLokaal(ids, digits, klaar) {
+  var mensen = ids.map(persoon).filter(Boolean);
+  if (!D.pinZout || !window.crypto || !crypto.subtle || !window.TextEncoder || !mensen.some(function (p) { return p.ph; })) { klaar(null); return; }
+  var open = mensen.length, gevonden = false, kapot = false;
+  mensen.forEach(function (p) {
+    pinHash(p.id, digits, function (h) {
+      if (h === null) kapot = true;
+      if (!gevonden && h && p.ph && h === p.ph) gevonden = p;
+      if (--open === 0) klaar(gevonden || (kapot ? null : false));
+    });
+  });
+}
+function ouderIds() { return ouders().map(function (o) { return o.id; }); }
+
 function druk(t) {
   if (!pin || pin.bezig) return;
   if (t === 'Annuleer') { pin = null; render(); return; }
@@ -1364,7 +1390,51 @@ function druk(t) {
   if (pin.digits.length >= 4) return;
   pin.digits += t; pin.fout = '';
   if (pin.digits.length < 4) { renderPin(); return; }
-  pin.bezig = true; renderPin();
+  pin.bezig = true;
+  var p1 = pin, digits = pin.digits;
+  var wie = pin.ouder ? ouderIds() : [pin.server ? pin.kind : pin.klus.kind].concat(ouderIds());
+  controleerLokaal(wie, digits, function (wieGoed) {
+    if (pin !== p1) return;
+    if (wieGoed === null) { renderPin(); drukServer(); return; }
+    if (wieGoed === false) {
+      pin.bezig = false; pin.digits = ''; pin.schud = true; pin.fout = 'Verkeerde pincode, probeer het nog eens';
+      renderPin(); return;
+    }
+    pinMeteenGoed(wieGoed, digits);
+  });
+}
+
+/** Pincode klopt: venster meteen dicht, opslaan gebeurt op de achtergrond. */
+function pinMeteenGoed(wieGoed, digits) {
+  var p0 = pin;
+  pin = null;
+  if (p0.ouder) {
+    ouderSessie = { pin: digits, naam: wieGoed.naam, tot: Date.now() + 5 * 60000 };
+    render();
+    if (p0.daarna) p0.daarna(); else zegt('Hoi ' + wieGoed.naam + '!', '#9CC2FF');
+    return;
+  }
+  if (p0.server) {
+    render();
+    zegt(p0.gelukt, (persoon(p0.kind) || {}).kleur || '#9CC2FF');
+    bewaar(p0.server.fn, p0.server.args.concat([digits]));
+    return;
+  }
+  var klus = p0.klus;
+  var c = D.klusjes.filter(function (x) { return x.id === klus.id; })[0];
+  if (c && !c.gedaan) {
+    c.gedaan = true;
+    if (D.punten) D.punten[klus.kind] = (D.punten[klus.kind] || 0) + klus.punten;
+    if (D.verdiend) D.verdiend[klus.kind] = (D.verdiend[klus.kind] || 0) + klus.punten;
+  }
+  render();
+  var k = persoon(klus.kind) || { naam: '', kleur: '#ECEEF3' };
+  zegt('+' + klus.punten + (klus.punten === 1 ? ' punt' : ' punten') + ' voor ' + k.naam + '!', k.kleur);
+  bewaar('vinkAf', [klus.id, digits]);
+}
+
+/** Zoals vroeger: de server controleert de pincode (als het op het scherm zelf niet kan). */
+function drukServer() {
   if (pin.server) {
     var p0 = pin;
     var runner = google.script.run
