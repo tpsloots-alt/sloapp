@@ -66,6 +66,14 @@ nav{display:flex;gap:8px;flex-wrap:wrap}
 .ktekst{flex:1;min-width:0;font-size:15px;font-weight:800;line-height:1.2}
 .ktekst.klein-label{font-size:13px;color:var(--muted)}
 .pdots{display:flex;gap:3px;flex:0 0 auto}
+.kmeta{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-top:2px}
+.kmeta.wacht{color:#9CC2FF}
+.geefknop{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:4px}
+.aanbod{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:14px;background:rgba(156,194,255,.10);border:1.5px solid rgba(156,194,255,.45)}
+.aanbod .at{flex:1 1 150px;min-width:0;display:flex;flex-direction:column;gap:2px;font-size:15px}
+.aanbod .ak{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%}
+.aanbod .knop,.aanbod .knop2{height:44px;min-height:44px;padding:0 14px;font-size:15px}
+.kregel .kn.vraag{color:#9CC2FF}
 .pdots span{width:8px;height:8px;border-radius:50%}
 .grid-eten{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
 .menu{display:flex;align-items:center;gap:14px;min-height:56px;padding:0 16px;border-radius:14px;border:1.5px solid transparent}
@@ -419,6 +427,7 @@ var detail = null;       // sleutel van de afspraak in het detailvenster (tabbla
 var weekNr = 0;          // 0 = deze week, 1 = volgende week
 var ouderSessie = null;  // {pin, naam, tot} – na ouderpincode mag het weekmenu een paar minuten aangepast worden
 var menuEdit = null;
+var geven = null;        // {klus}: kiezen aan wie een klus gegeven wordt
 var beheer = false;
 var helpDag = null;      // datum waarvoor de 'wie helpt koken?'-keuze open staat
 var wensKind = null;     // kind dat een eetwens doorgeeft      // klusjes beheren (na ouderpincode)
@@ -449,6 +458,7 @@ var ICONS = {
   dier: '<circle cx="6" cy="10" r="2"/><circle cx="10" cy="5.5" r="2"/><circle cx="14" cy="5.5" r="2"/><circle cx="18" cy="10" r="2"/><path d="M12 11c-3 0-6 4-6 6.5S8 21 12 21s6-1 6-3.5S15 11 12 11z"/>',
   overig: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
   vink: '<path d="M5 12l5 5 9-10"/>',
+  pijl: '<path d="M4 12h14M13 6l6 6-6 6"/>',
   week: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M7 14h2M11 14h2M15 14h2M7 17h2M11 17h2"/>',
   shirt: '<path d="M8 3L3 6l2 5 3-1v11h8V10l3 1 2-5-5-3a4 4 0 0 1-8 0z"/>',
   tand: '<path d="M7 3c-2 0-3 2-3 4 0 3 1 4 1.5 7S6 21 8 21c1.5 0 1.5-4 4-4s2.5 4 4 4c2 0 2-4 2.5-7S20 10 20 7c0-2-1-4-3-4-2 0-3 1-5 1S9 3 7 3z"/>',
@@ -573,7 +583,7 @@ function isNacht() {
   return van > tot ? (nu >= van || nu < tot) : (nu >= van && nu < tot);
 }
 function iemandBezig() {
-  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm);
+  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || geven);
 }
 function toonNacht() {
   return tabletStand && !isMobiel() && Date.now() - laatsteAanraking > KLOK_NA_MS && !iemandBezig();
@@ -722,9 +732,11 @@ function vandaag() {
     var klaar = lijst.length - open.length;
     var verd = (D.verdiend || {})[k.id] || 0, uit = (D.uitbetaald || {})[k.id] || 0;
     var nog = !lijst.length ? 'Geen klusjes' : !open.length ? '✓ Alles gedaan' : open.map(function (c) { return c.klus; }).join(', ');
+    var aangeboden = aanbodVoor(k);
+    if (aangeboden.length) nog = 'Wil je ' + aangeboden.map(function (c) { return c.klus + ' van ' + ((persoon(c.kind) || {}).naam || ''); }).join(', ') + ' overnemen?';
     return '<button type="button" class="kregel" data-act="tab" data-id="klusjes" aria-label="' + esc(k.naam + ': ' + (lijst.length ? klaar + ' van ' + lijst.length + ' klusjes gedaan. ' : '') + nog + '. Tegoed ' + euro(verd - uit)) + '">' +
       '<span class="dot" style="width:11px;height:11px;background:' + esc(k.kleur) + '"></span><span class="n">' + esc(k.naam) + '</span>' +
-      '<span class="kn' + (lijst.length && !open.length ? ' klaar' : '') + '">' + esc(nog) + '</span>' +
+      '<span class="kn' + (aangeboden.length ? ' vraag' : lijst.length && !open.length ? ' klaar' : '') + '">' + esc(nog) + '</span>' +
       '<span class="frac">' + (lijst.length ? klaar + '/' + lijst.length : '') + '</span>' +
       '<span class="kt" style="color:' + esc(k.kleur) + '">' + euro(verd - uit) + '</span></button>';
   }).join('');
@@ -852,7 +864,10 @@ function klusjes() {
         ' aria-label="' + esc(c.klus) + ', ' + c.punten + (c.punten === 1 ? ' punt' : ' punten') + (c.gedaan ? ', gedaan' : '') + '">' +
         '<span class="icoon" style="width:' + maat + 'px;height:' + maat + 'px;background:' + (c.gedaan ? 'rgba(74,222,128,.16)' : esc(k.kleur) + '26') + ';color:' + (c.gedaan ? 'var(--ja)' : esc(k.kleur)) + '">' +
         svg(c.gedaan ? 'vink' : c.icoon, maat > 40 ? 28 : 22, c.gedaan ? 2.5 : 2) + '</span>' +
-        '<span class="ktekst' + (maat === 52 ? ' klein-label' : '') + '">' + esc(c.klus) + '</span><span class="pdots">' + dots + '</span></button>';
+        '<span class="ktekst' + (maat === 52 ? ' klein-label' : '') + '">' + esc(c.klus) +
+        (c.aanbod ? '<span class="kmeta wacht">wacht op ' + esc((persoon(c.aanbod.naar) || {}).naam || '') + '</span>' :
+          c.van ? '<span class="kmeta">van ' + esc((persoon(c.van) || {}).naam || '') + '</span>' : '') +
+        '</span><span class="pdots">' + dots + '</span></button>';
     }).join('');
     return '<section class="card" style="padding:18px"><div class="rij" style="gap:10px">' + av(k, 44) +
       '<div><div style="font-size:18px;font-weight:900">' + esc(k.naam) + '</div><div class="klein">' + (k.leeftijd ? k.leeftijd + ' jaar' : '') + '</div></div></div>' +
@@ -861,12 +876,24 @@ function klusjes() {
       '<div class="klein" style="font-size:12px">Verdiend ' + euro((D.verdiend || {})[k.id] || 0) + ' · uitbetaald ' + euro((D.uitbetaald || {})[k.id] || 0) + '</div>' +
       '<div class="balk"><div style="width:' + ((25 - rest) / 25 * 100) + '%;background:' + esc(k.kleur) + '"></div></div>' +
       '<div class="klein" style="font-size:12px">Nog ' + rest + ' punten tot de volgende euro</div>' + doelBlok(k, pts) + '</div>' +
-      (knoppen || '<div class="leegtekst">Vandaag geen klusjes</div>') + extraLijst(k) + '</section>';
+      aanbodBlok(k) + (knoppen || '<div class="leegtekst">Vandaag geen klusjes</div>') + extraLijst(k) + '</section>';
   }).join('');
   return '<main style="display:flex;flex-direction:column;gap:14px">' + wachtBalk() + '<div class="kids">' + kaarten + '</div>' +
     '<div class="voet" style="align-items:center"><span>Tik op een klus en typ je pincode om hem af te vinken. 1–3 punten per klus · 25 punten = € 1</span>' +
     '<span class="chips"><button type="button" class="knop2" data-act="beoordeelOpen">+ Extra punten geven</button>' +
     '<button type="button" class="knop2" data-act="beheerAan" style="display:inline-flex;align-items:center;gap:8px">' + svg('potlood', 18) + 'Klusjes beheren</button></span></div></main>';
+}
+
+/** Klusjes die een broer of zus aan dit kind wil geven. */
+function aanbodVoor(k) { return D.klusjes.filter(function (c) { return c.aanbod && c.aanbod.naar === k.id && !c.gedaan; }); }
+function aanbodBlok(k) {
+  return aanbodVoor(k).map(function (c) {
+    var van = persoon(c.kind) || { naam: '', kleur: '#9AA1B2' };
+    return '<div class="aanbod">' + av(van, 32) + '<div class="at"><b>' + esc(van.naam) + ' geeft je ' + esc(c.klus) + '</b>' +
+      '<span class="klein">+' + c.punten + (c.punten === 1 ? ' punt' : ' punten') + ' als jij hem doet</span></div>' +
+      '<div class="ak"><button type="button" class="knop" data-act="aanbodJa" data-id="' + esc(c.id) + '">Overnemen</button>' +
+      '<button type="button" class="knop2" data-act="aanbodNee" data-id="' + esc(c.id) + '">Nee</button></div></div>';
+  }).join('');
 }
 
 function wachtend() { return (D.extra || []).filter(function (x) { return x.status === 'wacht'; }); }
@@ -1455,6 +1482,7 @@ function renderPin() {
   if (!pin && extraForm) { renderExtraForm(laag); return; }
   if (!pin && spaarForm) { renderSpaar(laag); return; }
   if (!pin && beoordeel) { renderBeoordeel(laag); return; }
+  if (!pin && geven) { renderGeven(laag); return; }
   if (!pin) { laag.innerHTML = ''; return; }
   var k = pin.ouder ? { naam: '', kleur: '#ECEEF3' } : (persoon(pin.server ? pin.kind : pin.klus.kind) || { naam: '?', kleur: '#ECEEF3' });
   var dots = ''; for (var i = 0; i < 4; i++) dots += '<span style="border-color:' + esc(k.kleur) + ';background:' + (i < pin.digits.length ? esc(k.kleur) : 'transparent') + '"></span>';
@@ -1471,8 +1499,24 @@ function renderPin() {
       '<div style="font-size:15px;color:#C9CEDA;font-weight:700;text-align:center">' + (pin.server ? esc(pin.sub) : esc(pin.klus.klus) + ' · +' + pin.klus.punten + (pin.klus.punten === 1 ? ' punt' : ' punten')) + '</div>') +
     '<div class="pindots" aria-label="' + pin.digits.length + ' van 4 cijfers">' + dots + '</div>' +
     '<div class="fout" aria-live="assertive">' + esc(pin.bezig ? 'Even controleren…' : pin.fout || '') + '</div>' +
-    '<div class="keys">' + keys + '</div></div></div>';
+    '<div class="keys">' + keys + '</div>' +
+    (pin.klus && !pin.klus.gedaan && !pin.bezig ? (pin.klus.aanbod ?
+      '<button type="button" class="knop2 geefknop" data-act="klusIntrekken">Toch zelf doen (aanbod aan ' + esc((persoon(pin.klus.aanbod.naar) || {}).naam || '') + ' intrekken)</button>' :
+      '<button type="button" class="knop2 geefknop" data-act="klusGeven">' + svg('pijl', 18) + 'Geef aan iemand anders</button>') : '') +
+    '</div></div>';
   pin.schud = false;
+}
+
+function renderGeven(laag) {
+  var c = geven.klus, van = persoon(c.kind) || { naam: '' };
+  var keuzes = kinderen().filter(function (k) { return k.id !== c.kind; }).map(function (k) {
+    return '<button type="button" class="wie-k" data-act="geefAan" data-id="' + esc(k.id) + '">' + av(k, 44) + '<span>' + esc(k.naam) + '</span></button>';
+  }).join('');
+  laag.innerHTML = '<div class="overlay"><div class="kiesbox" role="dialog" aria-modal="true" aria-label="Klus aan iemand anders geven">' +
+    '<h2>Aan wie geef je ' + esc(c.klus) + '?</h2>' +
+    '<div class="klein" style="font-size:14px">Die ander moet het eerst overnemen met zijn eigen pincode. Tot die tijd blijft de klus bij ' + esc(van.naam) + '. Wie hem doet, krijgt de ' + c.punten + (c.punten === 1 ? ' punt' : ' punten') + '.</div>' +
+    '<div class="wiegrid">' + keuzes + '</div>' +
+    '<div class="kiesknoppen"><button type="button" class="knop2" data-act="geefSluit">Annuleren</button></div></div></div>';
 }
 
 function zegt(tekst, kleur) {
@@ -1532,7 +1576,7 @@ function toonSlot(res) {
   if (gezinscode && !codeEchtFout(res) && !(res && res.reden === 'leeg')) { if (fout) zegt(fout, '#FF8A7A'); return; }
   vergrendeld = true; slotFout = fout || 'Typ de (nieuwe) gezinscode.';
   pin = null; keuze = null; detail = null; bewerkA = null; menuEdit = null; klusForm = null; helpDag = null;
-  meeForm = null; wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null;
+  meeForm = null; wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null; geven = null;
   vergeetCode();
   render();
 }
@@ -1553,10 +1597,10 @@ function bewaar(fn, args) {
 }
 
 function ververs() {
-  if (vergrendeld || pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || bezig) return;
+  if (vergrendeld || iemandBezig() || bezig) return;
   google.script.run.withSuccessHandler(function (res) {
     if (res && res.slot) { toonSlot(res); return; }
-    if (!pin && !keuze && !detail && !menuEdit && !klusForm && !helpDag && !meeForm && !wieKiezen && !extraForm && !beoordeel && !spaarForm && !bezig && res && res.gezin) { nieuweData(res); render(); }
+    if (!iemandBezig() && !bezig && res && res.gezin) { nieuweData(res); render(); }
   }).api(gezinscode, 'getData', []);
 }
 
@@ -1632,6 +1676,7 @@ function pinMeteenGoed(wieGoed, digits) {
     return;
   }
   if (p0.server) {
+    if (p0.lokaal) p0.lokaal();
     render();
     zegt(p0.gelukt, (persoon(p0.kind) || {}).kleur || '#9CC2FF');
     bewaar(p0.server.fn, p0.server.args.concat([digits]));
@@ -1860,6 +1905,34 @@ document.addEventListener('click', function (ev) {
     var veld = act === 'gaat' ? 'status' : act;
     var waarde = act === 'gaat' ? VOLGENDE[e.status] : volgendeChauffeur(e[act]);
     e[veld] = waarde; render(); bewaar('zetRit', [e.sleutel, e.titel, veld, waarde, e.datum]); return;
+  }
+  if (act === 'klusGeven' && pin && pin.klus) { geven = { klus: pin.klus }; pin = null; render(); return; }
+  if (act === 'geefSluit') { geven = null; render(); return; }
+  if (act === 'geefAan' && geven) {
+    var gk = geven.klus, naarP = persoon(id) || { naam: '' };
+    geven = null;
+    vraagKindPin(gk.kind, gk.klus + ' geven aan ' + naarP.naam, 'geefKlus', [gk.id, id], 'Gevraagd aan ' + naarP.naam + '! Die moet hem nog overnemen.');
+    pin.lokaal = function () { gk.aanbod = { id: 'tijdelijk', naar: id }; };
+    return;
+  }
+  if (act === 'klusIntrekken' && pin && pin.klus && pin.klus.aanbod) {
+    var ik2 = pin.klus;
+    vraagKindPin(ik2.kind, 'Aanbod intrekken: ' + ik2.klus, 'weigerKlus', [ik2.aanbod.id], 'Ingetrokken, je doet hem zelf');
+    pin.lokaal = function () { ik2.aanbod = null; };
+    return;
+  }
+  if (act === 'aanbodJa' || act === 'aanbodNee') {
+    var ac = D.klusjes.filter(function (x) { return x.id === id; })[0];
+    if (!ac || !ac.aanbod) return;
+    var ontvanger = ac.aanbod.naar, gever = ac.kind;
+    if (act === 'aanbodJa') {
+      vraagKindPin(ontvanger, 'Overnemen: ' + ac.klus + ' (van ' + ((persoon(gever) || {}).naam || '') + ')', 'neemKlusOver', [ac.aanbod.id], 'Overgenomen! Vink hem af als hij klaar is');
+      pin.lokaal = function () { ac.van = gever; ac.kind = ontvanger; ac.aanbod = null; };
+    } else {
+      vraagKindPin(ontvanger, 'Nee bedankt: ' + ac.klus, 'weigerKlus', [ac.aanbod.id], 'Oké, ' + ((persoon(gever) || {}).naam || '') + ' doet hem zelf');
+      pin.lokaal = function () { ac.aanbod = null; };
+    }
+    return;
   }
   if (act === 'klus') {
     var c = D.klusjes.filter(function (x) { return x.id === id; })[0];
