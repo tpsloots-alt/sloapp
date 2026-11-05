@@ -61,13 +61,25 @@ nav{display:flex;gap:8px;flex-wrap:wrap}
 .spaar .balk{height:8px;flex:none}
 .klus{display:flex;align-items:center;gap:10px;width:100%;min-height:58px;padding:8px 10px;border-radius:14px;border:1.5px solid #323745;background:var(--card2);color:var(--text);text-align:left}
 .klus[disabled]{background:transparent;border-color:#262A34;cursor:default}
-.klus[disabled] .ktekst{text-decoration:line-through;color:var(--dim)}
+.klus[disabled] .ktekst .kt{text-decoration:line-through;color:var(--dim)}
 .icoon{border-radius:12px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 .ktekst{flex:1;min-width:0;font-size:15px;font-weight:800;line-height:1.2}
 .ktekst.klein-label{font-size:13px;color:var(--muted)}
 .pdots{display:flex;gap:3px;flex:0 0 auto}
 .kmeta{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-top:2px}
 .kmeta.wacht{color:#9CC2FF}
+.kmeta.straf{color:var(--nee)}
+.klus.afgekeurd .ktekst .kt{text-decoration:line-through;color:var(--dim)}
+.klus.isaf{background:transparent;border-color:#262A34}
+.klus.isaf .ktekst .kt{text-decoration:line-through;color:var(--dim)}
+.knop2.stap{width:48px;height:48px;padding:0;font-size:24px;font-weight:900;color:var(--text)}
+.strafn{min-width:44px;text-align:center;font-size:28px;font-weight:900}
+.oppascodes{display:grid;grid-template-columns:1.7fr 1fr 1fr;gap:10px}
+.oppascodes>div{display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:14px;background:#12141A}
+.oppascodes b{font-size:22px;font-weight:900;letter-spacing:1px;word-break:break-all}
+.oprij{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.oprij .ot{flex:1;min-width:0;display:flex;flex-direction:column}
+@media (max-width:760px){.oppascodes{grid-template-columns:1fr}}
 .geefknop{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:4px}
 .aanbod{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:14px;background:rgba(156,194,255,.10);border:1.5px solid rgba(156,194,255,.45)}
 .aanbod .at{flex:1 1 150px;min-width:0;display:flex;flex-direction:column;gap:2px;font-size:15px}
@@ -198,6 +210,7 @@ input[type=date]{color-scheme:dark}
 .event.morgen .tijd{font-size:15px}
 .event.morgen .potloodknop{width:40px;height:40px}
 .wev .t{display:flex;align-items:center;gap:4px}
+input.veld{width:100%;height:48px;box-sizing:border-box;padding:0 14px;border-radius:14px;border:1.5px solid #3A3F4C;background:#12141A;color:var(--text);font:inherit;font-size:16px;font-weight:700;color-scheme:dark}
 textarea.veld{width:100%;min-height:84px;box-sizing:border-box;padding:12px 14px;border-radius:14px;border:1.5px solid #3A3F4C;background:#12141A;color:var(--text);font:inherit;font-size:16px;font-weight:700;resize:vertical}
 .status{display:none}
 .status.heeft-toast{display:flex;position:fixed;top:14px;right:20px;z-index:20}
@@ -428,6 +441,8 @@ var weekNr = 0;          // 0 = deze week, 1 = volgende week
 var ouderSessie = null;  // {pin, naam, tot} – na ouderpincode mag het weekmenu een paar minuten aangepast worden
 var menuEdit = null;
 var geven = null;        // {klus}: kiezen aan wie een klus gegeven wordt
+var straf = null;        // {klus, n}: 'niet echt gedaan' melden
+var oppasForm = null;    // {naam, van, tot, fout} of {klaar: {naam, code, pincode, van, tot}}
 var beheer = false;
 var helpDag = null;      // datum waarvoor de 'wie helpt koken?'-keuze open staat
 var wensKind = null;     // kind dat een eetwens doorgeeft      // klusjes beheren (na ouderpincode)
@@ -459,6 +474,8 @@ var ICONS = {
   overig: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
   vink: '<path d="M5 12l5 5 9-10"/>',
   pijl: '<path d="M4 12h14M13 6l6 6-6 6"/>',
+  kruis: '<path d="M6 6l12 12M18 6L6 18"/>',
+  oppas: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="18" cy="10" r="2.5"/><path d="M15.5 20a4.5 4.5 0 0 1 6-4.2"/>',
   week: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M7 14h2M11 14h2M15 14h2M7 17h2M11 17h2"/>',
   shirt: '<path d="M8 3L3 6l2 5 3-1v11h8V10l3 1 2-5-5-3a4 4 0 0 1-8 0z"/>',
   tand: '<path d="M7 3c-2 0-3 2-3 4 0 3 1 4 1.5 7S6 21 8 21c1.5 0 1.5-4 4-4s2.5 4 4 4c2 0 2-4 2.5-7S20 10 20 7c0-2-1-4-3-4-2 0-3 1-5 1S9 3 7 3z"/>',
@@ -583,7 +600,7 @@ function isNacht() {
   return van > tot ? (nu >= van || nu < tot) : (nu >= van && nu < tot);
 }
 function iemandBezig() {
-  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || geven);
+  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || geven || straf || oppasForm);
 }
 function toonNacht() {
   return tabletStand && !isMobiel() && Date.now() - laatsteAanraking > KLOK_NA_MS && !iemandBezig();
@@ -683,7 +700,9 @@ function kop() {
     '<span>' + esc(mij ? mij.naam : 'Gezin') + '</span></button>';
   var tabletKnop = '<button type="button" class="tabletknop" data-act="tabletStand" aria-pressed="' + tabletStand + '" title="Scherm blijft aan; na 5 minuten niets aanraken verschijnt het klokscherm (van ' + esc(nachtTijden().van) + ' tot ' + esc(nachtTijden().tot) + ' gedimd)">' +
     svg('pyjama', 18) + '<span>Tabletstand' + (tabletStand ? ' aan' : '') + '</span></button>';
+  var opNu = actieveOppas();
   return '<header><div><div class="datum">' + esc(hoofdletter(D.datumTekst)) + '</div><div class="sub">Ons gezin · week ' + D.week +
+    (opNu.length ? ' · oppas: ' + esc(opNu.map(function (o) { return o.naam; }).join(' & ')) : '') +
     '<span class="volgende"> · volgende melding ' + esc(volgende) + '</span></div></div>' + ikKnop + '<nav aria-label="Onderdelen" role="tablist">' + tabs.map(function (t) {
       return '<button type="button" class="tab" role="tab" aria-selected="' + (tab === t[0]) + '" data-act="tab" data-id="' + t[0] + '">' +
         svg(t[2], 22) + (t[3] ? '<span class="lang">' + t[1] + '</span><span class="kort">' + t[3] + '</span>' : '<span>' + t[1] + '</span>') + '</button>';
@@ -851,21 +870,23 @@ function ritChip(e, veld, label) {
 }
 
 function klusjes() {
-  if (beheer && ouderActief()) return klusBeheer();
+  if (beheer && ouderBeheer()) return klusBeheer();
   beheer = false;
   var kaarten = zichtbareKinderen().map(function (k) {
     var pts = D.punten[k.id] || 0;
-    var rest = 25 - (((pts % 25) + 25) % 25);
+    var rest = pts < 0 ? 25 - pts : 25 - (pts % 25);
     var maat = k.leeftijd && k.leeftijd < 6 ? 52 : k.leeftijd && k.leeftijd < 8 ? 46 : 36;
     var lijst = D.klusjes.filter(function (c) { return c.kind === k.id; });
     var knoppen = lijst.map(function (c) {
       var dots = ''; for (var i = 0; i < c.punten; i++) dots += '<span style="background:' + (c.gedaan ? '#4A5060' : esc(k.kleur)) + '"></span>';
-      return '<button type="button" class="klus" data-act="klus" data-id="' + esc(c.id) + '"' + (c.gedaan ? ' disabled' : '') +
-        ' aria-label="' + esc(c.klus) + ', ' + c.punten + (c.punten === 1 ? ' punt' : ' punten') + (c.gedaan ? ', gedaan' : '') + '">' +
-        '<span class="icoon" style="width:' + maat + 'px;height:' + maat + 'px;background:' + (c.gedaan ? 'rgba(74,222,128,.16)' : esc(k.kleur) + '26') + ';color:' + (c.gedaan ? 'var(--ja)' : esc(k.kleur)) + '">' +
-        svg(c.gedaan ? 'vink' : c.icoon, maat > 40 ? 28 : 22, c.gedaan ? 2.5 : 2) + '</span>' +
-        '<span class="ktekst' + (maat === 52 ? ' klein-label' : '') + '">' + esc(c.klus) +
-        (c.aanbod ? '<span class="kmeta wacht">wacht op ' + esc((persoon(c.aanbod.naar) || {}).naam || '') + '</span>' :
+      var af = c.afgekeurd;
+      return '<button type="button" class="klus' + (c.gedaan ? ' isaf' : '') + (af ? ' afgekeurd' : '') + '" data-act="' + (c.gedaan ? 'klusStraf' : 'klus') + '" data-id="' + esc(c.id) + '"' + (af ? ' disabled' : '') +
+        ' aria-label="' + esc(c.klus) + ', ' + c.punten + (c.punten === 1 ? ' punt' : ' punten') + (af ? ', niet echt gedaan' : c.gedaan ? ', gedaan. Ouder of oppas: tik als hij niet echt gedaan is' : '') + '">' +
+        '<span class="icoon" style="width:' + maat + 'px;height:' + maat + 'px;background:' + (af ? 'rgba(255,138,122,.16)' : c.gedaan ? 'rgba(74,222,128,.16)' : esc(k.kleur) + '26') + ';color:' + (af ? 'var(--nee)' : c.gedaan ? 'var(--ja)' : esc(k.kleur)) + '">' +
+        svg(af ? 'kruis' : c.gedaan ? 'vink' : c.icoon, maat > 40 ? 28 : 22, c.gedaan ? 2.5 : 2) + '</span>' +
+        '<span class="ktekst' + (maat === 52 ? ' klein-label' : '') + '"><span class="kt">' + esc(c.klus) + '</span>' +
+        (af ? '<span class="kmeta straf">niet echt gedaan · −' + af + '</span>' :
+          c.aanbod ? '<span class="kmeta wacht">wacht op ' + esc((persoon(c.aanbod.naar) || {}).naam || '') + '</span>' :
           c.van ? '<span class="kmeta">van ' + esc((persoon(c.van) || {}).naam || '') + '</span>' : '') +
         '</span><span class="pdots">' + dots + '</span></button>';
     }).join('');
@@ -874,7 +895,7 @@ function klusjes() {
       '<div class="spaar"><div><span class="pts" style="color:' + esc(k.kleur) + '">' + pts + '</span> <span class="klein" style="font-size:14px">punten</span></div>' +
       '<div style="font-size:15px;font-weight:800">' + euro(pts) + ' tegoed</div>' +
       '<div class="klein" style="font-size:12px">Verdiend ' + euro((D.verdiend || {})[k.id] || 0) + ' · uitbetaald ' + euro((D.uitbetaald || {})[k.id] || 0) + '</div>' +
-      '<div class="balk"><div style="width:' + ((25 - rest) / 25 * 100) + '%;background:' + esc(k.kleur) + '"></div></div>' +
+      '<div class="balk"><div style="width:' + (pts < 0 ? 0 : (25 - rest) / 25 * 100) + '%;background:' + esc(k.kleur) + '"></div></div>' +
       '<div class="klein" style="font-size:12px">Nog ' + rest + ' punten tot de volgende euro</div>' + doelBlok(k, pts) + '</div>' +
       aanbodBlok(k) + (knoppen || '<div class="leegtekst">Vandaag geen klusjes</div>') + extraLijst(k) + '</section>';
   }).join('');
@@ -1082,7 +1103,7 @@ function bewaarKlus() {
   f.fout = !f.klus ? 'Geef de klus een naam' : !f.kinderen.length ? 'Kies minstens één kind' :
     f.wanneer === 'dagen' && !f.dagen.length ? 'Kies minstens één dag' : f.wanneer === 'eenmalig' && !f.datum ? 'Kies een datum' : '';
   if (f.fout) { render(); return; }
-  if (!ouderActief()) { vraagOuderPin(function () { render(); bewaarKlus(); }, 'Klusjes beheren'); return; }
+  if (!ouderBeheer()) { vraagOuderPin(function () { render(); bewaarKlus(); }, 'Klusjes beheren', true); return; }
   ouderSessie.tot = Date.now() + 5 * 60000;
   var data = { id: f.id, klus: f.klus, kinderen: f.kinderen, punten: f.punten, icoon: f.icoon,
     dagen: f.wanneer === 'dagen' ? f.dagen : [], datum: f.wanneer === 'eenmalig' ? f.datum : '' };
@@ -1368,7 +1389,7 @@ function week() {
     ' · ' + open + (open === 1 ? ' rit' : ' ritten') + ' zonder chauffeur</span></div>' +
     (a.fout ? '<div class="melding">' + esc(a.fout) + '</div>' : '') +
     '<div class="weekgrid">' + kolommen + '</div>' +
-    '<div class="klein" style="font-size:14px">Tik op een afspraak om hem te bewerken: gaat het kind, wie brengt (B) en haalt (H), categorie en notitie.</div></main>';
+    '<div class="klein" style="font-size:14px">Tik op een afspraak om hem te bewerken: gaat het kind, wie brengt (B) en haalt (H), categorie en notitie.</div>' + oppasKaart() + '</main>';
 }
 
 function renderDetail(laag) {
@@ -1427,8 +1448,10 @@ function ouderActief() {
   return !!ouderSessie;
 }
 
-function vraagOuderPin(daarna, titel) {
-  pin = { ouder: true, titel: titel || 'Weekmenu aanpassen', digits: '', fout: '', bezig: false, daarna: daarna || null };
+function ouderBeheer() { return ouderActief() && ouderSessie.rol !== 'oppas'; }
+function vraagOuderPin(daarna, titel, alleenOuders) {
+  if (alleenOuders && ouderActief() && ouderSessie.rol === 'oppas') ouderSessie = null;
+  pin = { ouder: true, alleenOuders: !!alleenOuders, titel: titel || 'Weekmenu aanpassen', digits: '', fout: '', bezig: false, daarna: daarna || null };
   render();
 }
 
@@ -1483,6 +1506,8 @@ function renderPin() {
   if (!pin && spaarForm) { renderSpaar(laag); return; }
   if (!pin && beoordeel) { renderBeoordeel(laag); return; }
   if (!pin && geven) { renderGeven(laag); return; }
+  if (!pin && straf) { renderStraf(laag); return; }
+  if (!pin && oppasForm) { renderOppas(laag); return; }
   if (!pin) { laag.innerHTML = ''; return; }
   var k = pin.ouder ? { naam: '', kleur: '#ECEEF3' } : (persoon(pin.server ? pin.kind : pin.klus.kind) || { naam: '?', kleur: '#ECEEF3' });
   var dots = ''; for (var i = 0; i < 4; i++) dots += '<span style="border-color:' + esc(k.kleur) + ';background:' + (i < pin.digits.length ? esc(k.kleur) : 'transparent') + '"></span>';
@@ -1494,7 +1519,7 @@ function renderPin() {
   laag.innerHTML = '<div class="overlay"><div class="pinbox' + (pin.schud ? ' shake' : '') + '" role="dialog" aria-modal="true" aria-label="Pincode invoeren">' +
     (pin.ouder ?
       '<span class="av" style="width:64px;height:64px;background:#ECEEF3">' + svg('potlood', 30) + '</span><h2>' + esc(pin.titel || 'Ouderpincode') + '</h2>' +
-      '<div style="font-size:15px;color:#C9CEDA;font-weight:700;text-align:center">Pincode van ' + esc(ouders().map(function (o) { return o.naam; }).join(' of ')) + '</div>' :
+      '<div style="font-size:15px;color:#C9CEDA;font-weight:700;text-align:center">Pincode van ' + esc(ouders().map(function (o) { return o.naam; }).concat(pin.alleenOuders ? [] : actieveOppas().map(function (o) { return o.naam + ' (oppas)'; })).join(' of ')) + '</div>' :
       av(k, 64) + '<h2>Hoi ' + esc(k.naam) + '!</h2>' +
       '<div style="font-size:15px;color:#C9CEDA;font-weight:700;text-align:center">' + (pin.server ? esc(pin.sub) : esc(pin.klus.klus) + ' · +' + pin.klus.punten + (pin.klus.punten === 1 ? ' punt' : ' punten')) + '</div>') +
     '<div class="pindots" aria-label="' + pin.digits.length + ' van 4 cijfers">' + dots + '</div>' +
@@ -1505,6 +1530,62 @@ function renderPin() {
       '<button type="button" class="knop2 geefknop" data-act="klusGeven">' + svg('pijl', 18) + 'Geef aan iemand anders</button>') : '') +
     '</div></div>';
   pin.schud = false;
+}
+
+function renderStraf(laag) {
+  var c = straf.klus, k = persoon(c.kind) || { naam: '' };
+  var totaal = c.punten + straf.n;
+  laag.innerHTML = '<div class="overlay"><div class="kiesbox" role="dialog" aria-modal="true" aria-label="Niet echt gedaan">' +
+    '<h2>' + esc(c.klus) + ': niet echt gedaan?</h2>' +
+    '<div class="klein" style="font-size:15px">' + esc(k.naam) + ' heeft deze klus vandaag afgevinkt. De ' + c.punten + (c.punten === 1 ? ' punt' : ' punten') + ' van de klus gaan eraf, plus de strafpunten hieronder. De klus vervalt voor vandaag.</div>' +
+    '<div class="rij" style="gap:12px;justify-content:center"><span style="font-size:16px;font-weight:800">Strafpunten</span>' +
+    '<button type="button" class="knop2 stap" data-act="strafMin" aria-label="Eén strafpunt minder">−</button>' +
+    '<span class="strafn" aria-live="polite">' + straf.n + '</span>' +
+    '<button type="button" class="knop2 stap" data-act="strafPlus" aria-label="Eén strafpunt meer">+</button></div>' +
+    '<div style="text-align:center;font-size:18px;font-weight:900;color:var(--nee)">Totaal −' + totaal + ' punten voor ' + esc(k.naam) + '</div>' +
+    '<div class="kiesknoppen"><button type="button" class="knop" data-act="strafOk" style="background:var(--nee)">Strafpunten geven</button>' +
+    '<button type="button" class="knop2" data-act="strafSluit">Annuleren</button></div>' +
+    '<div class="klein" style="text-align:center">Alleen Tom, Kirsten of de oppas kan dit, met hun pincode.</div></div></div>';
+}
+
+function renderOppas(laag) {
+  var f = oppasForm;
+  if (f.klaar) {
+    var o = f.klaar, link = (D.dashboardLink || (location.protocol === 'https:' && location.hostname.indexOf('github.io') >= 0 ? location.href.split('#')[0] : ''));
+    var bericht = 'Hoi ' + o.naam + '! Fijn dat je oppast. Open ' + (link || 'het gezinsdashboard') + ' en vul deze code in: ' + o.code +
+      '. Voor afvinken, punten en het menu is je pincode: ' + o.pincode + '. Geldig t/m ' + datumKort(o.tot) + '.';
+    laag.innerHTML = '<div class="overlay"><div class="kiesbox" role="dialog" aria-modal="true" aria-label="Oppas klaar">' +
+      '<h2>' + esc(o.naam) + ' kan oppassen</h2>' +
+      '<div class="oppascodes"><div><span class="klein">Code om het dashboard te openen</span><b>' + esc(o.code) + '</b></div>' +
+      '<div><span class="klein">Pincode</span><b>' + esc(o.pincode) + '</b></div>' +
+      '<div><span class="klein">Geldig</span><b style="font-size:18px">' + esc(datumKort(o.van)) + ' t/m ' + esc(datumKort(o.tot)) + '</b></div></div>' +
+      '<label class="klein" for="oppasbericht">Bericht om te sturen</label>' +
+      '<textarea id="oppasbericht" class="veld" readonly rows="4">' + esc(bericht) + '</textarea>' +
+      '<div class="kiesknoppen"><button type="button" class="knop" data-act="oppasKopieer">Bericht kopiëren</button>' +
+      '<button type="button" class="knop2" data-act="oppasSluit">Klaar</button></div>' +
+      '<div class="klein" style="text-align:center">Je ziet de code en pincode later ook in de Sheet, tabblad Oppas.</div></div></div>';
+    return;
+  }
+  laag.innerHTML = '<div class="overlay"><form class="kiesbox" data-form="oppas" role="dialog" aria-modal="true" aria-label="Oppas toevoegen">' +
+    '<h2>Oppas toevoegen</h2>' +
+    '<div class="klein" style="font-size:14px">De oppas krijgt een eigen code om het dashboard te openen en een pincode. Daarmee kan de oppas klusjes afvinken en strafpunten geven, mee-eten en halen/brengen invullen, het menu en de boodschappen aanpassen en extra punten geven. Klusjes beheren kan de oppas niet. Na de einddatum werkt de code niet meer.</div>' +
+    '<label class="klein" for="op-naam">Naam</label><input id="op-naam" class="veld" type="text" maxlength="30" placeholder="Bijv. Oma of Lisa" value="' + esc(f.naam) + '">' +
+    '<div class="rij" style="gap:12px"><div style="flex:1"><label class="klein" for="op-van">Van</label><input id="op-van" class="veld" type="date" value="' + esc(f.van) + '"></div>' +
+    '<div style="flex:1"><label class="klein" for="op-tot">Tot en met</label><input id="op-tot" class="veld" type="date" value="' + esc(f.tot) + '"></div></div>' +
+    '<div class="fout" aria-live="assertive">' + esc(f.fout || '') + '</div>' +
+    '<div class="kiesknoppen"><button type="submit" class="knop"' + (f.bezig ? ' disabled' : '') + '>' + (f.bezig ? 'Even bezig…' : 'Oppas maken') + '</button>' +
+    '<button type="button" class="knop2" data-act="oppasSluit">Annuleren</button></div></form></div>';
+}
+
+function oppasKaart() {
+  var lijst = (D.oppas || []).map(function (o) {
+    return '<div class="oprij"><span class="av" style="width:36px;height:36px;background:#C9CED8">' + svg('oppas', 20) + '</span>' +
+      '<div class="ot"><b>' + esc(o.naam) + '</b><span class="klein">' + esc(datumKort(o.van)) + ' t/m ' + esc(datumKort(o.tot)) + (o.actief ? ' · nu actief' : ' · gepland') + '</span></div>' +
+      '<button type="button" class="knop2" data-act="oppasStop" data-id="' + esc(o.id) + '">' + (o.actief ? 'Stoppen' : 'Weghalen') + '</button></div>';
+  }).join('');
+  return '<section class="card"><div class="kop" style="align-items:center"><div><h2>Oppas</h2><span class="klein">Tijdelijke toegang voor opa, oma of een oppas</span></div>' +
+    '<button type="button" class="knop2" data-act="oppasNieuw" style="display:inline-flex;align-items:center;gap:8px">' + svg('oppas', 18) + 'Oppas toevoegen</button></div>' +
+    (lijst || '<div class="leegtekst">Geen oppas gepland.</div>') + '</section>';
 }
 
 function renderGeven(laag) {
@@ -1576,7 +1657,7 @@ function toonSlot(res) {
   if (gezinscode && !codeEchtFout(res) && !(res && res.reden === 'leeg')) { if (fout) zegt(fout, '#FF8A7A'); return; }
   vergrendeld = true; slotFout = fout || 'Typ de (nieuwe) gezinscode.';
   pin = null; keuze = null; detail = null; bewerkA = null; menuEdit = null; klusForm = null; helpDag = null;
-  meeForm = null; wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null; geven = null;
+  meeForm = null; wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null; geven = null; straf = null; oppasForm = null;
   vergeetCode();
   render();
 }
@@ -1630,8 +1711,10 @@ function pinHash(id, digits, klaar) {
     pinHashGeheugen[tekst] = hex; klaar(hex);
   }, function () { klaar(null); });
 }
+function oppasMet(id) { return (D.oppas || []).filter(function (o) { return o.id === id && o.actief; })[0]; }
+function actieveOppas() { return (D.oppas || []).filter(function (o) { return o.actief; }); }
 function controleerLokaal(ids, digits, klaar) {
-  var mensen = ids.map(persoon).filter(Boolean);
+  var mensen = ids.map(function (id) { return persoon(id) || oppasMet(id); }).filter(Boolean);
   if (!D.pinZout || !window.crypto || !crypto.subtle || !window.TextEncoder || !mensen.some(function (p) { return p.ph; })) { klaar(null); return; }
   var open = mensen.length, gevonden = false, kapot = false;
   mensen.forEach(function (p) {
@@ -1642,7 +1725,9 @@ function controleerLokaal(ids, digits, klaar) {
     });
   });
 }
-function ouderIds() { return ouders().map(function (o) { return o.id; }); }
+function ouderIds(alleenOuders) {
+  return ouders().map(function (o) { return o.id; }).concat(alleenOuders ? [] : actieveOppas().map(function (o) { return o.id; }));
+}
 
 function druk(t) {
   if (!pin || pin.bezig) return;
@@ -1653,7 +1738,7 @@ function druk(t) {
   if (pin.digits.length < 4) { renderPin(); return; }
   pin.bezig = true;
   var p1 = pin, digits = pin.digits;
-  var wie = pin.ouder ? ouderIds() : [pin.server ? pin.kind : pin.klus.kind].concat(ouderIds());
+  var wie = pin.ouder ? ouderIds(pin.alleenOuders) : [pin.server ? pin.kind : pin.klus.kind].concat(ouderIds());
   controleerLokaal(wie, digits, function (wieGoed) {
     if (pin !== p1) return;
     if (wieGoed === null) { renderPin(); drukServer(); return; }
@@ -1670,7 +1755,7 @@ function pinMeteenGoed(wieGoed, digits) {
   var p0 = pin;
   pin = null;
   if (p0.ouder) {
-    ouderSessie = { pin: digits, naam: wieGoed.naam, tot: Date.now() + 5 * 60000 };
+    ouderSessie = { pin: digits, naam: wieGoed.naam, rol: oppasMet(wieGoed.id) ? 'oppas' : 'ouder', tot: Date.now() + 5 * 60000 };
     render();
     if (p0.daarna) p0.daarna(); else zegt('Hoi ' + wieGoed.naam + '!', '#9CC2FF');
     return;
@@ -1862,7 +1947,7 @@ document.addEventListener('click', function (ev) {
     beoordeel.geef = { kind: '', wat: '', punten: 5 }; render(); return;
   }
   if (act === 'beheerAan') {
-    if (ouderActief()) { beheer = true; render(); } else vraagOuderPin(function () { beheer = true; render(); }, 'Klusjes beheren');
+    if (ouderBeheer()) { beheer = true; render(); } else vraagOuderPin(function () { beheer = true; render(); }, 'Klusjes beheren', true);
     return;
   }
   if (act === 'beheerUit') { beheer = false; render(); return; }
@@ -1878,7 +1963,7 @@ document.addEventListener('click', function (ev) {
     if (act === 'kfDag') { var j = f.dagen.indexOf(id); if (j >= 0) f.dagen.splice(j, 1); else f.dagen.push(id); }
     if (act === 'kfVerwijder') {
       if (!f.bevestig) { f.bevestig = true; render(); return; }
-      if (!ouderActief()) { vraagOuderPin(function () { render(); }, 'Klusjes beheren'); return; }
+      if (!ouderBeheer()) { vraagOuderPin(function () { render(); }, 'Klusjes beheren', true); return; }
       ouderSessie.tot = Date.now() + 5 * 60000;
       klusForm = null; zegt('Klus verwijderd', '#9CC2FF');
       bewaar('verwijderKlus', [f.id, ouderSessie.pin]); return;
@@ -1905,6 +1990,52 @@ document.addEventListener('click', function (ev) {
     var veld = act === 'gaat' ? 'status' : act;
     var waarde = act === 'gaat' ? VOLGENDE[e.status] : volgendeChauffeur(e[act]);
     e[veld] = waarde; render(); bewaar('zetRit', [e.sleutel, e.titel, veld, waarde, e.datum]); return;
+  }
+  if (act === 'klusStraf') {
+    var sc = D.klusjes.filter(function (x) { return x.id === id; })[0];
+    if (sc && sc.gedaan && !sc.afgekeurd) { straf = { klus: sc, n: sc.punten }; render(); }
+    return;
+  }
+  if (act === 'strafMin' && straf) { straf.n = Math.max(0, straf.n - 1); render(); return; }
+  if (act === 'strafPlus' && straf) { straf.n = Math.min(50, straf.n + 1); render(); return; }
+  if (act === 'strafSluit') { straf = null; render(); return; }
+  if (act === 'strafOk' && straf) {
+    var st = straf;
+    var geef = function () {
+      ouderSessie.tot = Date.now() + 5 * 60000;
+      straf = null;
+      st.klus.afgekeurd = st.klus.punten + st.n;
+      var kk = st.klus.kind;
+      if (D.punten) D.punten[kk] = (D.punten[kk] || 0) - st.klus.afgekeurd;
+      if (D.verdiend) D.verdiend[kk] = (D.verdiend[kk] || 0) - st.klus.afgekeurd;
+      zegt('−' + st.klus.afgekeurd + ' punten voor ' + ((persoon(kk) || {}).naam || ''), '#FF8A7A');
+      bewaar('strafKlus', [st.klus.id, st.n, ouderSessie.pin]);
+    };
+    if (ouderActief()) geef(); else { straf = null; vraagOuderPin(function () { straf = st; geef(); }, 'Niet echt gedaan'); }
+    return;
+  }
+  if (act === 'oppasNieuw') {
+    var start = function () { oppasForm = { naam: '', van: D.vandaag, tot: D.morgen, fout: '' }; render(); };
+    if (ouderBeheer()) start(); else vraagOuderPin(start, 'Oppas regelen', true);
+    return;
+  }
+  if (act === 'oppasSluit') { oppasForm = null; render(); return; }
+  if (act === 'oppasKopieer') {
+    var ta = document.getElementById('oppasbericht');
+    var klaar = function () { zegt('Bericht gekopieerd', '#9CC2FF'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(klaar, function () { ta.select(); document.execCommand('copy'); klaar(); });
+    else { ta.select(); document.execCommand('copy'); klaar(); }
+    return;
+  }
+  if (act === 'oppasStop') {
+    var stop = function () {
+      ouderSessie.tot = Date.now() + 5 * 60000;
+      D.oppas = (D.oppas || []).filter(function (o) { return o.id !== id; });
+      zegt('Toegang gestopt', '#9CC2FF');
+      bewaar('stopOppas', [id, ouderSessie.pin]);
+    };
+    if (ouderBeheer()) stop(); else vraagOuderPin(stop, 'Oppas stoppen', true);
+    return;
   }
   if (act === 'klusGeven' && pin && pin.klus) { geven = { klus: pin.klus }; pin = null; render(); return; }
   if (act === 'geefSluit') { geven = null; render(); return; }
@@ -1959,6 +2090,26 @@ document.addEventListener('submit', function (ev) {
     var wk = wensKind; wensKind = null;
     zegt('Wens doorgegeven!', (persoon(wk) || {}).kleur);
     bewaar('voegWensToe', [wk, wt]); return;
+  }
+  if (ev.target.matches('[data-form="oppas"]')) {
+    ev.preventDefault();
+    var of = oppasForm; if (!of || of.bezig) return;
+    of.naam = document.getElementById('op-naam').value.trim();
+    of.van = document.getElementById('op-van').value; of.tot = document.getElementById('op-tot').value;
+    of.fout = !of.naam ? 'Vul een naam in' : !of.van || !of.tot ? 'Kies de datums' : of.tot < of.van ? 'De einddatum ligt voor de begindatum' : '';
+    if (of.fout) { render(); return; }
+    if (!ouderBeheer()) { oppasForm = null; vraagOuderPin(function () { oppasForm = of; render(); }, 'Oppas regelen', true); return; }
+    of.bezig = true; render();
+    google.script.run
+      .withSuccessHandler(function (res) {
+        of.bezig = false;
+        if (res && res.slot) { toonSlot(res); return; }
+        if (!res || res.fout || !res.nieuweOppas) { of.fout = (res && res.fout) || 'Er ging iets mis'; render(); return; }
+        nieuweData(res); oppasForm = { klaar: res.nieuweOppas }; render();
+      })
+      .withFailureHandler(function (err) { of.bezig = false; of.fout = (err && err.message) || 'Er ging iets mis'; render(); })
+      .api(gezinscode, 'maakOppas', [of.naam, of.van, of.tot, ouderSessie.pin]);
+    return;
   }
   if (ev.target.matches('[data-form="slot"]')) {
     ev.preventDefault();
