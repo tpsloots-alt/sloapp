@@ -144,7 +144,9 @@ nav{display:flex;gap:8px;flex-wrap:wrap}
 .kiesknoppen{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .weekkop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .weekgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;align-items:start}
-.dagkol{background:var(--card);border-radius:16px;padding:12px 10px;display:flex;flex-direction:column;gap:8px;min-height:180px;min-width:0}
+.dagkol{background:var(--card);border-radius:16px;padding:12px 10px;display:flex;flex-direction:column;gap:8px;min-height:180px;min-width:0;border-top:4px solid transparent}
+.dagstip{display:inline-block;border-radius:50%;margin-right:7px;vertical-align:middle;position:relative;top:-2px;opacity:.9}
+.dagchip{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;border:1.5px solid;font-size:13px;font-weight:800;margin-right:auto;margin-left:10px}
 .dagkol.nu{outline:2px solid #5B9DFF}
 .dagkol.voorbij{opacity:.6}
 .dagkop{display:flex;align-items:baseline;gap:2px 6px;padding:0 2px 4px;flex-wrap:wrap}
@@ -462,6 +464,17 @@ var VOLGENDE = { ja: 'nee', nee: 'onb', onb: 'ja' };
 var ETEN_L = { ja: 'Eet mee', nee: 'Eet niet mee', onb: 'Weet nog niet' };
 var GAAT_L = { ja: '✓ Gaat', nee: '✕ Gaat niet', onb: '? Onbekend' };
 var DAG_KORT = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
+/* Kleuren van de schooldagen (zoals op school): ma geel, di rood, wo roze, do paars, vr blauw, weekend groen. */
+function DAG_KORT_VOL() { return ['maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag'][D.dagIndex] || ''; }
+var DAGKLEUR = ['#F2C94C', '#F0716B', '#F48FB1', '#B28DFF', '#64A8FF', '#5FD18B', '#5FD18B'];
+function dagKleur(datum) {
+  var p = String(datum || '').split('-').map(Number);
+  if (p.length !== 3 || !p[0]) return '#8F97A8';
+  return DAGKLEUR[(new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay() + 6) % 7];
+}
+function dagStip(datum, maat) {
+  return '<span class="dagstip" aria-hidden="true" style="width:' + (maat || 10) + 'px;height:' + (maat || 10) + 'px;background:' + dagKleur(datum) + '"></span>';
+}
 
 var ICONS = {
   opruimen: '<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/>',
@@ -653,7 +666,7 @@ function renderNacht() {
       '<div class="w">' + eters + (eters === 1 ? ' eter' : ' eters') + ' aangemeld</div></span></div></div>';
   }
   document.getElementById('app').innerHTML = '<div class="nacht' + (nacht ? ' donker' : '') + '" data-act="nachtWakker" role="button" aria-label="Klokscherm. Tik om het dashboard te openen">' +
-    '<div class="nacht-in"><div class="nacht-klok">' + klok + '</div><div class="nacht-datum">' + esc(hoofdletter(D.datumTekst || '')) + '</div>' +
+    '<div class="nacht-in"><div class="nacht-klok">' + klok + '</div><div class="nacht-datum">' + dagStip(D.vandaag, 12) + esc(hoofdletter(D.datumTekst || '')) + '</div>' +
     blokken + '<div class="nacht-hint">Tik om het dashboard te openen</div></div></div>';
   document.getElementById('laag').innerHTML = '';
   verschuifKlok();
@@ -701,7 +714,7 @@ function kop() {
   var tabletKnop = '<button type="button" class="tabletknop" data-act="tabletStand" aria-pressed="' + tabletStand + '" title="Scherm blijft aan; na 5 minuten niets aanraken verschijnt het klokscherm (van ' + esc(nachtTijden().van) + ' tot ' + esc(nachtTijden().tot) + ' gedimd)">' +
     svg('pyjama', 18) + '<span>Tabletstand' + (tabletStand ? ' aan' : '') + '</span></button>';
   var opNu = actieveOppas();
-  return '<header><div><div class="datum">' + esc(hoofdletter(D.datumTekst)) + '</div><div class="sub">Ons gezin · week ' + D.week +
+  return '<header><div><div class="datum">' + dagStip(D.vandaag, 14) + esc(hoofdletter(D.datumTekst)) + '</div><div class="sub">Ons gezin · week ' + D.week +
     (opNu.length ? ' · oppas: ' + esc(opNu.map(function (o) { return o.naam; }).join(' & ')) : '') +
     '<span class="volgende"> · volgende melding ' + esc(volgende) + '</span></div></div>' + ikKnop + '<nav aria-label="Onderdelen" role="tablist">' + tabs.map(function (t) {
       return '<button type="button" class="tab" role="tab" aria-selected="' + (tab === t[0]) + '" data-act="tab" data-id="' + t[0] + '">' +
@@ -721,7 +734,7 @@ function vandaag() {
   var morgenHtml = '';
   if (!a.fout && morgenDag) {
     var wm = weerVoor(D.morgen);
-    morgenHtml = '<div class="morgenkop"><span>Morgen · ' + esc(morgenDag.dag + ' ' + morgenDag.nr) + '</span>' +
+    morgenHtml = '<div class="morgenkop"><span>' + dagStip(morgenDag.datum, 9) + 'Morgen · ' + esc(morgenDag.dag + ' ' + morgenDag.nr) + '</span>' +
       (wm ? '<span class="mweer">' + svg(wm.icoon, 16) + esc(wm.tekst) + ' · ' + wm.min + '–' + wm.max + '°' + (wm.kans >= 30 ? ' · ' + wm.kans + '% regen' : '') + '</span>' : '') + '</div>' +
       (morgenLijst.map(function (e) { return afspraakRij(e, true); }).join('') || '<div class="leegtekst" style="opacity:.7;font-size:14px">Nog niets gepland.</div>');
   }
@@ -761,7 +774,7 @@ function vandaag() {
   }).join('');
 
   return '<main class="grid-vandaag">' +
-    '<section class="card agendakaart"><div class="kop"><h2>Agenda vandaag</h2><span class="klein">Tik op ✏️ om te wijzigen</span></div>' + weerBalk() + events + morgenHtml + '</section>' +
+    '<section class="card agendakaart"><div class="kop"><h2>Agenda vandaag</h2><span class="dagchip" style="color:' + dagKleur(D.vandaag) + ';border-color:' + dagKleur(D.vandaag) + '66">' + esc(DAG_KORT_VOL()) + '</span><span class="klein">Tik op ✏️ om te wijzigen</span></div>' + weerBalk() + events + morgenHtml + '</section>' +
     '<div class="kolom">' +
     '<section class="card"><div class="kop"><h2>Wie eet er mee?</h2><span class="klein">' + tel.ja + ' mee · ' + tel.nee + ' niet · ' + tel.onb + ' ?</span></div>' +
     menuRegel + '<div class="eters">' + eters + '</div></section>' +
@@ -1204,7 +1217,7 @@ function brood() {
   var data = D.brood[dag.datum] || {};
   var schakel = '<div class="chips" role="group" aria-label="Dag kiezen">' + D.dagen.map(function (d, i) {
     return '<button type="button" class="tab" aria-pressed="' + (i === broodDag) + '" data-act="broodDag" data-id="' + i + '">' +
-      esc(d.label) + ' · ' + esc(d.dag) + ' ' + d.nr + '</button>';
+      dagStip(d.datum, 9) + esc(d.label) + ' · ' + esc(d.dag) + ' ' + d.nr + '</button>';
   }).join('') + '</div>';
 
   var M = ['ontbijt', 'lunch', 'fruit'];
@@ -1378,8 +1391,8 @@ function week() {
         '<span class="t">' + (e.categorie ? svg(e.categorie, 12) : '') + esc(e.tijd) + (e.eind ? '–' + esc(e.eind) : '') + (e.notitie ? svg('notitie', 12) : '') + '</span><span class="n">' + esc(e.titel) + '</span>' +
         (dots ? '<span style="display:flex;gap:3px">' + dots + '</span>' : '') + regel + '</button>';
     }).join('');
-    return '<section class="dagkol' + (d.vandaag ? ' nu' : '') + (voorbij ? ' voorbij' : '') + '" aria-label="' + esc(d.dag + ' ' + d.nr + ' ' + d.maand) + '">' +
-      '<div class="dagkop"><b>' + esc(d.dag) + ' ' + d.nr + '</b><span>' + (d.vandaag ? 'vandaag' : '') + '</span>' +
+    return '<section class="dagkol' + (d.vandaag ? ' nu' : '') + (voorbij ? ' voorbij' : '') + '" style="border-top-color:' + dagKleur(d.datum) + (d.vandaag ? ';outline-color:' + dagKleur(d.datum) : '') + '" aria-label="' + esc(d.dag + ' ' + d.nr + ' ' + d.maand) + '">' +
+      '<div class="dagkop"><b>' + dagStip(d.datum, 9) + esc(d.dag) + ' ' + d.nr + '</b><span>' + (d.vandaag ? 'vandaag' : '') + '</span>' +
       dagWeer(d) + '</div>' +
       (items || '<div class="klein" style="padding:2px">Niets gepland</div>') + '</section>';
   }).join('');
