@@ -1924,7 +1924,9 @@ function renderWeer(laag) {
   laag.innerHTML = '<div class="weerscherm" role="dialog" aria-modal="true" aria-label="Weer">' +
     '<header class="wkop"><div class="rij" style="gap:12px;flex-wrap:wrap"><h1>Weer in ' + esc(w.plaats || '') + '</h1>' + (w.bijgewerkt ? '<span class="klein">bijgewerkt ' + esc(w.bijgewerkt) + '</span>' : '') + '</div>' +
     '<div class="rij" style="gap:16px"><span class="wklok">' + klok + '</span><button type="button" class="knop2" data-act="weerSluit">Sluiten</button></div></header>' +
-    '<div class="wgrid"><div class="kolom">' + nuKaart + dagKaart + '</div><div class="kolom">' + uurKaart + regenKaart + fietsKaart + '</div></div></div>';
+    '<div class="wgrid"><div class="kolom">' + nuKaart + dagKaart + '</div><div class="kolom">' +
+    ((uurKaart + regenKaart + fietsKaart) || '<section class="card wkaart"><h2>Meer details komen eraan</h2><div class="klein" style="font-size:15px">De uurverwachting, regen per kwartier en het fietsweer verschijnen zodra het weer opnieuw is opgehaald (binnen een kwartier).</div></section>') +
+    '</div></div></div>';
 }
 
 function renderGeven(laag) {
@@ -2021,10 +2023,12 @@ function bewaar(fn, args) {
 function ververs() {
   // Een opslag-actie die na 90 seconden nog geen antwoord heeft, is verloren gegaan: dan niet blijven wachten.
   if (bezig && Date.now() - bezigSinds > 90000) bezig = 0;
-  if (vergrendeld || iemandBezig() || bezig) return;
+  // Het weerscherm is alleen om te kijken: dat mag gewoon bijgewerkt worden terwijl het openstaat.
+  var bezigMetInvoer = function () { var w = weerScherm; weerScherm = null; var b = iemandBezig(); weerScherm = w; return b; };
+  if (vergrendeld || bezigMetInvoer() || bezig) return;
   google.script.run.withSuccessHandler(function (res) {
     if (res && res.slot) { toonSlot(res); return; }
-    if (!iemandBezig() && !bezig && res && res.gezin) { nieuweData(res); render(); }
+    if (!bezigMetInvoer() && !bezig && res && res.gezin) { nieuweData(res); render(); }
   }).api(gezinscode, 'getData', []);
 }
 
@@ -2334,7 +2338,7 @@ document.addEventListener('click', function (ev) {
     var waarde = act === 'gaat' ? VOLGENDE[e.status] : volgendeChauffeur(e[act]);
     e[veld] = waarde; render(); bewaar('zetRit', [e.sleutel, e.titel, veld, waarde, e.datum]); return;
   }
-  if (act === 'weerOpen') { weerScherm = {}; render(); return; }
+  if (act === 'weerOpen') { weerScherm = {}; render(); ververs(); return; }
   if (act === 'weerSluit') { weerScherm = null; render(); return; }
   if (act === 'okNieuw') {
     okForm = { wat: '', wie: ouderSessie && ouderSessie.rol !== 'oppas' ? (ouders().filter(function (o) { return o.naam === ouderSessie.naam; })[0] || ouders()[0] || {}).id : (ouders()[0] || {}).id, status: 'gedaan', datum: '', icoon: 'gereedschap', fout: '' };
