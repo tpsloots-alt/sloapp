@@ -24,6 +24,17 @@ button:focus-visible,input:focus-visible{outline:3px solid #9CC2FF;outline-offse
 .app{max-width:1400px;margin:0 auto;padding:22px 28px 28px;display:flex;flex-direction:column;gap:18px;min-height:100vh}
 header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .datum{font-size:30px;font-weight:900;letter-spacing:-.5px}
+.kopblok{display:flex;align-items:center;gap:16px;min-width:0}
+.hklok{font-size:40px;font-weight:900;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums;padding-right:16px;border-right:2px solid var(--line)}
+@media (min-width:761px) and (max-width:1400px){.kopblok .datum{font-size:22px;white-space:nowrap}.kopblok .sub{font-size:13px}.hklok{font-size:34px}}
+@media (max-width:760px){.hklok{font-size:26px;padding-right:10px}.kopblok{gap:10px}.kopblok .datum{font-size:19px}}
+.nulijn{display:flex;align-items:center;gap:8px;margin:2px 0}
+.nutijd{flex:0 0 auto;height:22px;padding:0 8px;border-radius:11px;background:var(--nu,#FF6B6B);color:#101218;font-size:12px;font-weight:900;display:inline-flex;align-items:center}
+.nustreep{flex:1;height:2px;border-radius:1px;background:var(--nu,#FF6B6B);position:relative}
+.nustreep::before{content:'';position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--nu,#FF6B6B)}
+.event.voorbij{opacity:.45}
+.event.bezig{background:rgba(255,255,255,.04);border-radius:12px;box-shadow:inset 3px 0 0 var(--nu,#FF6B6B);padding-left:10px !important;margin-left:-10px}
+.bezigtag{display:block;font-size:11px;font-weight:900;color:var(--nu,#FF8A8A);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
 .sub{font-size:15px;color:var(--muted);font-weight:700}
 nav{display:flex;gap:8px;flex-wrap:wrap}
 .tab{display:inline-flex;align-items:center;gap:8px;height:52px;padding:0 18px;border-radius:26px;border:none;background:#1E222C;color:#C9CEDA;font-size:16px;font-weight:800}
@@ -138,6 +149,31 @@ nav{display:flex;gap:8px;flex-wrap:wrap}
 .wfiets .kk{font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--dim)}
 .wfiets b{font-size:24px;font-weight:900}
 @media (max-width:900px){.wgrid{grid-template-columns:1fr}.wgrid>.kolom{display:contents}.wkaart.o1{order:1}.wkaart.o2{order:2}.wkaart.o3{order:3}.wkaart.o4{order:4}.wkaart.o5{order:5}.weerscherm{padding:14px 12px 24px}.wkop h1{font-size:22px}.wklok{font-size:24px}.wfietsen{grid-template-columns:1fr}.wuur:nth-child(n+7){display:none}.wgrafiek{display:none}.wnu b{font-size:46px}}
+[data-form="ouderklus"]>*{flex-shrink:0}
+.okcats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%}
+.okcat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;padding:8px 4px;border-radius:14px;border:1.5px solid #323745;background:#20242E;color:var(--text);font-size:12px;font-weight:800}
+.okcat[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+@media (max-width:480px){.okcats{grid-template-columns:repeat(4,minmax(0,1fr))}.okcat{font-size:11px}}
+.maandgrid{display:grid;grid-template-columns:78px repeat(7,minmax(0,1fr));gap:6px}
+.maandlijst{display:none}
+.mdagnaam{font-size:13px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:0 4px;display:flex;align-items:center}
+.mweek{display:flex;flex-direction:column;justify-content:center;gap:2px;border:none;border-radius:14px;background:transparent;color:var(--text);text-align:left;padding:4px}
+.mweek b{font-size:15px;font-weight:900}
+.mweek span{font-size:12px;font-weight:700;color:var(--dim)}
+.mcel{min-height:112px;min-width:0;background:var(--card);border-radius:12px;border-top:3px solid transparent;padding:6px 6px 8px;display:flex;flex-direction:column;gap:3px}
+.mcel.nu{outline:2px solid;outline-offset:-1px}
+.mcel.voorbij{opacity:.45}
+.mkop{display:flex;align-items:baseline;gap:5px;padding:0 2px 2px}
+.mkop b{font-size:16px;font-weight:900}
+.mkop span{font-size:11px;font-weight:800;color:var(--dim)}
+.mkop .mvandaag{margin-left:auto;color:var(--text)}
+.mev{display:flex;align-items:center;gap:5px;min-width:0;border:none;background:#20242E;border-radius:7px;padding:3px 6px;color:var(--text);font-size:12px;font-weight:800;text-align:left}
+.mev .mt{flex:0 0 auto;color:var(--muted)}
+.mev .mn{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mmeer{border:none;background:transparent;color:#9CC2FF;font-size:12px;font-weight:800;text-align:left;padding:2px 6px}
+@media (max-width:760px){.maandgrid{display:none}.maandlijst{display:flex;flex-direction:column;gap:6px}
+ .mlrij{display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--line)}.mld{width:62px;flex:0 0 auto;font-size:14px;font-weight:900;display:flex;align-items:center}
+ .mlev{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.mlev .mev{font-size:14px;padding:6px 8px}}
 .samengrid{display:grid;grid-template-columns:1fr 1.6fr;gap:14px;align-items:start}
 .samenkaart{gap:10px}
 .samenkaart .sk{font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--dim)}
@@ -520,7 +556,7 @@ var toast = null, toastTimer = null;
 var pin = null;          // {klus, digits, fout, bezig}
 var bezig = 0;           // lopende opslag-acties
 var detail = null;       // sleutel van de afspraak in het detailvenster (tabblad Week)
-var weekNr = 0;          // 0 = deze week, 1 = volgende week
+var weekNr = 0;          // 0 = deze week, 1 = volgende week, 2/3 = later; 'maand' = 4 weken compact
 var ouderSessie = null;  // {pin, naam, tot} – na ouderpincode mag het weekmenu een paar minuten aangepast worden
 var menuEdit = null;
 var geven = null;        // {klus}: kiezen aan wie een klus gegeven wordt
@@ -560,6 +596,8 @@ function dagStip(datum, maat) {
 }
 
 var ICONS = {
+  administratie: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h7"/>',
+  verven: '<rect x="4" y="3" width="13" height="6" rx="1.5"/><path d="M17 6h2v5h-7v3"/><rect x="10.5" y="14" width="3" height="7" rx="1"/>',
   windje: '<path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h8"/>',
   zonop: '<path d="M12 3v4M5.6 7.6l1.4 1.4M18.4 7.6L17 9M3 15h18M7 15a5 5 0 0 1 10 0M9 19h6"/>',
   druppel: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
@@ -811,7 +849,7 @@ function render() {
 }
 
 function kop() {
-  var tabs = [['vandaag', 'Vandaag', 'agenda'], ['week', 'Week', 'week'], ['klusjes', 'Klusjes', 'taken'], ['brood', 'Schooldag', 'tas'], ['eten', 'Eten & boodschappen', 'kar', 'Eten']];
+  var tabs = [['vandaag', 'Vandaag', 'agenda'], ['week', 'Agenda', 'week'], ['klusjes', 'Klusjes', 'taken'], ['brood', 'Schooldag', 'tas'], ['eten', 'Eten & boodschappen', 'kar', 'Eten']];
   var h = new Date().getHours();
   var volgende = h < D.meldingEten ? D.meldingEten + ':00 · mee-eten' :
     h < D.meldingOverig ? D.meldingOverig + ':00 · ritten en klusjes' : 'morgen ' + D.meldingEten + ':00 · mee-eten';
@@ -823,10 +861,10 @@ function kop() {
   var tabletKnop = '<button type="button" class="tabletknop" data-act="tabletStand" aria-pressed="' + tabletStand + '" title="Scherm blijft aan; na 5 minuten niets aanraken verschijnt het klokscherm (van ' + esc(nachtTijden().van) + ' tot ' + esc(nachtTijden().tot) + ' gedimd)">' +
     svg('pyjama', 18) + '<span>Tabletstand' + (tabletStand ? ' aan' : '') + '</span></button>';
   var opNu = actieveOppas();
-  return '<header><div><div class="datum">' + dagStip(D.vandaag, 14) + esc(hoofdletter(D.datumTekst)) + '</div><div class="sub">Ons gezin · week ' + D.week +
+  return '<header><div class="kopblok"><div class="hklok" aria-label="Huidige tijd">' + nuTijd() + '</div><div><div class="datum">' + dagStip(D.vandaag, 14) + esc(hoofdletter(D.datumTekst)) + '</div><div class="sub">Ons gezin · week ' + D.week +
     (opNu.length ? ' · oppas: ' + esc(opNu.map(function (o) { return o.naam; }).join(' & ')) : '') +
     (Date.now() - laatsteData > 10 * 60000 ? ' · <span style="color:#F2A65A">niet bijgewerkt sinds ' + esc(new Date(laatsteData).toTimeString().slice(0, 5)) + '</span>' : '') +
-    '<span class="volgende"> · volgende melding ' + esc(volgende) + '</span></div></div>' + ikKnop + '<nav aria-label="Onderdelen" role="tablist">' + tabs.map(function (t) {
+    '<span class="volgende"> · volgende melding ' + esc(volgende) + '</span></div></div></div>' + ikKnop + '<nav aria-label="Onderdelen" role="tablist">' + tabs.map(function (t) {
       return '<button type="button" class="tab" role="tab" aria-selected="' + (tab === t[0]) + '" data-act="tab" data-id="' + t[0] + '">' +
         svg(t[2], 22) + (t[3] ? '<span class="lang">' + t[1] + '</span><span class="kort">' + t[3] + '</span>' : '<span>' + t[1] + '</span>') + '</button>';
     }).join('') + '</nav>' + tabletKnop + '<div class="status' + (toast ? ' heeft-toast' : '') + '" aria-live="polite">' + rechts + '</div></header>';
@@ -845,13 +883,30 @@ function ouderRegels() {
   }).join('');
 }
 
+/* De afspraken van vandaag met een lijn op het huidige tijdstip. Voorbije afspraken worden lichter,
+   een afspraak die nu bezig is krijgt een markering. */
+function nuTijd() { var n = new Date(); return ('0' + n.getHours()).slice(-2) + ':' + ('0' + n.getMinutes()).slice(-2); }
+function metNuLijn(lijst) {
+  var nu = nuTijd(), html = '', lijnGezet = false;
+  var kl = dagKleur(D.vandaag);   // de lijn heeft de schoolkleur van vandaag
+  var lijn = '<div class="nulijn" style="--nu:' + kl + '" aria-label="Nu ' + nu + '"><span class="nutijd">' + nu + '</span><span class="nustreep"></span></div>';
+  lijst.forEach(function (e) {
+    if (!e.heleDag && !lijnGezet && e.tijd > nu) { html += lijn; lijnGezet = true; }
+    var overNacht = e.eind && e.eind < e.tijd;   // loopt door na middernacht
+    var status = e.heleDag ? '' : (e.eind && !overNacht && e.eind <= nu) ? 'voorbij' : (e.tijd <= nu) ? 'bezig' : '';
+    html += status === 'bezig' ? afspraakRij(e, false, status).replace('<div class="event', '<div style="--nu:' + kl + '" class="event') : afspraakRij(e, false, status);
+  });
+  if (!lijnGezet) html += lijn;
+  return html;
+}
+
 function vandaag() {
   var mk = mijnKind();
   var voorMij = function (e) { return !mk || !e.wie.length || e.wie.indexOf(mk.id) >= 0; };
   var a = { fout: (D.agenda || {}).fout, lijst: vandaagEvents().filter(voorMij) };
   var events = a.fout ? '<div class="melding">' + esc(a.fout) + '</div>' :
     !a.lijst.length ? '<div class="leegtekst">Geen afspraken vandaag.</div>' :
-    a.lijst.map(function (e) { return afspraakRij(e, false); }).join('');
+    metNuLijn(a.lijst);
   var morgenDag = ((D.agenda || {}).dagen || []).filter(function (d) { return d.datum === D.morgen; })[0];
   var morgenLijst = morgenDag ? morgenDag.events.filter(voorMij) : [];
   var morgenHtml = '';
@@ -980,7 +1035,7 @@ function pil(kleur, tekst, open) {
 }
 
 /** Eén afspraak op Vandaag: alleen tonen, aanpassen via het potlood. */
-function afspraakRij(e, morgen) {
+function afspraakRij(e, morgen, status) {
   var wie = e.wie.map(persoon).filter(Boolean);
   var wieHtml = wie.length ? wie.map(function (p) { return '<span class="dot" style="background:' + esc(p.kleur) + '"></span>'; }).join('') +
     '<span>' + esc(wie.map(function (p) { return p.naam; }).join(' & ')) + '</span>' : '<span>Gezin</span>';
@@ -992,7 +1047,8 @@ function afspraakRij(e, morgen) {
     pillen = '<div class="pillen">' + (morgen ? '' : pil(ST[e.status].c, GAAT_L[e.status])) +
       pil(b ? b.kleur : '#F2C14E', 'Breng: ' + (b ? b.naam : '?'), !b) + pil(h ? h.kleur : '#F2C14E', 'Haal: ' + (h ? h.naam : '?'), !h) + '</div>';
   }
-  return '<div class="event' + (morgen ? ' morgen' : '') + '"><div class="tijd">' + esc(e.heleDag ? 'Hele dag' : e.tijd) + '</div>' +
+  return '<div class="event' + (morgen ? ' morgen' : '') + (status ? ' ' + status : '') + '"><div class="tijd">' + esc(e.heleDag ? 'Hele dag' : e.tijd) +
+    (status === 'bezig' ? '<span class="bezigtag">nu bezig</span>' : '') + '</div>' +
     '<div class="etitel"><b>' + esc(e.titel) + '</b><div class="wie">' + wieHtml + cat + notitie + '</div></div>' + pillen +
     '<button type="button" class="potloodknop" data-act="detail" data-id="' + esc(e.sleutel) + '" aria-label="' + esc(e.titel) + ' bewerken">' + svg('potlood', 18) + '</button></div>';
 }
@@ -1489,13 +1545,65 @@ function gaatChip(e) {
     '" aria-label="' + esc(e.titel) + ': ' + esc(GAAT_L[e.status].slice(2)) + ', tik om te wijzigen">' + GAAT_L[e.status] + '</button>';
 }
 
+function weekSchakel() {
+  return '<div class="chips" role="group" aria-label="Weergave kiezen">' + [['0', 'Deze week'], ['1', 'Volgende week'], ['maand', '4 weken']].map(function (x) {
+    return '<button type="button" class="tab" aria-pressed="' + (String(weekNr) === x[0]) + '" data-act="weekNr" data-id="' + x[0] + '">' + x[1] + '</button>';
+  }).join('') + '</div>';
+}
+
+/** Compacte weergave: deze week en de 3 weken erna, per week een rij met 7 dagen. */
+function vierWeken() {
+  var a = D.agenda || {};
+  var dagen = (a.dagen || []).slice(0, 28);
+  var rijen = [];
+  for (var w = 0; w * 7 < dagen.length; w++) {
+    var wk = dagen.slice(w * 7, w * 7 + 7);
+    var cellen = wk.map(function (d) {
+      var voorbij = d.datum < D.vandaag;
+      var max = 3, ev = d.events;
+      var items = ev.slice(0, max).map(function (e) {
+        var p = e.wie.map(persoon).filter(Boolean)[0];
+        return '<button type="button" class="mev" data-act="detail" data-id="' + esc(e.sleutel) + '" aria-label="' + esc(e.tijd + ', ' + e.titel) + '">' +
+          '<span class="dot" style="width:7px;height:7px;background:' + (p ? esc(p.kleur) : '#5A6070') + '"></span>' +
+          '<span class="mt">' + (e.heleDag ? '' : esc(e.tijd) + ' ') + '</span><span class="mn">' + esc(e.titel) + '</span></button>';
+      }).join('');
+      var meer = ev.length > max ? '<button type="button" class="mmeer" data-act="weekNr" data-id="' + w + '">+' + (ev.length - max) + ' meer</button>' : '';
+      return '<div class="mcel' + (d.vandaag ? ' nu' : '') + (voorbij ? ' voorbij' : '') + '" style="border-top-color:' + dagKleur(d.datum) + (d.vandaag ? ';outline-color:' + dagKleur(d.datum) : '') + '">' +
+        '<div class="mkop"><b>' + d.nr + '</b>' + (d.nr === 1 || (w === 0 && d === wk[0]) ? '<span>' + esc(d.maand) + '</span>' : '') + (d.vandaag ? '<span class="mvandaag">vandaag</span>' : '') + '</div>' +
+        items + meer + '</div>';
+    }).join('');
+    var eerste = wk[0], laatste = wk[wk.length - 1];
+    rijen.push('<button type="button" class="mweek" data-act="weekNr" data-id="' + w + '" aria-label="Week ' + isoWeek(eerste.datum) + ' openen">' +
+      '<b>wk ' + isoWeek(eerste.datum) + '</b><span>' + eerste.nr + '–' + laatste.nr + ' ' + esc(laatste.maand.slice(0, 3)) + '</span></button>' + cellen);
+  }
+  var koppen = '<div></div>' + ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'].map(function (d, i) {
+    return '<div class="mdagnaam">' + '<span class="dagstip" style="width:8px;height:8px;background:' + DAGKLEUR[i] + '"></span>' + d + '</div>';
+  }).join('');
+  // Telefoon: een lijst per week met alleen de dagen waarop iets gepland staat.
+  var lijst = [];
+  for (var v = 0; v * 7 < dagen.length; v++) {
+    var wd = dagen.slice(v * 7, v * 7 + 7).filter(function (d) { return d.events.length && d.datum >= D.vandaag; });
+    lijst.push('<div class="okkop">Week ' + isoWeek(dagen[v * 7].datum) + '</div>' + (wd.map(function (d) {
+      return '<div class="mlrij"><span class="mld">' + dagStip(d.datum, 8) + esc(d.dag.slice(0, 2)) + ' ' + d.nr + '</span><div class="mlev">' + d.events.map(function (e) {
+        var p = e.wie.map(persoon).filter(Boolean)[0];
+        return '<button type="button" class="mev" data-act="detail" data-id="' + esc(e.sleutel) + '"><span class="dot" style="width:7px;height:7px;background:' + (p ? esc(p.kleur) : '#5A6070') + '"></span>' +
+          '<span class="mt">' + (e.heleDag ? '' : esc(e.tijd) + ' ') + '</span><span class="mn">' + esc(e.titel) + '</span></button>';
+      }).join('') + '</div></div>';
+    }).join('') || '<div class="klein">Niets gepland</div>'));
+  }
+  return '<main style="display:flex;flex-direction:column;gap:14px">' +
+    '<div class="weekkop">' + weekSchakel() + '<span class="klein" style="font-size:15px">Komende 4 weken · tik op een week voor de details</span></div>' +
+    (a.fout ? '<div class="melding">' + esc(a.fout) + '</div>' : '') +
+    '<div class="maandgrid">' + koppen + rijen.join('') + '</div>' +
+    '<div class="maandlijst">' + lijst.join('') + '</div></main>';
+}
+
 function week() {
+  if (weekNr === 'maand') return vierWeken();
   var a = D.agenda || {};
   var dagen = (a.dagen || []).slice(weekNr * 7, weekNr * 7 + 7).filter(function (d) { return !isMobiel() || weekNr > 0 || d.datum >= D.vandaag; });
   if (!dagen.length) return '<main><div class="melding">De weekagenda kon niet geladen worden.</div></main>';
-  var schakel = '<div class="chips" role="group" aria-label="Week kiezen">' + ['Deze week', 'Volgende week'].map(function (l, i) {
-    return '<button type="button" class="tab" aria-pressed="' + (i === weekNr) + '" data-act="weekNr" data-id="' + i + '">' + l + '</button>';
-  }).join('') + '</div>';
+  var schakel = weekSchakel();
   var eerste = dagen[0], laatste = dagen[dagen.length - 1];
   var bereik = eerste.nr + (eerste.maand !== laatste.maand ? ' ' + eerste.maand : '') + ' – ' + laatste.nr + ' ' + laatste.maand;
   var open = 0;
@@ -1796,7 +1904,9 @@ function ouderKolom() {
     '<div class="okbalk">' + (lijst || '<span class="leegtekst" style="font-size:14px;align-self:center">Niets op de lijst.</span>') + gedaan + meer + '</div></section>';
 }
 
-var OK_ICONEN = ['gootsteen', 'gereedschap', 'lamp', 'auto', 'schoon', 'tuin', 'stofzuigen', 'boodschappen', 'koken', 'was', 'overig'];
+var OK_ICONEN = [['gereedschap', 'Klussen'], ['gootsteen', 'Loodgieter'], ['lamp', 'Elektra'], ['verven', 'Verven'], ['schoon', 'Schoonmaken'],
+  ['stofzuigen', 'Stofzuigen'], ['was', 'Was'], ['koken', 'Koken'], ['boodschappen', 'Boodschappen'], ['tuin', 'Tuin'], ['kliko', 'Afval'],
+  ['auto', 'Auto'], ['fiets', 'Fiets'], ['dier', 'Huisdier'], ['administratie', 'Administratie'], ['overig', 'Overig']];
 function renderOkForm(laag) {
   var f = okForm;
   var wieK = ouders().concat([SAMEN]).map(function (p) {
@@ -1806,7 +1916,7 @@ function renderOkForm(laag) {
     return '<button type="button" class="keuze" data-act="okStatus" data-id="' + x[0] + '" aria-pressed="' + (f.status === x[0]) + '">' + x[1] + '</button>';
   }).join('');
   var ic = OK_ICONEN.map(function (i) {
-    return '<button type="button" class="keuze" data-act="okIcoon" data-id="' + i + '" aria-pressed="' + (f.icoon === i) + '" aria-label="Icoon ' + i + '">' + svg(i, 22) + '</button>';
+    return '<button type="button" class="okcat" data-act="okIcoon" data-id="' + i[0] + '" aria-pressed="' + (f.icoon === i[0]) + '">' + svg(i[0], 22) + '<span>' + i[1] + '</span></button>';
   }).join('');
   laag.innerHTML = '<div class="overlay"><form class="kiesbox" data-form="ouderklus" role="dialog" aria-modal="true" aria-label="Ouderklus">' +
     '<h2>Ouderklus</h2>' +
@@ -1815,7 +1925,7 @@ function renderOkForm(laag) {
     '<div style="font-size:15px;font-weight:800">Wie?</div><div class="chips">' + wieK + '</div>' +
     '<div style="font-size:15px;font-weight:800">Gedaan of plannen?</div><div class="chips">' + st + '</div>' +
     (f.status === 'plan' ? '<label class="klein" for="ok-dag">Dag (mag leeg: dan "deze week")</label><input id="ok-dag" class="veld" type="date" value="' + esc(f.datum) + '">' : '') +
-    '<div style="font-size:15px;font-weight:800">Icoon</div><div class="chips">' + ic + '</div>' +
+    '<div style="font-size:15px;font-weight:800">Soort klus</div><div class="okcats">' + ic + '</div>' +
     '<div class="fout" aria-live="assertive">' + esc(f.fout || '') + '</div>' +
     '<div class="kiesknoppen"><button type="submit" class="knop">Opslaan</button><button type="button" class="knop2" data-act="okSluit">Annuleren</button></div>' +
     '<div class="klein">Met de pincode van ' + esc(ouders().map(function (o) { return o.naam; }).join(' of ')) + '.</div></form></div>';
@@ -2191,7 +2301,7 @@ document.addEventListener('click', function (ev) {
   if (act === 'key') { druk(id); return; }
   if (act === 'nachtWakker') { laatsteAanraking = Date.now(); render(); return; }
   if (act === 'tabletStand') { zetTabletStand(!tabletStand); return; }
-  if (act === 'weekNr') { weekNr = Number(id); render(); return; }
+  if (act === 'weekNr') { weekNr = id === 'maand' ? 'maand' : Number(id); render(); window.scrollTo(0, 0); return; }
   if (act === 'detail') { detail = id; bewerkA = null; render(); return; }
   if (bewerkA && (act === 'aStatus' || act === 'aBreng' || act === 'aHaal' || act === 'aCat')) {
     var veldA = { aStatus: 'status', aBreng: 'breng', aHaal: 'haal', aCat: 'categorie' }[act];
@@ -2622,6 +2732,17 @@ function dagWachter() {
   }
 }
 setInterval(dagWachter, 60000);
+
+/* Klok bovenin elke paar seconden bijwerken; op een nieuwe minuut ook de nu-lijn in de agenda verplaatsen. */
+var laatsteMinuut = nuTijd();
+setInterval(function () {
+  var t = nuTijd();
+  var k = document.querySelector('.hklok'); if (k) k.textContent = t;
+  if (t !== laatsteMinuut) {
+    laatsteMinuut = t;
+    if (tab === 'vandaag' && !iemandBezig() && !document.querySelector('.nacht')) render();
+  }
+}, 5000);
 setInterval(function () { if (!toast) render(); }, 5 * 60000); // "volgende melding" bijwerken
 
 var wasMobiel = isMobiel();
