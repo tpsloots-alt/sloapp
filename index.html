@@ -485,6 +485,36 @@ textarea.veld{width:100%;min-height:84px;box-sizing:border-box;padding:12px 14px
 .wiegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;width:100%}
 .wie-k{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:16px;border:1.5px solid #3A3F4C;background:#2A2E39;color:var(--text);font-size:14px;font-weight:800;min-height:44px}
 .wie-k[aria-pressed="true"]{border-color:var(--text)}
+.afvalregel{display:flex;align-items:center;gap:12px;width:100%;padding:9px 14px;border-radius:14px;border:1.5px solid #3a4050;background:var(--card2);border:1.5px solid color-mix(in srgb,var(--bak) 40%,transparent);background:color-mix(in srgb,var(--bak) 10%,var(--card2));color:var(--text);text-align:left;font-family:inherit;cursor:pointer}
+.afvalregel .bakken{display:flex;gap:3px}.afvalregel .at{flex:1;display:flex;flex-direction:column;font-size:15px}.afvalregel .at span{color:var(--muted);font-size:13px;font-weight:700}
+.afvalregel.buiten{border-color:var(--bak);background:#26302a;background:color-mix(in srgb,var(--bak) 20%,var(--card2));padding:12px 14px}.afvalregel.buiten .at{font-size:17px}
+.afvalregel.morgen{opacity:.8}
+.aflabels{display:flex;flex-wrap:wrap;gap:4px}.aflabel{display:inline-flex;align-items:center;gap:4px;border:none;border-radius:8px;padding:3px 6px;font-size:11px;font-weight:900;font-family:inherit;cursor:pointer}
+.afstip{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:2px}
+.afvalbox,.aftelbox{max-width:560px;width:100%;max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.afrij{display:flex;align-items:center;gap:12px;background:var(--card2);border-radius:12px;padding:9px 12px}.afrij .aw{flex:1;display:flex;flex-direction:column;min-width:0}.afrij .aw span{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.afrij .ad{font-weight:900}
+.afmlijst{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px}.afmini{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800}.afmini .mld{width:96px;color:var(--muted)}
+.nacht-afval{display:flex;align-items:center;gap:10px;justify-content:center;font-size:24px;font-weight:800;margin-top:6px}.nacht-afval.klein{font-size:16px;opacity:.8}
+.nacht-aftel{text-align:center;color:#c8b6ff;font-size:18px;font-weight:700;opacity:.85;margin-top:4px}
+.aftelkaart{gap:10px}.afteltegels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.afteltegel{display:flex;flex-direction:column;gap:2px;align-items:flex-start;background:var(--card2);border:none;border-top:4px solid;border-radius:14px;padding:9px 10px;color:var(--text);text-align:left;font-family:inherit;cursor:pointer;min-width:0}
+.afteltegel .ai{font-size:22px}.afteltegel .an{font-size:32px;font-weight:900;line-height:1}.afteltegel .ae{color:var(--muted);font-size:12px;font-weight:800}
+.afteltegel .aw{font-weight:800;font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.afteltegel .ad{color:var(--dim);font-size:12px}
+.abalk{display:block;width:100%;height:5px;border-radius:9px;background:#2b3140;overflow:hidden;margin-top:4px}.abalk i{display:block;height:100%;border-radius:9px}
+.manen{font-size:18px;letter-spacing:1px;line-height:1.3}
+.linkknop{background:none;border:none;color:var(--muted);font-family:inherit;cursor:pointer;padding:0}
+.aftelrij{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:12px;padding:8px 10px}.aftelrij.uit{opacity:.75}
+.aftelrij .ai{font-size:22px;width:28px;text-align:center}.aftelrij .aw{flex:1;display:flex;flex-direction:column;min-width:0}.aftelrij .aw span{color:var(--muted);font-size:13px;display:flex;align-items:center;gap:3px}
+.aftelrij .an{font-weight:900;font-size:20px;text-align:right}.aftelrij .an small{display:block;font-size:11px;color:var(--muted)}
+.bron{font-size:11px;font-weight:900;border-radius:99px;padding:2px 8px;background:#2b3140;color:var(--muted)}
+.schakel{width:48px;height:28px;border-radius:99px;border:none;background:#4ADE80;position:relative;cursor:pointer;flex:0 0 auto}.schakel i{position:absolute;right:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#101218}
+.plusknop{width:36px;height:36px;border-radius:50%;border:none;background:#2b3140;color:var(--text);font-size:20px;font-weight:900;cursor:pointer;flex:0 0 auto}
+.aftelform{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+.feestrij{grid-column:1/-1;display:flex;flex-direction:column;gap:10px}
+.feest{position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;border-radius:20px;padding:16px 22px;background:linear-gradient(135deg,#3b2a5c,#5a2a45);background:linear-gradient(135deg,color-mix(in srgb,var(--f) 45%,#2a1d40),#4a2440)}
+.feest .big{font-size:44px}.feest b{display:block;font-size:22px}.feest span span{color:#efe6ff}.feest .conf{position:absolute;left:0;right:0;bottom:2px;font-size:13px;opacity:.3;pointer-events:none;letter-spacing:8px;white-space:nowrap;overflow:hidden}.feest>span:not(.conf){position:relative;z-index:1}
+.feestrand{box-shadow:0 0 0 2px #F48FB1 inset}.kregel.feestrand{border-radius:10px;padding-left:6px;padding-right:6px}
+@media (max-width:760px){.afteltegel .an{font-size:26px}.afmlijst{grid-template-columns:1fr}.feest b{font-size:18px}}
 </style>
 </head>
 <body>
@@ -561,6 +591,8 @@ var ouderSessie = null;  // {pin, naam, tot} – na ouderpincode mag het weekmen
 var menuEdit = null;
 var geven = null;        // {klus}: kiezen aan wie een klus gegeven wordt
 var weerScherm = null;   // {} als het weerscherm open is
+var afvalScherm = null;  // {} als de afvalkalender open is
+var aftelScherm = null;  // {beheer, wat, datum, icoon, voor, fout}
 var okForm = null;       // ouderklus toevoegen: {wat, wie, status, datum, icoon, fout}
 var straf = null;        // {klus, n}: 'niet echt gedaan' melden
 var oppasForm = null;    // {naam, van, tot, fout} of {klaar: {naam, code, pincode, van, tot}}
@@ -760,7 +792,7 @@ function isNacht() {
   return van > tot ? (nu >= van || nu < tot) : (nu >= van && nu < tot);
 }
 function iemandBezig() {
-  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || geven || straf || oppasForm || okForm || weerScherm);
+  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || geven || straf || oppasForm || okForm || weerScherm || afvalScherm || aftelScherm);
 }
 function toonNacht() {
   return tabletStand && !isMobiel() && Date.now() - laatsteAanraking > KLOK_NA_MS && !iemandBezig();
@@ -814,7 +846,7 @@ function renderNacht() {
   }
   document.getElementById('app').innerHTML = '<div class="nacht' + (nacht ? ' donker' : '') + '" data-act="nachtWakker" role="button" aria-label="Klokscherm. Tik om het dashboard te openen">' +
     '<div class="nacht-in"><div class="nacht-klok">' + klok + '</div><div class="nacht-datum">' + dagStip(D.vandaag, 12) + esc(hoofdletter(D.datumTekst || '')) + '</div>' +
-    blokken + '<div class="nacht-hint">Tik om het dashboard te openen</div></div></div>';
+    afvalKlok() + aftelKlok() + blokken + '<div class="nacht-hint">Tik om het dashboard te openen</div></div></div>';
   document.getElementById('laag').innerHTML = '';
   verschuifKlok();
 }
@@ -900,6 +932,174 @@ function metNuLijn(lijst) {
   return html;
 }
 
+/* ---------------- afvalkalender ---------------- */
+var AFVAL_SOORTEN = [
+  [/gft|groente|tuin/i, 'GFT', '#5FD18B'], [/pmd|plastic|pbd|blik|drankkarton/i, 'PMD', '#F59E0B'], [/papier|karton|opk/i, 'Papier', '#64A8FF'],
+  [/rest/i, 'Restafval', '#A3AABA'], [/textiel/i, 'Textiel', '#B28DFF'], [/kerstbo/i, 'Kerstboom', '#2FA36B'], [/glas/i, 'Glas', '#4FD1C5']
+];
+function afvalSoort(x) {
+  var t = (x.soort || '') + ' ' + (x.omschrijving || '');
+  for (var i = 0; i < AFVAL_SOORTEN.length; i++) if (AFVAL_SOORTEN[i][0].test(t)) return { naam: AFVAL_SOORTEN[i][1], kleur: AFVAL_SOORTEN[i][2] };
+  return { naam: hoofdletter(String(x.omschrijving || x.soort || 'Afval').split(/[,(]/)[0].trim()), kleur: '#8F97A8' };
+}
+function afvalOp(datum) { return ((D.afval || {}).lijst || []).filter(function (x) { return x.datum === datum; }); }
+function afvalNamen(lijst) { return lijst.map(function (x) { return afvalSoort(x).naam; }).join(' + '); }
+function bakIcoon(kleur, maat) {
+  maat = maat || 26;
+  return '<svg class="bak" width="' + maat + '" height="' + Math.round(maat * 34 / 30) + '" viewBox="0 0 30 34" style="color:' + esc(kleur) + ';flex:0 0 auto" aria-hidden="true">' +
+    '<rect x="3" y="7" width="24" height="25" rx="3" fill="currentColor"/><rect x="1" y="3" width="28" height="5" rx="2" fill="currentColor" opacity=".8"/>' +
+    '<rect x="11" y="0" width="8" height="4" rx="1.5" fill="currentColor" opacity=".8"/><circle cx="8" cy="32" r="2.5" fill="#101218"/><circle cx="22" cy="32" r="2.5" fill="#101218"/>' +
+    '<path d="M10 13v13M15 13v13M20 13v13" stroke="#101218" stroke-width="2" opacity=".35"/></svg>';
+}
+/** Wat er nu over afval te melden is. Kampen: bak op de ophaaldag tussen 6:00 en 7:30 buiten, vóór 20:00 weer binnen. */
+function afvalNu() {
+  var n = new Date(), m = n.getHours() * 60 + n.getMinutes();
+  var vandaagL = afvalOp(D.vandaag), morgenL = afvalOp(D.morgen);
+  if (vandaagL.length && m < 7 * 60 + 30) return { stand: 'buiten', lijst: vandaagL };
+  if (vandaagL.length && m < 20 * 60) return { stand: 'binnen', lijst: vandaagL };
+  if (morgenL.length) return { stand: 'morgen', lijst: morgenL };
+  return null;
+}
+function afvalRegel() {
+  var a = afvalNu();
+  if (!a) return '';
+  var kl = afvalSoort(a.lijst[0]).kleur, namen = afvalNamen(a.lijst);
+  var bakken = a.lijst.map(function (x) { return bakIcoon(afvalSoort(x).kleur, 24); }).join('');
+  var t = a.stand === 'buiten' ? ['<b>' + esc(namen) + ' nu buiten zetten — vóór 7:30</b>', 'Wordt vandaag opgehaald'] :
+    a.stand === 'binnen' ? ['<b>' + esc(namen) + (a.lijst.length > 1 ? '-bakken' : '-bak') + ' weer binnenhalen</b>', 'Vóór 20:00 van de straat'] :
+    ['<b>Morgen ' + esc(namen) + '</b>', 'Zet hem morgen tussen 6:00 en 7:30 buiten'];
+  return '<button type="button" class="afvalregel ' + a.stand + '" data-act="afvalOpen" style="--bak:' + esc(kl) + '" aria-label="' + esc(namen + ', afvalkalender openen') + '">' +
+    '<span class="bakken">' + bakken + '</span><span class="at">' + t[0] + '<span>' + esc(t[1]) + '</span></span><span class="weermeer">›</span></button>';
+}
+function afvalKlok() {
+  var a = afvalNu(), h = new Date().getHours();
+  if (!a || a.stand === 'binnen' || (a.stand === 'buiten' && h < 6) || (a.stand === 'morgen' && h < 17)) return '';
+  var kl = afvalSoort(a.lijst[0]).kleur, namen = afvalNamen(a.lijst);
+  return a.stand === 'buiten' ?
+    '<div class="nacht-afval" style="color:' + esc(kl) + '">' + bakIcoon(kl, 28) + esc(namen) + ' buiten zetten vóór 7:30</div>' :
+    '<div class="nacht-afval klein" style="color:' + esc(kl) + '">' + bakIcoon(kl, 18) + 'Morgen ' + esc(namen) + '</div>';
+}
+function afvalLabels(datum, compact) {
+  return afvalOp(datum).map(function (x) {
+    var s = afvalSoort(x);
+    return compact ? '<span class="afstip" style="background:' + esc(s.kleur) + '" title="' + esc(s.naam) + '"></span>' :
+      '<button type="button" class="aflabel" data-act="afvalOpen" style="color:' + esc(s.kleur) + ';background:' + esc(s.kleur) + '22">' + bakIcoon(s.kleur, 11) + esc(s.naam) + '</button>';
+  }).join('');
+}
+function renderAfval(laag) {
+  var a = D.afval || { lijst: [] };
+  var toekomst = a.lijst.filter(function (x) { return x.datum >= D.vandaag; });
+  var perSoort = {}, volgorde = [];
+  toekomst.forEach(function (x) { var s = afvalSoort(x); if (!perSoort[s.naam]) { perSoort[s.naam] = { s: s, x: x, n: 0 }; volgorde.push(s.naam); } perSoort[s.naam].n++; });
+  var datumTekst = function (d) {
+    var p = d.split('-').map(Number), wd = DAG_KORT[(new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay() + 6) % 7];
+    return d === D.vandaag ? 'vandaag' : d === D.morgen ? 'morgen' : wd + ' ' + p[2] + ' ' + MAAND_KORT[p[1] - 1];
+  };
+  var kaarten = volgorde.map(function (naam) {
+    var r = perSoort[naam];
+    return '<div class="afrij">' + bakIcoon(r.s.kleur, 30) + '<span class="aw"><b>' + esc(naam) + '</b>' + (r.x.omschrijving && r.x.omschrijving.toLowerCase() !== naam.toLowerCase() ? '<span>' + esc(r.x.omschrijving) + '</span>' : '') + '</span><span class="ad">' + esc(datumTekst(r.x.datum)) + '</span></div>';
+  }).join('');
+  var lijst = toekomst.slice(0, 16).map(function (x) {
+    var s = afvalSoort(x);
+    return '<div class="afmini"><span class="mld">' + dagStip(x.datum, 8) + esc(datumTekst(x.datum)) + '</span>' + bakIcoon(s.kleur, 14) + '<span>' + esc(s.naam) + '</span></div>';
+  }).join('');
+  laag.innerHTML = '<div class="overlay"><div class="detailbox afvalbox" role="dialog" aria-modal="true" aria-label="Afvalkalender">' +
+    '<div class="kop" style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Afvalkalender</h2><button type="button" class="knop2" data-act="afvalSluit">Sluiten</button></div>' +
+    (kaarten || '<div class="leegtekst">' + esc(a.fout || 'Nog geen ophaaldagen bekend.') + '</div>') +
+    (lijst ? '<div class="okkop" style="margin-top:6px">Komende ophaaldagen</div><div class="afmlijst">' + lijst + '</div>' : '') +
+    '<div class="klein">Bak op de ophaaldag tussen 6:00 en 7:30 buiten zetten en vóór 20:00 weer binnenhalen. Bron: mijnafvalwijzer.nl</div></div></div>';
+}
+
+/* ---------------- aftelkalender ---------------- */
+var AFTEL_ICONEN = ['⭐', '🎂', '🛏️', '🎢', '✈️', '🎉', '⚽', '🎬', '🏕️', '🎁', '🏖️', '🎄'];
+function aftelZichtbaar() {
+  var mk = mijnKind();
+  return (D.aftellen || []).filter(function (x) {
+    return x.aan && x.nachtjes >= 0 && (!mk || !x.voor || x.voor.split(',').indexOf(mk.id) >= 0);
+  });
+}
+function nachtjesTekst(n) { return n === 1 ? 'nachtje' : 'nachtjes'; }
+function aftelZin(x) {
+  if (x.nachtjes === 0) return 'Vandaag: ' + x.wat + '!';
+  return 'Nog ' + x.nachtjes + ' ' + nachtjesTekst(x.nachtjes) + ' tot ' + (x.jarig ? x.wat.replace(/ jarig$/, '') + ' jarig is' : x.wat);
+}
+function aftelKleur(x) {
+  if (x.jarig) { var p = persoon(x.jarig); if (p) return p.kleur; }
+  return dagKleur(x.datum);
+}
+function feestBanner() {
+  var f = aftelZichtbaar().filter(function (x) { return x.nachtjes === 0; });
+  if (!f.length) return '';
+  return f.map(function (x) {
+    var t = x.jarig ? 'Hoera! ' + x.wat.replace(/ jarig$/, '') + ' is vandaag jarig' : x.bron === 'Vakanties' ? 'Vandaag begint de ' + x.wat + '!' : 'Vandaag: ' + x.wat + '!';
+    return '<div class="feest" style="--f:' + esc(aftelKleur(x)) + '"><span class="conf" aria-hidden="true">🎉 ✨ 🎈 ✨ 🎉 ✨ 🎈 ✨ 🎉 ✨ 🎈 ✨ 🎉 ✨ 🎈 ✨ 🎉</span>' +
+      '<span class="big">' + esc(x.icoon) + '</span><span><b>' + esc(t) + '</b>' + (x.wordt ? '<span>' + x.wordt + ' jaar 🎈</span>' : '') + '</span></div>';
+  }).join('');
+}
+function jarigVandaag(id) { return aftelZichtbaar().some(function (x) { return x.nachtjes === 0 && x.jarig === id; }); }
+function aftelKaart() {
+  var lijst = aftelZichtbaar().filter(function (x) { return x.nachtjes > 0; }).slice(0, 3);
+  var tegels = lijst.map(function (x) {
+    var kl = aftelKleur(x);
+    return '<button type="button" class="afteltegel" data-act="aftelOpen" style="border-top-color:' + esc(kl) + '" aria-label="' + esc(aftelZin(x)) + '">' +
+      '<span class="ai">' + esc(x.icoon) + '</span><span class="an">' + x.nachtjes + '</span><span class="ae">' + nachtjesTekst(x.nachtjes) + '</span>' +
+      '<span class="aw">' + esc(x.wat) + '</span><span class="ad">' + esc(datumKort(x.datum)) + (x.wordt ? ' · wordt ' + x.wordt : '') + '</span>' +
+      '<span class="abalk"><i style="width:' + Math.round(x.voortgang * 100) + '%;background:' + esc(kl) + '"></i></span></button>';
+  }).join('');
+  var eerste = lijst[0];
+  var manen = eerste && eerste.nachtjes <= 14 ? '<div class="manen" aria-label="' + esc(aftelZin(eerste)) + '">' + new Array(eerste.nachtjes + 1).join('🌙') + esc(eerste.icoon) + '</div>' : '';
+  return '<section class="card aftelkaart"><div class="kop"><h2>Aftellen</h2><button type="button" class="klein linkknop" data-act="aftelOpen">' + (lijst.length ? 'alles ›' : 'kiezen ›') + '</button></div>' +
+    (tegels ? '<div class="afteltegels">' + tegels + '</div>' + manen : '<button type="button" class="leegtekst linkknop" data-act="aftelOpen" style="font-size:14px;text-align:left">Nog niets om naar uit te kijken. Tik om leuke dagen te kiezen.</button>') + '</section>';
+}
+function aftelKlok() {
+  var x = aftelZichtbaar()[0];
+  if (!x) return '';
+  var t = x.nachtjes === 0 && x.jarig ? 'Hoera, ' + x.wat.replace(/ jarig$/, '') + ' is vandaag jarig!' : aftelZin(x);
+  return '<div class="nacht-aftel">' + esc(x.icoon) + ' ' + esc(t) + '</div>';
+}
+function renderAftel(laag) {
+  var f = aftelScherm;
+  var alle = D.aftellen || [];
+  var rij = function (x, knop) {
+    var sub = datumKort(x.datum) + (x.tot && x.tot !== x.datum ? ' – ' + datumKort(x.tot) : '') + (x.wordt ? ' · wordt ' + x.wordt : '');
+    var voor = x.voor && x.bron === 'eigen' ? ' ' + x.voor.split(',').map(persoon).filter(Boolean).map(function (p) { return av(p, 20); }).join('') : '';
+    return '<div class="aftelrij' + (x.aan ? '' : ' uit') + '"><span class="ai">' + esc(x.icoon) + '</span><span class="aw"><b>' + esc(x.wat) + '</b><span>' + esc(sub) + voor + '</span></span>' +
+      '<span class="bron">' + esc(x.bron) + '</span>' + knop + '</div>';
+  };
+  var inhoud;
+  if (!f.beheer) {
+    var lijst = aftelZichtbaar();
+    inhoud = (lijst.map(function (x) { return rij(x, '<span class="an">' + (x.nachtjes === 0 ? '🎉' : x.nachtjes + '<small>' + nachtjesTekst(x.nachtjes) + '</small>') + '</span>'); }).join('') ||
+      '<div class="leegtekst">Er staat nog niets op de aftelkalender.</div>') +
+      '<button type="button" class="knop2" data-act="aftelBeheer" style="align-self:flex-start">Kiezen wat erop staat</button>';
+  } else {
+    var aan = alle.filter(function (x) { return x.aan; }), uit = alle.filter(function (x) { return !x.aan; });
+    var schak = function (x) { return '<button type="button" class="schakel" data-act="aftelZet" data-id="' + esc(x.sleutel) + '" aria-pressed="true" aria-label="' + esc(x.wat) + ' uitzetten"><i></i></button>' +
+      (x.bron === 'eigen' ? '<button type="button" class="okweg" data-act="aftelWeg" data-id="' + esc(x.sleutel) + '" aria-label="' + esc(x.wat) + ' verwijderen">' + svg('kruis', 14) + '</button>' : ''); };
+    var plus = function (x) { return '<button type="button" class="plusknop" data-act="aftelZet" data-id="' + esc(x.sleutel) + '" aria-label="' + esc(x.wat) + ' toevoegen">＋</button>'; };
+    var ic = AFTEL_ICONEN.map(function (i) { return '<button type="button" class="keuze" data-act="aftelIcoon" data-id="' + esc(i) + '" aria-pressed="' + (f.icoon === i) + '">' + esc(i) + '</button>'; }).join('');
+    var voor = [{ id: '', naam: 'Iedereen' }].concat(D.gezin).map(function (p) {
+      var on = p.id ? f.voor.indexOf(p.id) >= 0 : !f.voor.length;
+      return '<button type="button" class="keuze" data-act="aftelVoor" data-id="' + esc(p.id) + '" aria-pressed="' + on + '">' + esc(p.naam) + '</button>';
+    }).join('');
+    inhoud = '<div class="okkop">Op de aftelkalender</div>' + (aan.map(function (x) { return rij(x, schak(x)); }).join('') || '<div class="klein">Nog niets aangezet.</div>') +
+      '<div class="okkop">Suggesties — tik ＋ om toe te voegen</div>' + (uit.map(function (x) { return rij(x, plus(x)); }).join('') ||
+      '<div class="klein">Geen suggesties. Vul geboortedata in op het tabblad Gezin (kolom geboortedatum).</div>') +
+      '<form data-form="aftel" class="aftelform"><div class="okkop">+ Eigen evenement</div>' +
+      '<input id="af-wat" class="veld" type="text" maxlength="40" placeholder="Bijv. logeren bij opa en oma" value="' + esc(f.wat) + '">' +
+      '<input id="af-dag" class="veld" type="date" min="' + esc(D.vandaag) + '" value="' + esc(f.datum) + '">' +
+      '<div class="chips">' + ic + '</div><div class="chips">' + voor + '</div>' +
+      '<div class="fout" aria-live="assertive">' + esc(f.fout || '') + '</div><button type="submit" class="knop" style="align-self:flex-start">Toevoegen</button></form>';
+  }
+  laag.innerHTML = '<div class="overlay"><div class="detailbox aftelbox" role="dialog" aria-modal="true" aria-label="Aftelkalender">' +
+    '<div class="kop" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 style="margin:0">' + (f.beheer ? 'Aftellen beheren' : 'Waar kijken we naar uit?') + '</h2>' +
+    '<button type="button" class="knop2" data-act="aftelSluit">' + (f.beheer ? 'Klaar' : 'Sluiten') + '</button></div>' + inhoud + '</div></div>';
+}
+function aftelVelden() {
+  var w = document.getElementById('af-wat'); if (w && aftelScherm) aftelScherm.wat = w.value;
+  var d = document.getElementById('af-dag'); if (d && aftelScherm) aftelScherm.datum = d.value;
+}
+
 function vandaag() {
   var mk = mijnKind();
   var voorMij = function (e) { return !mk || !e.wie.length || e.wie.indexOf(mk.id) >= 0; };
@@ -923,7 +1123,7 @@ function vandaag() {
   var eters = D.gezin.map(function (p) {
     var st = D.eten[p.id] || 'onb'; tel[st]++;
     var s = ST[st];
-    return '<button type="button" class="eter" data-act="eet" data-id="' + esc(p.id) + '" style="border-color:' + (st === 'onb' ? '#3A3F4C' : s.c + '66') + ';background:' + s.bg + '" aria-label="' + esc(p.naam) + ': ' + ETEN_L[st] + ', tik om te wijzigen">' +
+    return '<button type="button" class="eter' + (jarigVandaag(p.id) ? ' feestrand' : '') + '" data-act="eet" data-id="' + esc(p.id) + '" style="border-color:' + (st === 'onb' ? '#3A3F4C' : s.c + '66') + ';background:' + s.bg + '" aria-label="' + esc(p.naam) + ': ' + ETEN_L[st] + ', tik om te wijzigen">' +
       '<span style="opacity:' + (st === 'nee' ? .45 : 1) + '">' + av(p, 32) + '</span><span class="n">' + esc(p.naam) + '</span><span class="s" style="color:' + s.c + '">' + KORT_L[st] + '</span></button>';
   }).join('');
   var vandaagKort = DAG_KORT[D.dagIndex];
@@ -944,21 +1144,21 @@ function vandaag() {
     var nog = !lijst.length ? 'Geen klusjes' : !open.length ? '✓ Alles gedaan' : open.map(function (c) { return c.klus; }).join(', ');
     var aangeboden = aanbodVoor(k);
     if (aangeboden.length) nog = 'Wil je ' + aangeboden.map(function (c) { return c.klus + ' van ' + ((persoon(c.kind) || {}).naam || ''); }).join(', ') + ' overnemen?';
-    return '<button type="button" class="kregel" data-act="tab" data-id="klusjes" aria-label="' + esc(k.naam + ': ' + (lijst.length ? klaar + ' van ' + lijst.length + ' klusjes gedaan. ' : '') + nog + '. Tegoed ' + euro(verd - uit)) + '">' +
+    return '<button type="button" class="kregel' + (jarigVandaag(k.id) ? ' feestrand' : '') + '" data-act="tab" data-id="klusjes" aria-label="' + esc(k.naam + ': ' + (lijst.length ? klaar + ' van ' + lijst.length + ' klusjes gedaan. ' : '') + nog + '. Tegoed ' + euro(verd - uit)) + '">' +
       '<span class="dot" style="width:11px;height:11px;background:' + esc(k.kleur) + '"></span><span class="n">' + esc(k.naam) + '</span>' +
       '<span class="kn' + (aangeboden.length ? ' vraag' : lijst.length && !open.length ? ' klaar' : '') + '">' + esc(nog) + '</span>' +
       '<span class="frac">' + (lijst.length ? klaar + '/' + lijst.length : '') + '</span>' +
       '<span class="kt" style="color:' + esc(k.kleur) + '">' + euro(verd - uit) + '</span></button>';
   }).join('');
 
-  return '<main class="grid-vandaag">' +
-    '<section class="card agendakaart"><div class="kop"><h2>Agenda vandaag</h2><span class="dagchip" style="color:' + dagKleur(D.vandaag) + ';border-color:' + dagKleur(D.vandaag) + '66">' + esc(DAG_KORT_VOL()) + '</span><span class="klein">Tik op ✏️ om te wijzigen</span></div>' + weerBalk() + events + morgenHtml + '</section>' +
+  return '<main class="grid-vandaag">' + (feestBanner() ? '<div class="feestrij">' + feestBanner() + '</div>' : '') +
+    '<section class="card agendakaart"><div class="kop"><h2>Agenda vandaag</h2><span class="dagchip" style="color:' + dagKleur(D.vandaag) + ';border-color:' + dagKleur(D.vandaag) + '66">' + esc(DAG_KORT_VOL()) + '</span><span class="klein">Tik op ✏️ om te wijzigen</span></div>' + weerBalk() + afvalRegel() + events + morgenHtml + '</section>' +
     '<div class="kolom">' +
     '<section class="card"><div class="kop"><h2>Wie eet er mee?</h2><span class="klein">' + tel.ja + ' mee · ' + tel.nee + ' niet · ' + tel.onb + ' ?</span></div>' +
     menuRegel + '<div class="eters">' + eters + '</div></section>' +
     '<section class="card" style="gap:4px"><div class="kop"><h2>Klusjes</h2><span class="klein">Vandaag ' + verdiend + (verdiend === 1 ? ' punt' : ' punten') + ' · tegoed in €</span></div>' +
     (mijnKind() ? '' : (wachtend().length ? '<div style="padding:6px 0">' + wachtBalk() + '</div>' : '')) + samenvatting + (mijnKind() ? '' : ouderRegels()) + '</section>' +
-    '</div></main>';
+    aftelKaart() + '</div></main>';
 }
 
 function weerVoor(datum) {
@@ -1569,7 +1769,7 @@ function vierWeken() {
       }).join('');
       var meer = ev.length > max ? '<button type="button" class="mmeer" data-act="weekNr" data-id="' + w + '">+' + (ev.length - max) + ' meer</button>' : '';
       return '<div class="mcel' + (d.vandaag ? ' nu' : '') + (voorbij ? ' voorbij' : '') + '" style="border-top-color:' + dagKleur(d.datum) + (d.vandaag ? ';outline-color:' + dagKleur(d.datum) : '') + '">' +
-        '<div class="mkop"><b>' + d.nr + '</b>' + (d.nr === 1 || (w === 0 && d === wk[0]) ? '<span>' + esc(d.maand) + '</span>' : '') + (d.vandaag ? '<span class="mvandaag">vandaag</span>' : '') + '</div>' +
+        '<div class="mkop"><b>' + d.nr + '</b>' + (d.nr === 1 || (w === 0 && d === wk[0]) ? '<span>' + esc(d.maand) + '</span>' : '') + (d.vandaag ? '<span class="mvandaag">vandaag</span>' : '') + afvalLabels(d.datum, true) + '</div>' +
         items + meer + '</div>';
     }).join('');
     var eerste = wk[0], laatste = wk[wk.length - 1];
@@ -1626,7 +1826,7 @@ function week() {
     }).join('');
     return '<section class="dagkol' + (d.vandaag ? ' nu' : '') + (voorbij ? ' voorbij' : '') + '" style="border-top-color:' + dagKleur(d.datum) + (d.vandaag ? ';outline-color:' + dagKleur(d.datum) : '') + '" aria-label="' + esc(d.dag + ' ' + d.nr + ' ' + d.maand) + '">' +
       '<div class="dagkop"><b>' + dagStip(d.datum, 9) + esc(d.dag) + ' ' + d.nr + '</b><span>' + (d.vandaag ? 'vandaag' : '') + '</span>' +
-      dagWeer(d) + '</div>' +
+      dagWeer(d) + '</div>' + (afvalOp(d.datum).length ? '<div class="aflabels">' + afvalLabels(d.datum) + '</div>' : '') +
       (items || '<div class="klein" style="padding:2px">Niets gepland</div>') + '</section>';
   }).join('');
 
@@ -1756,6 +1956,8 @@ function renderPin() {
   if (!pin && oppasForm) { renderOppas(laag); return; }
   if (!pin && okForm) { renderOkForm(laag); return; }
   if (!pin && weerScherm) { renderWeer(laag); return; }
+  if (!pin && afvalScherm) { renderAfval(laag); return; }
+  if (!pin && aftelScherm) { renderAftel(laag); return; }
   if (!pin) { laag.innerHTML = ''; return; }
   var k = pin.ouder ? { naam: '', kleur: '#ECEEF3' } : (persoon(pin.server ? pin.kind : pin.klus.kind) || { naam: '?', kleur: '#ECEEF3' });
   var dots = ''; for (var i = 0; i < 4; i++) dots += '<span style="border-color:' + esc(k.kleur) + ';background:' + (i < pin.digits.length ? esc(k.kleur) : 'transparent') + '"></span>';
@@ -2449,6 +2651,34 @@ document.addEventListener('click', function (ev) {
     e[veld] = waarde; render(); bewaar('zetRit', [e.sleutel, e.titel, veld, waarde, e.datum]); return;
   }
   if (act === 'weerOpen') { weerScherm = {}; render(); ververs(); return; }
+  if (act === 'afvalOpen') { afvalScherm = {}; render(); return; }
+  if (act === 'afvalSluit') { afvalScherm = null; render(); return; }
+  if (act === 'aftelOpen') { aftelScherm = { beheer: false, wat: '', datum: '', icoon: '⭐', voor: [], fout: '' }; render(); return; }
+  if (act === 'aftelSluit') { if (aftelScherm && aftelScherm.beheer) { aftelScherm.beheer = false; render(); } else { aftelScherm = null; render(); } return; }
+  if (act === 'aftelBeheer') {
+    var openBeheer = function () { aftelScherm = aftelScherm || { wat: '', datum: '', icoon: '⭐', voor: [], fout: '' }; aftelScherm.beheer = true; render(); };
+    if (ouderBeheer()) openBeheer(); else { var bewaardA = aftelScherm; aftelScherm = null; vraagOuderPin(function () { aftelScherm = bewaardA; openBeheer(); }, 'Aftellen beheren', true); }
+    return;
+  }
+  if ((act === 'aftelZet' || act === 'aftelWeg') && aftelScherm) {
+    aftelVelden();
+    var ax = (D.aftellen || []).filter(function (x) { return x.sleutel === id; })[0];
+    if (!ax) return;
+    var doeA = function () {
+      ouderSessie.tot = Date.now() + 5 * 60000;
+      if (act === 'aftelWeg') { D.aftellen = D.aftellen.filter(function (x) { return x !== ax; }); render(); bewaar('verwijderAftellen', [id, ouderSessie.pin]); return; }
+      ax.aan = !ax.aan; render(); bewaar('zetAftellen', [id, ax.aan, ouderSessie.pin]);
+    };
+    if (ouderBeheer()) doeA(); else { var bwA = aftelScherm; aftelScherm = null; vraagOuderPin(function () { aftelScherm = bwA; doeA(); }, 'Aftellen beheren', true); }
+    return;
+  }
+  if (act === 'aftelIcoon' && aftelScherm) { aftelVelden(); aftelScherm.icoon = id; render(); return; }
+  if (act === 'aftelVoor' && aftelScherm) {
+    aftelVelden();
+    if (!id) aftelScherm.voor = [];
+    else { var vi = aftelScherm.voor.indexOf(id); if (vi >= 0) aftelScherm.voor.splice(vi, 1); else aftelScherm.voor.push(id); }
+    render(); return;
+  }
   if (act === 'weerSluit') { weerScherm = null; render(); return; }
   if (act === 'okNieuw') {
     okForm = { wat: '', wie: ouderSessie && ouderSessie.rol !== 'oppas' ? (ouders().filter(function (o) { return o.naam === ouderSessie.naam; })[0] || ouders()[0] || {}).id : (ouders()[0] || {}).id, status: 'gedaan', datum: '', icoon: 'gereedschap', fout: '' };
@@ -2583,6 +2813,25 @@ document.addEventListener('submit', function (ev) {
     var wk = wensKind; wensKind = null;
     zegt('Wens doorgegeven!', (persoon(wk) || {}).kleur);
     bewaar('voegWensToe', [wk, wt]); return;
+  }
+  if (ev.target.matches('[data-form="aftel"]')) {
+    ev.preventDefault();
+    aftelVelden();
+    var af = aftelScherm; if (!af) return;
+    af.wat = af.wat.trim();
+    if (!af.wat) { af.fout = 'Vul in waar jullie naar uitkijken'; render(); return; }
+    if (!af.datum || af.datum < D.vandaag) { af.fout = 'Kies een datum vanaf vandaag'; render(); return; }
+    var opslaanAf = function () {
+      ouderSessie.tot = Date.now() + 5 * 60000;
+      var n = Math.round((Date.UTC.apply(null, af.datum.split('-').map(function (v, i) { return i === 1 ? v - 1 : +v; })) - Date.UTC.apply(null, D.vandaag.split('-').map(function (v, i) { return i === 1 ? v - 1 : +v; }))) / 86400000);
+      D.aftellen = (D.aftellen || []).concat([{ sleutel: 'tijdelijk' + Date.now(), wat: af.wat, datum: af.datum, icoon: af.icoon, voor: af.voor.join(','), bron: 'eigen', aan: true, nachtjes: n, voortgang: 0 }])
+        .sort(function (a, b) { return a.datum < b.datum ? -1 : a.datum > b.datum ? 1 : 0; });
+      bewaar('voegAftellenToe', [{ wat: af.wat, datum: af.datum, icoon: af.icoon, voor: af.voor.join(',') }, ouderSessie.pin]);
+      af.wat = ''; af.datum = ''; af.fout = ''; af.voor = []; af.icoon = '⭐';
+      zegt('Staat op de aftelkalender', '#9CC2FF'); render();
+    };
+    if (ouderBeheer()) opslaanAf(); else { aftelScherm = null; vraagOuderPin(function () { aftelScherm = af; opslaanAf(); }, 'Aftellen beheren', true); }
+    return;
   }
   if (ev.target.matches('[data-form="ouderklus"]')) {
     ev.preventDefault();
@@ -2722,7 +2971,7 @@ function dagWachter() {
   if (!dagWisselSinds) dagWisselSinds = Date.now();
   if (Date.now() - laatsteAanraking > 5 * 60000) {
     pin = null; keuze = null; detail = null; bewerkA = null; menuEdit = null; klusForm = null; helpDag = null; meeForm = null;
-    wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null; geven = null; straf = null; oppasForm = null; okForm = null; weerScherm = null;
+    wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null; geven = null; straf = null; oppasForm = null; okForm = null; weerScherm = null; afvalScherm = null; aftelScherm = null;
     bezig = 0;
   }
   ververs();
