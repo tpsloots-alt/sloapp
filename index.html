@@ -515,6 +515,24 @@ textarea.veld{width:100%;min-height:84px;box-sizing:border-box;padding:12px 14px
 .feest .big{font-size:44px}.feest b{display:block;font-size:22px}.feest span span{color:#efe6ff}.feest .conf{position:absolute;left:0;right:0;bottom:2px;font-size:13px;opacity:.3;pointer-events:none;letter-spacing:8px;white-space:nowrap;overflow:hidden}.feest>span:not(.conf){position:relative;z-index:1}
 .feestrand{box-shadow:0 0 0 2px #F48FB1 inset}.kregel.feestrand{border-radius:10px;padding-left:6px;padding-right:6px}
 @media (max-width:760px){.afteltegel .an{font-size:26px}.afmlijst{grid-template-columns:1fr}.feest b{font-size:18px}}
+.schoolregel{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:8px;min-height:40px}.schooltijd{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;background:none;border:none;color:var(--text);font-family:inherit;cursor:pointer;padding:0;text-align:right}
+.schooltijd .uit{font-size:21px;font-weight:900;line-height:1.1}.schooltijd small{color:var(--muted);font-size:12px;font-weight:800}
+.gymlabel{background:rgba(74,222,128,.15);color:#4ADE80;border:none;border-radius:99px;padding:4px 10px;font-weight:900;font-size:13px;font-family:inherit;cursor:pointer}
+.wijzlabel{background:rgba(245,158,11,.15);color:#F59E0B;border-radius:8px;padding:2px 7px;font-size:11px;font-weight:900}
+.roosterherin{display:block;width:100%;text-align:left;background:rgba(178,141,255,.12);border:1.5px solid #B28DFF;border-radius:14px;padding:10px 14px;color:var(--text);font-weight:800;font-size:15px;font-family:inherit;cursor:pointer}
+.stabelwrap{overflow-x:auto}.stabel{border-collapse:separate;border-spacing:4px;width:100%}.stabel th{font-size:12px;color:var(--muted);text-align:left;padding:2px 4px;white-space:nowrap}.stabel th.vd{color:var(--text)}
+.stabel td.n{white-space:nowrap;font-weight:800;font-size:14px}.stabel td.n .av{vertical-align:middle}
+.scel{width:100%;background:var(--card2);border:1.5px solid transparent;border-radius:10px;padding:6px 8px;font-weight:800;font-size:13px;white-space:nowrap;color:var(--text);font-family:inherit;cursor:pointer;text-align:left}
+.scel.gw{border-color:#F59E0B;background:rgba(245,158,11,.1)}.scel.leeg{border-color:#B28DFF;border-style:dashed;color:#B28DFF}.scel.vrij{color:var(--muted)}.snote{color:var(--muted)}
+.schoolform{max-width:620px;width:100%;max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.tijdveld{height:38px;border-radius:10px;border:1.5px solid #323745;background:var(--card2);color:var(--text);padding:0 8px;font-size:15px;font-family:inherit}
+.wrij{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--card2);border-radius:12px;padding:8px 10px}.wrij>b{width:52px}.wrij .pijl{color:var(--muted)}
+.vraster{display:grid;grid-template-columns:52px repeat(5,minmax(0,1fr));gap:6px;align-items:center;font-size:13px;font-weight:800}.vraster .vk{text-align:center;color:var(--muted)}
+.vsel{height:38px;padding:0 4px;font-size:14px;min-width:0;width:100%;background:#12141A;color:var(--text);border:1.5px solid #3A3F4C;border-radius:10px;font-family:inherit;font-weight:800;color-scheme:dark}.vgym{padding:6px 2px;justify-content:center}
+@media (max-width:760px){.schooltijd .uit{font-size:18px}.wrij>b{width:100%}}
+.schoolstrip{display:flex;flex-direction:column;gap:6px}.sskop{font-size:13px;font-weight:900;color:var(--muted);letter-spacing:.03em}
+.ssrij{display:grid;gap:6px}.sschip{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;background:var(--card2);border:1.5px solid transparent;border-radius:99px;padding:4px 6px 4px 4px;color:var(--text);font-family:inherit;font-size:14px;cursor:pointer;white-space:nowrap}.sschip .av{flex:0 0 auto}.ssico{font-size:14px;line-height:1}
+.sschip.gw{border-color:#F59E0B}.sschip.leeg{border-color:#B28DFF;border-style:dashed}.sschip.leeg b{color:#B28DFF}@media (max-width:520px){.sschip{flex-direction:column;gap:2px;border-radius:14px;padding:5px 2px}.sschip b{font-size:13px}.ssico{font-size:12px}}
 </style>
 </head>
 <body>
@@ -567,8 +585,9 @@ if (D.slot && gezinscode) {
 var vergrendeld = !!D.slot;   // er is een gezinscode ingesteld en dit apparaat heeft hem (nog) niet
 var laatsteData = Date.now();   // wanneer de gegevens voor het laatst van de server kwamen
 var dagWisselSinds = 0;         // sinds wanneer de datum op het scherm achterloopt
+var dataTeller = 0;   // telt nieuwe data; een verversing die al liep vóór een opslag mag die niet overschrijven
 function nieuweData(res) {
-  D = res;
+  D = res; dataTeller++;
   laatsteData = Date.now(); dagWisselSinds = 0;
   try { if (gezinscode) localStorage.setItem(DATA_SLEUTEL, JSON.stringify(res)); } catch (e) {}
 }
@@ -792,7 +811,7 @@ function isNacht() {
   return van > tot ? (nu >= van || nu < tot) : (nu >= van && nu < tot);
 }
 function iemandBezig() {
-  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || geven || straf || oppasForm || okForm || weerScherm || afvalScherm || aftelScherm);
+  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || geven || straf || oppasForm || okForm || weerScherm || afvalScherm || aftelScherm || dagForm || weekForm || vastForm);
 }
 function toonNacht() {
   return tabletStand && !isMobiel() && Date.now() - laatsteAanraking > KLOK_NA_MS && !iemandBezig();
@@ -1152,7 +1171,7 @@ function vandaag() {
   }).join('');
 
   return '<main class="grid-vandaag">' + (feestBanner() ? '<div class="feestrij">' + feestBanner() + '</div>' : '') +
-    '<section class="card agendakaart"><div class="kop"><h2>Agenda vandaag</h2><span class="dagchip" style="color:' + dagKleur(D.vandaag) + ';border-color:' + dagKleur(D.vandaag) + '66">' + esc(DAG_KORT_VOL()) + '</span><span class="klein">Tik op ✏️ om te wijzigen</span></div>' + weerBalk() + afvalRegel() + events + morgenHtml + '</section>' +
+    '<section class="card agendakaart"><div class="kop"><h2>Agenda vandaag</h2><span class="dagchip" style="color:' + dagKleur(D.vandaag) + ';border-color:' + dagKleur(D.vandaag) + '66">' + esc(DAG_KORT_VOL()) + '</span><span class="klein">Tik op ✏️ om te wijzigen</span></div>' + weerBalk() + afvalRegel() + roosterHerinnering() + schoolStrip() + events + morgenHtml + '</section>' +
     '<div class="kolom">' +
     '<section class="card"><div class="kop"><h2>Wie eet er mee?</h2><span class="klein">' + tel.ja + ' mee · ' + tel.nee + ' niet · ' + tel.onb + ' ?</span></div>' +
     menuRegel + '<div class="eters">' + eters + '</div></section>' +
@@ -1585,13 +1604,217 @@ function eten() {
     '</section></main>';
 }
 
+/* ---------------- schooltijden en gym ---------------- */
+var schoolWeek = 0;     // 0 = deze week, 1 = volgende week (in het weekend: komende en de week erna)
+var dagForm = null;     // {kind, datum, b, u, vrij, n, gym, andersB, andersU}
+var weekForm = null;    // {kind, week, rijen: {datum: {b, u, vrij, n, andersB, andersU}}}
+var vastForm = null;    // {kind, dagen: {ma: {b, u, gym}}}
+var WD_KORT = ['ma', 'di', 'wo', 'do', 'vr'];
+function SD() { return D.school || null; }
+function schoolKindInfo(id) { var s = SD(); return s ? s.kinderen.filter(function (k) { return k.id === id; })[0] || null : null; }
+function schoolVan(id) {
+  var k = schoolKindInfo(id), s = SD();
+  return k ? s.scholen.filter(function (x) { return x.naam === k.school; })[0] || { begin: [], uit: [], soort: k.soort } : null;
+}
+function schoolOp(datum, id) { var s = SD(); return s && s.dagen[datum] ? s.dagen[datum][id] || null : null; }
+function tijdKort(t) { return t ? t.replace(/^0/, '') : ''; }
+function wdVan(datum) { var p = datum.split('-').map(Number); return (new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay() + 6) % 7; }
+function dagLabelKort(datum) { return WD_KORT[wdVan(datum)] + ' ' + Number(datum.slice(8, 10)); }
+function celTekst(x) {
+  if (!x) return '';
+  if (x.vrij) return x.vak && x.vak !== 'vrij' ? x.vak.replace(/vakantie/i, 'vak.') : 'vrij';
+  if (x.leeg) return '?';
+  return (x.b ? tijdKort(x.b) + '–' : 'uit ') + tijdKort(x.u);
+}
+function gymKnop(k, datum, x) {
+  if (!x || x.vrij || !x.gym) return '';
+  return '<button type="button" class="gymlabel" data-act="gymNiet" data-id="' + esc(k.id + '|' + datum) + '" aria-label="' + esc(k.naam) + ' heeft gym. Tik als gym niet doorgaat">👟 Gymtas mee</button>';
+}
+function schoolKop(k, datum) {
+  var x = schoolOp(datum, k.id);
+  if (!x) return '';
+  var info = schoolKindInfo(k.id);
+  var tijd = x.vrij ? '<span class="uit">vrij</span><small>' + esc(x.vak && x.vak !== 'vrij' ? x.vak : 'geen school') + '</small>' :
+    x.leeg ? '<span class="uit" style="color:#B28DFF">?</span><small>nog invullen</small>' :
+    '<span class="uit">uit ' + esc(tijdKort(x.u) || '?') + '</span><small>' + esc((x.b ? tijdKort(x.b) + ' – ' + tijdKort(x.u) : '') + (x.n ? ' · ' + x.n : '')) + '</small>';
+  return gymKnop(k, datum, x) + (x.gw ? '<span class="wijzlabel">gewijzigd</span>' : '') +
+    '<button type="button" class="schooltijd" data-act="schoolCel" data-id="' + esc(k.id + '|' + datum) + '" aria-label="Schooltijden ' + esc(k.naam) + ' aanpassen">' + tijd + '</button>';
+}
+function teInvullen(id) {
+  var s = SD(), info = schoolKindInfo(id);
+  if (!s || !info || info.soort !== 'middelbaar') return null;
+  var n = new Date(), wd = (n.getDay() + 6) % 7;
+  if (!(wd === 6 || wd === 5 && n.getHours() >= 12 || (wd === 0 && n.getHours() < 12))) return null;
+  var week = s.weken[0];
+  return week.some(function (d) { var x = s.dagen[d][id]; return x && x.leeg; }) ? 0 : null;
+}
+function roosterHerinnering() {
+  var s = SD();
+  if (!s) return '';
+  var mk = mijnKind();
+  return s.kinderen.filter(function (k) { return (!mk || mk.id === k.id) && teInvullen(k.id) !== null; }).map(function (k) {
+    var p = persoon(k.id) || { naam: k.id };
+    return '<button type="button" class="roosterherin" data-act="roosterWeek" data-id="' + esc(k.id + '|0') + '">📅 ' + esc(p.naam) + ', vul je rooster voor ' +
+      (new Date().getDay() === 1 ? 'deze' : 'volgende') + ' week in ›</button>';
+  }).join('');
+}
+function schoolOverzicht() {
+  var s = SD();
+  if (!s) return '';
+  var week = s.weken[schoolWeek] || s.weken[0];
+  var kids = s.kinderen.map(function (k) { return persoon(k.id); }).filter(Boolean);
+  var mk = mijnKind();
+  if (mk) kids = kids.filter(function (k) { return k.id === mk.id; });
+  var kopRij = '<tr><th></th>' + week.map(function (d) {
+    return '<th' + (d === D.vandaag ? ' class="vd"' : '') + '>' + dagStip(d, 8) + esc(dagLabelKort(d)) + '</th>';
+  }).join('') + '</tr>';
+  var rijen = kids.map(function (k) {
+    var info = schoolKindInfo(k.id);
+    return '<tr><td class="n">' + av(k, 22) + ' ' + esc(k.naam) + '</td>' + week.map(function (d) {
+      var x = s.dagen[d][k.id] || {};
+      return '<td><button type="button" class="scel' + (x.gw ? ' gw' : '') + (x.leeg ? ' leeg' : '') + (x.vrij ? ' vrij' : '') + '" data-act="schoolCel" data-id="' + esc(k.id + '|' + d) + '">' +
+        esc(celTekst(x)) + (x.gym && !x.vrij ? ' <span aria-label="gym">👟</span>' : '') + (x.n ? ' <span class="snote" title="' + esc(x.n) + '">✎</span>' : '') + '</button></td>';
+    }).join('') + '</tr>';
+  }).join('');
+  var knoppen = '<div class="chips" role="group" aria-label="Week kiezen">' + ['Deze week', 'Volgende week'].map(function (t, i) {
+    var label = i === 0 && wdVan(s.weken[0][0]) === 0 && s.weken[0][0] > D.vandaag ? 'Komende week' : i === 0 ? t : (s.weken[0][0] > D.vandaag ? 'Week erna' : t);
+    return '<button type="button" class="tab" data-act="schoolWeek" data-id="' + i + '" aria-pressed="' + (schoolWeek === i) + '">' + esc(label) + '</button>';
+  }).join('') + '</div>';
+  return '<section class="card schoolkaart"><div class="kop" style="flex-wrap:wrap;gap:8px"><h2>Schooltijden</h2>' + knoppen + '</div>' +
+    '<div class="stabelwrap"><table class="stabel">' + kopRij + rijen + '</table></div>' +
+    '<div class="rij" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><span class="klein">Oranje = afwijkend · 👟 = gym · tik op een vakje om aan te passen</span>' +
+    (mk ? '' : '<button type="button" class="knop2" data-act="vastOpen">Vaste tijden en gym</button>') + '</div></section>';
+}
+function tijdKeuze(act, lijst, waarde, anders, veldId) {
+  var inLijst = lijst.indexOf(waarde) >= 0;
+  var chips = lijst.map(function (t) {
+    return '<button type="button" class="keuze" data-act="' + act + '" data-id="' + esc(t) + '" aria-pressed="' + (waarde === t && !anders) + '">' + esc(tijdKort(t)) + '</button>';
+  }).join('');
+  var a = anders || (waarde && !inLijst);
+  return chips + '<button type="button" class="keuze" data-act="' + act + '" data-id="anders" aria-pressed="' + !!a + '">anders…</button>' +
+    (a ? '<input type="time" step="300" class="tijdveld" id="' + veldId + '" value="' + esc(waarde || '') + '" aria-label="Andere tijd">' : '');
+}
+function renderDagForm(laag) {
+  var f = dagForm, k = persoon(f.kind) || { naam: '?', kleur: '#ECEEF3' }, sc = schoolVan(f.kind) || { begin: [], uit: [] };
+  var x = schoolOp(f.datum, f.kind) || {};
+  var basis = (schoolKindInfo(f.kind) || {}).soort === 'basis';
+  laag.innerHTML = '<div class="overlay"><div class="detailbox schoolform" role="dialog" aria-modal="true" aria-label="Schooltijden aanpassen">' +
+    '<div class="rij" style="gap:12px">' + av(k, 44) + '<h2 style="margin:0">' + esc(k.naam) + ' · ' + esc(dagLabelKort(f.datum)) + '</h2></div>' +
+    (x.vrij && x.vak && x.vak !== 'vrij' ? '<div class="melding">' + esc(x.vak) + '</div>' : '') +
+    (f.vrij ? '' : '<div class="okkop">Begin</div><div class="chips">' + tijdKeuze('dfB', sc.begin, f.b, f.andersB, 'df-b') + '</div>' +
+      '<div class="okkop">Uit</div><div class="chips">' + tijdKeuze('dfU', sc.uit, f.u, f.andersU, 'df-u') + '</div>') +
+    '<div class="chips"><button type="button" class="keuze" data-act="dfVrij" aria-pressed="' + f.vrij + '">Hele dag vrij</button>' +
+    (f.vrij ? '' : '<button type="button" class="keuze" data-act="dfGym" aria-pressed="' + f.gym + '">👟 Gym</button>') + '</div>' +
+    '<input id="df-n" class="veld" type="text" maxlength="60" placeholder="Opmerking, bijv. toets wiskunde" value="' + esc(f.n) + '">' +
+    '<div class="chips"><button type="button" class="knop" data-act="dfOpslaan">Opslaan</button>' +
+    (basis && x.gw ? '<button type="button" class="knop2" data-act="dfTerug">Terug naar vast rooster</button>' : '') +
+    ((schoolKindInfo(f.kind) || {}).soort === 'middelbaar' ? '<button type="button" class="knop2" data-act="roosterWeek" data-id="' + esc(f.kind + '|' + ((SD().weken[1] || []).indexOf(f.datum) >= 0 ? 1 : 0)) + '">Hele week invullen</button>' : '') +
+    '<button type="button" class="knop2" data-act="dfSluit">Annuleren</button></div></div></div>';
+}
+function dagFormVelden() {
+  if (!dagForm) return;
+  var b = document.getElementById('df-b'), u = document.getElementById('df-u'), n = document.getElementById('df-n');
+  if (b) dagForm.b = b.value; if (u) dagForm.u = u.value; if (n) dagForm.n = n.value;
+}
+function openDagForm(kind, datum) {
+  var x = schoolOp(datum, kind) || {};
+  dagForm = { kind: kind, datum: datum, b: x.b || '', u: x.u || '', vrij: !!x.vrij && !(x.vak && x.vak !== 'vrij'), n: x.n || '', gym: !!x.gym, andersB: false, andersU: false };
+  render();
+}
+function renderWeekForm(laag) {
+  var f = weekForm, s = SD(), k = persoon(f.kind) || { naam: '?', kleur: '#ECEEF3' }, sc = schoolVan(f.kind) || { begin: [], uit: [] };
+  var week = s.weken[f.week];
+  var rijen = week.map(function (d) {
+    var r = f.rijen[d], x = s.dagen[d][f.kind] || {};
+    if (x.vrij && x.vak && x.vak !== 'vrij') return '<div class="wrij"><b>' + esc(dagLabelKort(d)) + '</b><span class="klein">' + esc(x.vak) + '</span></div>';
+    return '<div class="wrij"><b>' + esc(dagLabelKort(d)) + '</b>' + (r.vrij ? '<span class="klein" style="font-size:14px">vrij</span>' :
+      '<div class="chips">' + tijdKeuze('wfB', sc.begin, r.b, r.andersB, 'wf-b-' + d).replace(/data-id="/g, 'data-dag="' + d + '" data-id="') + '</div><span class="pijl">→</span>' +
+      '<div class="chips">' + tijdKeuze('wfU', sc.uit, r.u, r.andersU, 'wf-u-' + d).replace(/data-id="/g, 'data-dag="' + d + '" data-id="') + '</div>') +
+      '<button type="button" class="keuze klein" data-act="wfVrij" data-dag="' + d + '" data-id="x" aria-pressed="' + r.vrij + '">vrij</button>' + (x.gym && !r.vrij ? '<span aria-label="gym">👟</span>' : '') + '</div>';
+  }).join('');
+  laag.innerHTML = '<div class="overlay"><div class="detailbox schoolform weekform" role="dialog" aria-modal="true" aria-label="Rooster invullen">' +
+    '<div class="rij" style="gap:12px;flex-wrap:wrap">' + av(k, 40) + '<h2 style="margin:0">Rooster ' + esc(k.naam) + ' · week ' + isoWeek(week[0]) + '</h2>' +
+    '<span class="klein">' + esc(datumKort(week[0]) + ' – ' + datumKort(week[4])) + '</span></div>' +
+    '<div class="chips">' + [0, 1].map(function (i) { return '<button type="button" class="tab" data-act="wfWeek" data-id="' + i + '" aria-pressed="' + (f.week === i) + '">Week ' + isoWeek(s.weken[i][0]) + '</button>'; }).join('') + '</div>' +
+    rijen +
+    '<div class="chips">' + (f.week === 1 ? '<button type="button" class="keuze" data-act="wfKopie">Zelfde als week ' + isoWeek(s.weken[0][0]) + '</button>' : '') + '</div>' +
+    '<div class="fout" aria-live="assertive">' + esc(f.fout || '') + '</div>' +
+    '<div class="chips"><button type="button" class="knop" data-act="wfOpslaan">Opslaan met pincode</button><button type="button" class="knop2" data-act="wfSluit">Annuleren</button></div></div></div>';
+}
+function weekFormVelden() {
+  if (!weekForm) return;
+  Object.keys(weekForm.rijen).forEach(function (d) {
+    var b = document.getElementById('wf-b-' + d), u = document.getElementById('wf-u-' + d);
+    if (b) weekForm.rijen[d].b = b.value; if (u) weekForm.rijen[d].u = u.value;
+  });
+}
+function openWeekForm(kind, week) {
+  var s = SD(), rijen = {};
+  s.weken[week].forEach(function (d) { var x = s.dagen[d][kind] || {}; rijen[d] = { b: x.b || '', u: x.u || '', vrij: !!x.vrij && !(x.vak && x.vak !== 'vrij'), n: x.n || '', andersB: false, andersU: false }; });
+  weekForm = { kind: kind, week: week, rijen: rijen, fout: '' };
+  render();
+}
+function renderVastForm(laag) {
+  var f = vastForm, s = SD();
+  var kids = s.kinderen.map(function (k) { return persoon(k.id); }).filter(Boolean);
+  var info = schoolKindInfo(f.kind) || {}, sc = schoolVan(f.kind) || { begin: [], uit: [] }, basis = info.soort === 'basis';
+  var kies = kids.map(function (p) { return '<button type="button" class="keuze" data-act="vfKind" data-id="' + esc(p.id) + '" aria-pressed="' + (p.id === f.kind) + '">' + esc(p.naam) + '</button>'; }).join('');
+  var zelfde = basis ? kids.filter(function (p) { var i = schoolKindInfo(p.id); return p.id !== f.kind && i && i.soort === 'basis'; })
+    .map(function (p) { return '<button type="button" class="keuze" data-act="vfKopie" data-id="' + esc(p.id) + '">Zelfde als ' + esc(p.naam) + '</button>'; }).join('') : '';
+  var sel = function (dag, wat, lijst) {
+    return '<select class="veld vsel" data-dag="' + dag + '" data-wat="' + wat + '" aria-label="' + wat + ' ' + dag + '">' + [''].concat(lijst).concat(lijst.indexOf(f.dagen[dag][wat]) < 0 && f.dagen[dag][wat] ? [f.dagen[dag][wat]] : []).map(function (t) {
+      return '<option value="' + esc(t) + '"' + (t === f.dagen[dag][wat] ? ' selected' : '') + '>' + esc(t ? tijdKort(t) : '–') + '</option>';
+    }).join('') + '</select>';
+  };
+  var raster = '<div class="vraster"><span></span>' + WD_KORT.map(function (d) { return '<span class="vk">' + d + '</span>'; }).join('') +
+    (basis ? '<span>Begin</span>' + WD_KORT.map(function (d) { return sel(d, 'b', sc.begin); }).join('') +
+      '<span>Uit</span>' + WD_KORT.map(function (d) { return sel(d, 'u', sc.uit); }).join('') : '') +
+    '<span>Gym</span>' + WD_KORT.map(function (d) { return '<button type="button" class="keuze vgym" data-act="vfGym" data-id="' + d + '" aria-pressed="' + !!f.dagen[d].gym + '">' + (f.dagen[d].gym ? '👟 ja' : '–') + '</button>'; }).join('') + '</div>';
+  laag.innerHTML = '<div class="overlay"><div class="detailbox schoolform" role="dialog" aria-modal="true" aria-label="Vaste schooltijden">' +
+    '<div class="kop" style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Vaste tijden en gym</h2><button type="button" class="knop2" data-act="vfSluit">Sluiten</button></div>' +
+    '<div class="chips">' + kies + '</div>' +
+    '<div class="klein">' + esc(info.school || '') + (basis ? ' · vast weekrooster' : ' · rooster vult ' + esc((persoon(f.kind) || {}).naam || '') + ' zelf per week in') + '</div>' +
+    raster + (zelfde ? '<div class="chips">' + zelfde + '</div>' : '') +
+    '<div class="chips"><button type="button" class="knop" data-act="vfOpslaan">Opslaan</button></div>' +
+    '<div class="klein">Scholen en tijden op de knoppen pas je aan in de Sheet: tabblad Scholen, en per kind de kolom school in het tabblad Gezin.</div></div></div>';
+}
+function vastFormVelden() {
+  if (!vastForm) return;
+  Array.prototype.forEach.call(document.querySelectorAll('.vsel'), function (el) { vastForm.dagen[el.getAttribute('data-dag')][el.getAttribute('data-wat')] = el.value; });
+}
+function openVastForm(kind) {
+  var s = SD(), v = (s.vast || {})[kind] || {}, dagen = {};
+  WD_KORT.forEach(function (d) { var x = v[d] || {}; dagen[d] = { b: x.b || '', u: x.u || '', gym: !!x.gym }; });
+  vastForm = { kind: kind, dagen: dagen };
+  render();
+}
+
+function schoolStrip() {
+  var s = SD();
+  if (!s || !D.dagen || !D.dagen.length) return '';
+  var vanaf = new Date().getHours() < 15 ? D.vandaag : D.morgen;
+  var dag = D.dagen.filter(function (d) { return d.datum >= vanaf; })[0];
+  if (!dag || !s.dagen[dag.datum]) return '';
+  var mk = mijnKind();
+  var kids = s.kinderen.map(function (k) { return persoon(k.id); }).filter(function (k) { return k && (!mk || mk.id === k.id); });
+  var chips = kids.map(function (k) {
+    var x = s.dagen[dag.datum][k.id] || {};
+    var mee = (D.meenemen || []).filter(function (m) { return m.datum === dag.datum && m.kind === k.id; }).map(function (m) { return m.wat; });
+    var tijd = x.vrij ? 'vrij' : x.leeg ? '?' : tijdKort(x.u);
+    return '<button type="button" class="sschip' + (x.leeg ? ' leeg' : '') + (x.gw ? ' gw' : '') + '" data-act="tab" data-id="brood" aria-label="' + esc(k.naam + ': ' + (x.vrij ? 'vrij' : 'uit ' + tijd) + (x.gym && !x.vrij ? ', gymtas mee' : '') + (mee.length ? ', mee: ' + mee.join(', ') : '')) + '">' +
+      av(k, 22) + '<b>' + esc(tijd) + '</b>' + (x.gym && !x.vrij ? '<span class="ssico" title="Gymtas mee">👟</span>' : '') +
+      (mee.length ? '<span class="ssico" title="' + esc(mee.join(', ')) + '">🎒</span>' : '') + '</button>';
+  }).join('');
+  return '<div class="schoolstrip"><div class="sskop">School ' + esc(dag.label.toLowerCase()) + ' · uit om</div><div class="ssrij" style="grid-template-columns:repeat(' + kids.length + ',minmax(0,1fr))">' + chips + '</div></div>';
+}
+
 function brood() {
   if (!D.dagen.length) {
     var v = D.schoolVrij || {};
     return '<main><section class="card vakantie">' + '<span style="color:#9CC2FF">' + svg('tas', 48) + '</span>' +
       '<b>' + (v.naam ? 'Het is ' + esc(v.naam.toLowerCase().indexOf('vakantie') >= 0 ? v.naam.toLowerCase() : v.naam) + '!' : 'Geen schooldag') + '</b>' +
       '<div class="klein" style="font-size:16px">Er hoeft nu niets klaargezet te worden.' + (v.weer ? ' De school begint weer op <b style="font-size:16px">' + esc(v.weer) + '</b>.' : '') + '</div>' +
-      '<div class="klein">Vanaf het weekend ervoor kun je hier weer brood, fruit en spullen kiezen.</div></section></main>';
+      '<div class="klein">Vanaf het weekend ervoor kun je hier weer brood, fruit en spullen kiezen.</div></section>' + roosterHerinnering() + schoolOverzicht() + '</main>';
   }
   if (broodDag >= D.dagen.length) broodDag = D.dagen.length - 1;
   var dag = D.dagen[broodDag];
@@ -1618,8 +1841,8 @@ function brood() {
         '<span class="mtekst">' + esc(x.wat) + '</span>' +
         '<button type="button" class="wis" data-act="meeWeg" data-id="' + esc(x.id) + '" aria-label="' + esc(x.wat) + ' weghalen">×</button></div>';
     }).join('');
-    return '<section class="card" style="padding:18px"><div class="rij" style="gap:10px">' + av(k, 44) +
-      '<div style="font-size:18px;font-weight:900">' + esc(k.naam) + '</div></div>' +
+    return '<section class="card" style="padding:18px"><div class="rij kindkop" style="gap:10px">' + av(k, 44) +
+      '<div style="font-size:18px;font-weight:900">' + esc(k.naam) + '</div></div>' + (schoolKop(k, dag.datum) ? '<div class="schoolregel">' + schoolKop(k, dag.datum) + '</div>' : '') +
       maal(k, 'ontbijt', 'Ontbijt', b.ontbijt) + maal(k, 'lunch', 'Lunch op school', b.lunch) + maal(k, 'fruit', 'Fruit', b.fruit) +
       '<div class="maal"><div class="kop"><span class="mtitel">Mee naar school</span></div>' + spullen +
       '<button type="button" class="snee plus" data-act="meeNieuw" data-id="' + esc(k.id) + '" aria-label="Iets mee naar school voor ' + esc(k.naam) + '">+ iets meenemen</button></div>' +
@@ -1645,7 +1868,7 @@ function brood() {
       return w ? '<div class="weerbalk"><span class="nu" style="font-size:16px">' + svg(w.icoon, 22) + esc(w.tekst) + ' · ' + w.min + '–' + w.max + '°</span>' +
         (w.tips.length ? w.tips.map(function (t) { return '<span class="weertip">' + esc(t) + '</span>'; }).join('') : '<span>Geen bijzonderheden voor onderweg</span>') + '</div>' : '';
     })() +
-    '<div class="kids">' + kaarten + '</div>' +
+    roosterHerinnering() + '<div class="kids">' + kaarten + '</div>' + schoolOverzicht() +
     '<section class="card"><div class="kop"><h2>Klaarzetten voor ' + esc(dag.label === 'Vandaag' || dag.label === 'Morgen' ? dag.label.toLowerCase() : dag.dag) + '</h2>' +
     '<span class="klein">Staat ook in de mail van ' + D.meldingOverig + ':00 de avond ervoor</span></div>' +
     '<div class="grid-eten" style="gap:12px 20px">' + overzicht + '</div>' +
@@ -1958,6 +2181,9 @@ function renderPin() {
   if (!pin && weerScherm) { renderWeer(laag); return; }
   if (!pin && afvalScherm) { renderAfval(laag); return; }
   if (!pin && aftelScherm) { renderAftel(laag); return; }
+  if (!pin && dagForm) { renderDagForm(laag); return; }
+  if (!pin && weekForm) { renderWeekForm(laag); return; }
+  if (!pin && vastForm) { renderVastForm(laag); return; }
   if (!pin) { laag.innerHTML = ''; return; }
   var k = pin.ouder ? { naam: '', kleur: '#ECEEF3' } : (persoon(pin.server ? pin.kind : pin.klus.kind) || { naam: '?', kleur: '#ECEEF3' });
   var dots = ''; for (var i = 0; i < 4; i++) dots += '<span style="border-color:' + esc(k.kleur) + ';background:' + (i < pin.digits.length ? esc(k.kleur) : 'transparent') + '"></span>';
@@ -2234,7 +2460,7 @@ function renderWeer(laag) {
   }
 
   laag.innerHTML = '<div class="weerscherm" role="dialog" aria-modal="true" aria-label="Weer">' +
-    '<header class="wkop"><div class="rij" style="gap:12px;flex-wrap:wrap"><h1>Weer in ' + esc(w.plaats || '') + '</h1>' + (w.bijgewerkt ? '<span class="klein">bijgewerkt ' + esc(w.bijgewerkt) + '</span>' : '') + '</div>' +
+    '<header class="wkop"><div class="rij" style="gap:12px;flex-wrap:wrap"><h1>Weer in ' + esc(w.plaats || '') + '</h1>' + (w.bijgewerkt ? '<span class="klein">bijgewerkt ' + esc(w.bijgewerkt) + (w.bron ? ' · ' + esc(w.bron) : '') + '</span>' : '') + '</div>' +
     '<div class="rij" style="gap:16px"><span class="wklok">' + klok + '</span><button type="button" class="knop2" data-act="weerSluit">Sluiten</button></div></header>' +
     '<div class="wgrid"><div class="kolom">' + nuKaart + dagKaart + '</div><div class="kolom">' +
     ((uurKaart + regenKaart + fietsKaart) || '<section class="card wkaart"><h2>Meer details komen eraan</h2><div class="klein" style="font-size:15px">De uurverwachting, regen per kwartier en het fietsweer verschijnen zodra het weer opnieuw is opgehaald (binnen een kwartier).</div></section>') +
@@ -2338,9 +2564,10 @@ function ververs() {
   // Het weerscherm is alleen om te kijken: dat mag gewoon bijgewerkt worden terwijl het openstaat.
   var bezigMetInvoer = function () { var w = weerScherm; weerScherm = null; var b = iemandBezig(); weerScherm = w; return b; };
   if (vergrendeld || bezigMetInvoer() || bezig) return;
+  var teller0 = dataTeller;
   google.script.run.withSuccessHandler(function (res) {
     if (res && res.slot) { toonSlot(res); return; }
-    if (!bezigMetInvoer() && !bezig && res && res.gezin) { nieuweData(res); render(); }
+    if (!bezigMetInvoer() && !bezig && !pin && dataTeller === teller0 && res && res.gezin) { nieuweData(res); render(); }
   }).api(gezinscode, 'getData', []);
 }
 
@@ -2651,6 +2878,105 @@ document.addEventListener('click', function (ev) {
     e[veld] = waarde; render(); bewaar('zetRit', [e.sleutel, e.titel, veld, waarde, e.datum]); return;
   }
   if (act === 'weerOpen') { weerScherm = {}; render(); ververs(); return; }
+  if (act === 'schoolWeek') { schoolWeek = Number(id) || 0; render(); return; }
+  if (act === 'gymNiet') {
+    var gp = id.split('|'), gk = persoon(gp[0]) || { naam: '' };
+    vraagKindPin(gp[0], 'Gym gaat niet door · ' + dagLabelKort(gp[1]), 'zetGym', [gp[0], gp[1], false], 'Gym gaat niet door voor ' + gk.naam);
+    return;
+  }
+  if (act === 'schoolCel') {
+    var sp = id.split('|'), si = schoolKindInfo(sp[0]);
+    if (!si) return;
+    var sx = schoolOp(sp[1], sp[0]) || {};
+    if (si.soort === 'middelbaar' && sx.leeg) { openWeekForm(sp[0], (SD().weken[1] || []).indexOf(sp[1]) >= 0 ? 1 : 0); return; }
+    openDagForm(sp[0], sp[1]); return;
+  }
+  if (act === 'roosterWeek') { dagForm = null; var rp = id.split('|'); openWeekForm(rp[0], Number(rp[1]) || 0); return; }
+  if (dagForm && (act === 'dfB' || act === 'dfU')) {
+    dagFormVelden();
+    var dk = act === 'dfB' ? 'b' : 'u', da = act === 'dfB' ? 'andersB' : 'andersU';
+    if (id === 'anders') dagForm[da] = true; else { dagForm[da] = false; dagForm[dk] = id; }
+    render(); return;
+  }
+  if (dagForm && act === 'dfVrij') { dagFormVelden(); dagForm.vrij = !dagForm.vrij; render(); return; }
+  if (dagForm && act === 'dfGym') { dagFormVelden(); dagForm.gym = !dagForm.gym; render(); return; }
+  if (act === 'dfSluit') { dagForm = null; render(); return; }
+  if (dagForm && (act === 'dfOpslaan' || act === 'dfTerug')) {
+    dagFormVelden();
+    var df = dagForm, item = act === 'dfTerug' ? { datum: df.datum, terug: true } :
+      { datum: df.datum, begin: df.vrij ? '' : df.b, uit: df.vrij ? '' : df.u, vrij: df.vrij, notitie: df.n, gym: df.vrij ? false : df.gym };
+    var dpn = persoon(df.kind) || { naam: '' };
+    dagForm = null;
+    vraagKindPin(df.kind, 'Schooltijden ' + dagLabelKort(df.datum), 'zetRooster', [df.kind, [item]], 'Schooltijden van ' + dpn.naam + ' bijgewerkt');
+    return;
+  }
+  if (weekForm && (act === 'wfB' || act === 'wfU' || act === 'wfVrij')) {
+    weekFormVelden();
+    var wr = weekForm.rijen[b.getAttribute('data-dag')];
+    if (!wr) return;
+    if (act === 'wfVrij') wr.vrij = !wr.vrij;
+    else {
+      var wk = act === 'wfB' ? 'b' : 'u', wa = act === 'wfB' ? 'andersB' : 'andersU';
+      if (id === 'anders') wr[wa] = true; else { wr[wa] = false; wr[wk] = id; }
+    }
+    render(); return;
+  }
+  if (weekForm && act === 'wfWeek') { weekFormVelden(); openWeekForm(weekForm.kind, Number(id) || 0); return; }
+  if (weekForm && act === 'wfKopie') {
+    weekFormVelden();
+    var s0 = SD().weken[0], s1 = SD().weken[1];
+    s1.forEach(function (d, i) {
+      var x = SD().dagen[s0[i]][weekForm.kind] || {};
+      if (x.vak && x.vak !== 'vrij') return;
+      weekForm.rijen[d] = { b: x.b || '', u: x.u || '', vrij: !!x.vrij, n: '', andersB: false, andersU: false };
+    });
+    render(); return;
+  }
+  if (act === 'wfSluit') { weekForm = null; render(); return; }
+  if (weekForm && act === 'wfOpslaan') {
+    weekFormVelden();
+    var wf = weekForm, items = [];
+    Object.keys(wf.rijen).forEach(function (d) {
+      var r = wf.rijen[d], x = SD().dagen[d][wf.kind] || {};
+      if (x.vak && x.vak !== 'vrij') return;
+      if (!r.vrij && !r.b && !r.u) return;
+      items.push({ datum: d, begin: r.vrij ? '' : r.b, uit: r.vrij ? '' : r.u, vrij: r.vrij, notitie: r.n });
+    });
+    if (!items.length) { wf.fout = 'Kies per dag in elk geval hoe laat je uit bent'; render(); return; }
+    var wpn = persoon(wf.kind) || { naam: '' };
+    weekForm = null;
+    vraagKindPin(wf.kind, 'Rooster week ' + isoWeek(Object.keys(wf.rijen)[0]), 'zetRooster', [wf.kind, items], 'Rooster van ' + wpn.naam + ' opgeslagen');
+    return;
+  }
+  if (act === 'vastOpen') {
+    var eerste = (SD() || { kinderen: [] }).kinderen[0];
+    if (!eerste) return;
+    if (ouderBeheer()) openVastForm(eerste.id); else vraagOuderPin(function () { openVastForm(eerste.id); }, 'Vaste schooltijden', true);
+    return;
+  }
+  if (vastForm && act === 'vfKind') { openVastForm(id); return; }
+  if (vastForm && act === 'vfGym') { vastFormVelden(); vastForm.dagen[id].gym = !vastForm.dagen[id].gym; render(); return; }
+  if (vastForm && act === 'vfKopie') {
+    var bron = (SD().vast || {})[id] || {};
+    WD_KORT.forEach(function (d) { var x = bron[d] || {}; vastForm.dagen[d] = { b: x.b || '', u: x.u || '', gym: !!x.gym }; });
+    render(); return;
+  }
+  if (act === 'vfSluit') { vastForm = null; render(); return; }
+  if (vastForm && act === 'vfOpslaan') {
+    vastFormVelden();
+    var vf = vastForm;
+    var bewaarVast = function () {
+      ouderSessie.tot = Date.now() + 5 * 60000;
+      var lijst = WD_KORT.map(function (d) { return { dag: d, begin: vf.dagen[d].b, uit: vf.dagen[d].u, gym: vf.dagen[d].gym }; });
+      D.school.vast[vf.kind] = {};
+      WD_KORT.forEach(function (d) { D.school.vast[vf.kind][d] = { b: vf.dagen[d].b, u: vf.dagen[d].u, gym: vf.dagen[d].gym }; });
+      bewaar('zetVastRooster', [vf.kind, lijst, ouderSessie.pin]);
+      zegt('Vaste tijden opgeslagen', '#9CC2FF');
+      render();
+    };
+    if (ouderBeheer()) bewaarVast(); else { vastForm = null; vraagOuderPin(function () { vastForm = vf; bewaarVast(); }, 'Vaste schooltijden', true); }
+    return;
+  }
   if (act === 'afvalOpen') { afvalScherm = {}; render(); return; }
   if (act === 'afvalSluit') { afvalScherm = null; render(); return; }
   if (act === 'aftelOpen') { aftelScherm = { beheer: false, wat: '', datum: '', icoon: '⭐', voor: [], fout: '' }; render(); return; }
@@ -2971,7 +3297,7 @@ function dagWachter() {
   if (!dagWisselSinds) dagWisselSinds = Date.now();
   if (Date.now() - laatsteAanraking > 5 * 60000) {
     pin = null; keuze = null; detail = null; bewerkA = null; menuEdit = null; klusForm = null; helpDag = null; meeForm = null;
-    wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null; geven = null; straf = null; oppasForm = null; okForm = null; weerScherm = null; afvalScherm = null; aftelScherm = null;
+    wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null; geven = null; straf = null; oppasForm = null; okForm = null; weerScherm = null; afvalScherm = null; aftelScherm = null; dagForm = null; weekForm = null; vastForm = null;
     bezig = 0;
   }
   ververs();
