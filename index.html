@@ -568,6 +568,13 @@ textarea.veld{width:100%;min-height:84px;box-sizing:border-box;padding:12px 14px
 .kpilijst{display:flex;flex-direction:column;gap:10px}.kpidag{display:flex;flex-direction:column;gap:4px}.kpidh{display:flex;align-items:center;gap:6px;font-weight:900;font-size:14px}.kpidh .klein{margin-left:auto}
 .kpit{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:10px;padding:6px 10px;font-weight:800;font-size:14px}.kpt{width:18px;text-align:center;font-weight:900}.kpw{flex:1;min-width:0}.kpw small{display:block;color:var(--muted);font-size:11px}
 .kpp{font-weight:900;color:#4ADE80;font-size:13px}.kpit.niet,.kpit.straf{opacity:.75}.kpit.niet .kpt,.kpit.straf .kpt{color:#FF8A7A}.kpit.open{opacity:.6}
+.dkort{display:none}.koptekst{min-width:0}
+.kopblok .datum,.kopblok .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kopblok .dlang{display:none}.kopblok .dkort{display:inline}.kopblok .volgende{display:none}
+@media (min-width:761px){.tabletknop span{display:none}.tabletknop{padding-left:12px;padding-right:12px}}
+.versievoet{text-align:center;color:var(--dim);font-size:11px;font-weight:700;padding:14px 0 6px;opacity:.7}
+.nieuwversie{color:#4ADE80;font-weight:900;text-decoration:none}
+@media (max-width:760px){.versievoet{padding-bottom:90px}}
 </style>
 </head>
 <body>
@@ -623,6 +630,7 @@ var dagWisselSinds = 0;         // sinds wanneer de datum op het scherm achterlo
 var dataTeller = 0;   // telt nieuwe data; een verversing die al liep vóór een opslag mag die niet overschrijven
 function nieuweData(res) {
   D = res; dataTeller++;
+  setTimeout(versieCheck, 1000);
   setTimeout(mijlpaalCheck, 300);
   laatsteData = Date.now(); dagWisselSinds = 0;
   try { if (gezinscode) localStorage.setItem(DATA_SLEUTEL, JSON.stringify(res)); } catch (e) {}
@@ -918,6 +926,32 @@ function verschuifKlok() {
   box.style.transform = 'translate(' + Math.round(fx * vrijX - vrijX / 2) + 'px,' + Math.round(fy * vrijY - vrijY / 2) + 'px)';
 }
 
+/* ---------------- versie ---------------- */
+var VERSIE = '2026-11-11 18:45';   // moet gelijk zijn aan VERSIE in Code.gs
+var inGoogle = /googleusercontent/.test(location.hostname);
+function versieTekst(v) { var m = String(v || '').match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})$/); return m ? Number(m[3]) + ' ' + MAAND_KORT[Number(m[2]) - 1] + ' ' + m[4] : String(v || '?'); }
+/** Draait de server (Apps Script) een nieuwere versie dan deze pagina? Dan zo snel als het kan herladen. */
+function versieCheck() {
+  if (!D || !D.versie || D.versie === VERSIE || D.versie < VERSIE) return;
+  if (inGoogle) return;                                         // Google-kader kan zichzelf niet herladen: banner in de kop
+  if (iemandBezig() || pin || Date.now() - laatsteAanraking < 60000) return;
+  var poging = {};
+  try { poging = JSON.parse(localStorage.getItem('gezinsdashboard-versiepoging') || '{}'); } catch (e) {}
+  if (poging.v === D.versie && Date.now() - poging.t < 10 * 60000) return;   // GitHub nog niet bij: over 10 minuten opnieuw
+  try { localStorage.setItem('gezinsdashboard-versiepoging', JSON.stringify({ v: D.versie, t: Date.now() })); } catch (e) {}
+  try { location.replace(location.pathname + '?v=' + encodeURIComponent(D.versie.replace(/\D/g, '')) + location.hash); } catch (e) {}
+}
+setInterval(versieCheck, 60000);
+function versieMelding() {
+  if (!D || !D.versie || D.versie === VERSIE) return '';
+  if (D.versie < VERSIE) return ' · <span style="color:#F2A65A">Apps Script nog oude versie (' + esc(versieTekst(D.versie)) + ')</span>';
+  return ' · <a class="nieuwversie" ' + (inGoogle && D.dashboardLink ? 'href="' + esc(D.dashboardLink) + '" target="_top"' : 'href="?v=' + esc(D.versie.replace(/\D/g, '')) + '"') + '>Nieuwe versie ›</a>';
+}
+function versieVoet() {
+  return '<div class="versievoet">Versie ' + esc(versieTekst(VERSIE)) + (D && D.versie && D.versie !== VERSIE ? ' · server ' + esc(versieTekst(D.versie)) : '') +
+    (inGoogle ? ' · Google' : ' · GitHub') + ' · gegevens van ' + esc(new Date(laatsteData || Date.now()).toTimeString().slice(0, 5)) + '</div>';
+}
+
 function render() {
   if (vergrendeld) { renderSlot(); return; }
   if (toonNacht()) { renderNacht(); return; }
@@ -927,7 +961,7 @@ function render() {
   }).filter(Boolean);
 
   document.getElementById('app').innerHTML = kop() +
-    (tab === 'vandaag' ? vandaag() : tab === 'week' ? week() : tab === 'klusjes' ? klusjes() : tab === 'brood' ? brood() : tab === 'scores' ? scores() : eten());
+    (tab === 'vandaag' ? vandaag() : tab === 'week' ? week() : tab === 'klusjes' ? klusjes() : tab === 'brood' ? brood() : tab === 'scores' ? scores() : eten()) + versieVoet();
 
   bewaard.forEach(function (b) {
     var el = document.getElementById(b.id);
@@ -949,10 +983,10 @@ function kop() {
   var tabletKnop = '<button type="button" class="tabletknop" data-act="tabletStand" aria-pressed="' + tabletStand + '" title="Scherm blijft aan; na 5 minuten niets aanraken verschijnt het klokscherm (van ' + esc(nachtTijden().van) + ' tot ' + esc(nachtTijden().tot) + ' gedimd)">' +
     svg('pyjama', 18) + '<span>Tabletstand' + (tabletStand ? ' aan' : '') + '</span></button>';
   var opNu = actieveOppas();
-  return '<header><div class="kopblok"><div class="hklok" aria-label="Huidige tijd">' + nuTijd() + '</div><div><div class="datum">' + dagStip(D.vandaag, 14) + esc(hoofdletter(D.datumTekst)) + '</div><div class="sub">Ons gezin · week ' + D.week +
+  return '<header><div class="kopblok"><div class="hklok" aria-label="Huidige tijd">' + nuTijd() + '</div><div class="koptekst"><div class="datum">' + dagStip(D.vandaag, 14) + '<span class="dlang">' + esc(hoofdletter(D.datumTekst)) + '</span><span class="dkort">' + esc(hoofdletter(DAG_KORT[wdVan(D.vandaag)]) + ' ' + Number(D.vandaag.slice(8, 10)) + ' ' + MAAND_KORT[Number(D.vandaag.slice(5, 7)) - 1]) + '</span></div><div class="sub">Ons gezin · week ' + D.week +
     (opNu.length ? ' · oppas: ' + esc(opNu.map(function (o) { return o.naam; }).join(' & ')) : '') +
     (Date.now() - laatsteData > 10 * 60000 ? ' · <span style="color:#F2A65A">niet bijgewerkt sinds ' + esc(new Date(laatsteData).toTimeString().slice(0, 5)) + '</span>' : '') +
-    '<span class="volgende"> · volgende melding ' + esc(volgende) + '</span></div></div></div>' + ikKnop + '<nav aria-label="Onderdelen" role="tablist">' + tabs.map(function (t) {
+    versieMelding() + '<span class="volgende"> · volgende melding ' + esc(volgende) + '</span></div></div></div>' + ikKnop + '<nav aria-label="Onderdelen" role="tablist">' + tabs.map(function (t) {
       return '<button type="button" class="tab" role="tab" aria-selected="' + (tab === t[0]) + '" data-act="tab" data-id="' + t[0] + '">' +
         svg(t[2], 22) + (t[3] ? '<span class="lang">' + t[1] + '</span><span class="kort">' + t[3] + '</span>' : '<span>' + t[1] + '</span>') + '</button>';
     }).join('') + '</nav>' + tabletKnop + '<div class="status' + (toast ? ' heeft-toast' : '') + '" aria-live="polite">' + rechts + '</div></header>';
