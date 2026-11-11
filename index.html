@@ -543,7 +543,7 @@ textarea.veld{width:100%;min-height:84px;box-sizing:border-box;padding:12px 14px
 .kpin{display:flex;align-items:center;gap:8px;font-weight:900;font-size:15px;min-width:0;white-space:nowrap;overflow:hidden}.kpibar{height:12px;border-radius:9px;background:#2b3140;overflow:hidden}.kpibar i{display:block;height:100%;border-radius:9px}
 .kpipct{font-size:19px;font-weight:900;text-align:right;display:flex;flex-direction:column;line-height:1.1}.tr{font-size:12px;font-weight:900}.tr.op{color:#4ADE80}.tr.af{color:#FF8A7A}.tr.gl{color:var(--muted)}
 .kpivl{font-weight:900;font-size:17px;white-space:nowrap;display:flex;align-items:baseline;gap:4px}.kpivl small{font-size:11px;color:var(--muted)}
-.kpibox{max-width:560px;width:100%;display:flex;flex-direction:column;gap:10px}.kdagen{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}.kdk{font-size:12px;font-weight:800;color:var(--muted)}
+.kpibox{max-width:560px;width:100%;max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:10px}.kdagen{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}.kdk{font-size:12px;font-weight:800;color:var(--muted)}
 .kdag{height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;background:var(--card2);font-size:14px}.kdag.niet{color:#FF8A7A;background:rgba(255,138,122,.12)}.kdag.deels,.kdag.bezig{color:#F59E0B;background:rgba(245,158,11,.12)}.kdag.later{opacity:.4}.kdag.geen{color:var(--muted)}
 .kweken{display:flex;align-items:flex-end;gap:10px;height:130px}.kwk{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:800;color:var(--muted)}.kwk i{display:block;width:100%;border-radius:8px 8px 4px 4px}
 .mijlpaal{position:fixed;left:50%;top:24px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#5a3a10,#7a2d1a);border-radius:18px;padding:14px 22px;box-shadow:0 10px 40px rgba(0,0,0,.5);transition:opacity .6s;max-width:92vw}
@@ -565,6 +565,9 @@ textarea.veld{width:100%;min-height:84px;box-sizing:border-box;padding:12px 14px
 .oplus{background:none;border:1.5px dashed #323745;border-radius:12px;padding:6px 10px;color:var(--muted);font-family:inherit;font-weight:800;font-size:13px;cursor:pointer}
 .obs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:var(--card2);border:none;border-radius:12px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:14px;cursor:pointer;text-align:left}
 .obs b{white-space:nowrap}.obc{background:#2b3140;border-radius:99px;padding:2px 9px;font-size:12px;font-weight:800}.obp{margin-left:auto;color:var(--muted);font-weight:900}
+.kpilijst{display:flex;flex-direction:column;gap:10px}.kpidag{display:flex;flex-direction:column;gap:4px}.kpidh{display:flex;align-items:center;gap:6px;font-weight:900;font-size:14px}.kpidh .klein{margin-left:auto}
+.kpit{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:10px;padding:6px 10px;font-weight:800;font-size:14px}.kpt{width:18px;text-align:center;font-weight:900}.kpw{flex:1;min-width:0}.kpw small{display:block;color:var(--muted);font-size:11px}
+.kpp{font-weight:900;color:#4ADE80;font-size:13px}.kpit.niet,.kpit.straf{opacity:.75}.kpit.niet .kpt,.kpit.straf .kpt{color:#FF8A7A}.kpit.open{opacity:.6}
 </style>
 </head>
 <body>
@@ -934,7 +937,7 @@ function render() {
 }
 
 function kop() {
-  var tabs = [['vandaag', 'Vandaag', 'agenda'], ['week', 'Agenda', 'week'], ['klusjes', 'Klusjes', 'taken'], ['brood', 'Schooldag', 'tas'], ['eten', 'Eten & boodschappen', 'kar', 'Eten'], ['scores', 'Scores', 'trofee']];
+  var tabs = [['vandaag', 'Vandaag', 'agenda'], ['week', 'Agenda', 'week'], ['klusjes', 'Klusjes', 'taken'], ['brood', 'Schooldag', 'tas'], ['eten', 'Eten', 'kar'], ['scores', 'Scores', 'trofee']];
   var h = new Date().getHours();
   var volgende = h < D.meldingEten ? D.meldingEten + ':00 · mee-eten' :
     h < D.meldingOverig ? D.meldingOverig + ':00 · ritten en klusjes' : 'morgen ' + D.meldingEten + ':00 · mee-eten';
@@ -1129,7 +1132,7 @@ function aftelKaart() {
       '<span class="abalk"><i style="width:' + Math.round(x.voortgang * 100) + '%;background:' + esc(kl) + '"></i></span></button>';
   }).join('');
   var eerste = lijst[0];
-  var manen = eerste && eerste.nachtjes <= 14 ? '<div class="manen" aria-label="' + esc(aftelZin(eerste)) + '">' + new Array(eerste.nachtjes + 1).join('🌙') + esc(eerste.icoon) + '</div>' : '';
+  var manen = false && eerste && eerste.nachtjes <= 14 ? '<div class="manen" aria-label="' + esc(aftelZin(eerste)) + '">' + new Array(eerste.nachtjes + 1).join('🌙') + esc(eerste.icoon) + '</div>' : '';
   return '<section class="card aftelkaart"><div class="kop"><h2>Aftellen</h2><button type="button" class="klein linkknop" data-act="aftelOpen">' + (lijst.length ? 'alles ›' : 'kiezen ›') + '</button></div>' +
     (tegels ? '<div class="afteltegels">' + tegels + '</div>' + manen : '<button type="button" class="leegtekst linkknop" data-act="aftelOpen" style="font-size:14px;text-align:left">Nog niets om naar uit te kijken. Tik om leuke dagen te kiezen.</button>') + '</section>';
 }
@@ -1236,13 +1239,13 @@ function vandaag() {
   return '<main class="grid-vandaag">' + (feestBanner() ? '<div class="feestrij">' + feestBanner() + '</div>' : '') +
     (mijnOuder() ? '<div class="feestrij">' + ouderBlok(mijnOuder().id) + '</div>' : '') +
     '<section class="card agendakaart"><div class="kop"><h2>Agenda vandaag</h2><span class="dagchip" style="color:' + dagKleur(D.vandaag) + ';border-color:' + dagKleur(D.vandaag) + '66">' + esc(DAG_KORT_VOL()) + '</span><span class="klein">Tik op ✏️ om te wijzigen</span></div>' + weerBalk() + afvalRegel() + roosterHerinnering() + broodHerinnering() + schoolStrip() + events + morgenHtml + '</section>' +
-    '<div class="kolom">' +
+    '<div class="kolom">' + aftelKaart() +
     '<section class="card"><div class="kop"><h2>Wie eet er mee?</h2><span class="klein">' + tel.ja + ' mee · ' + tel.nee + ' niet · ' + tel.onb + ' ?</span></div>' +
     menuRegel + '<div class="eters">' + eters + '</div></section>' +
     (mijnKind() || mijnOuder() ? '' : ouderBlok()) +
     '<section class="card" style="gap:4px"><div class="kop"><h2>Klusjes</h2><span class="klein">Vandaag ' + verdiend + (verdiend === 1 ? ' punt' : ' punten') + ' · tegoed in €</span></div>' +
     (mijnKind() ? '' : (wachtend().length ? '<div style="padding:6px 0">' + wachtBalk() + '</div>' : '')) + samenvatting + '</section>' +
-    aftelKaart() + '</div></main>';
+    '</div></main>';
 }
 
 function weerVoor(datum) {
@@ -1896,6 +1899,22 @@ function scores() {
     samenBlok() +
     '<div class="voet"><span>🔥 = dagen op rij met alle klusjes af. Bonus bij ' + esc(Object.keys(D.reeksBonus || {}).map(function (n) { return n + ' (+' + D.reeksBonus[n] + ')'; }).join(', ')) + ' dagen. % vergelijkt met dezelfde dagen vorige week.</span></div></main>';
 }
+function kpiLijst(x, k) {
+  var dagen = x.week.filter(function (d) { return d.datum <= D.vandaag && d.lijst && d.lijst.length; }).reverse();
+  if (!dagen.length) return '<div class="klein">Nog niets deze week.</div>';
+  var tekens = { af: '✓', extra: '⭐', bonus: '🔥', niet: '✗', straf: '✗', open: '○' };
+  var volg = { bonus: 0, extra: 1, af: 2, straf: 3, open: 4, niet: 5 };
+  return '<div class="kpilijst">' + dagen.map(function (d) {
+    var items = d.lijst.slice().sort(function (a, b) { return volg[a.s] - volg[b.s]; }).map(function (it) {
+      var sub = it.s === 'straf' ? 'niet echt gedaan' : it.s === 'niet' ? 'niet gedaan' : it.s === 'open' ? 'nog te doen' :
+        it.s === 'extra' ? 'extra klus' : it.s === 'bonus' ? 'bonus' : it.van ? 'overgenomen van ' + ((persoon(it.van) || {}).naam || '') : '';
+      var pt = (it.s === 'af' || it.s === 'extra' || it.s === 'bonus') && it.punten ? '+' + it.punten : '';
+      return '<div class="kpit ' + it.s + '"><span class="kpt"' + (it.s === 'af' ? ' style="color:' + esc(k.kleur) + '"' : '') + '>' + tekens[it.s] + '</span><span class="kpw">' + esc(it.wat) +
+        (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span><span class="kpp">' + pt + '</span></div>';
+    }).join('');
+    return '<div class="kpidag"><div class="kpidh">' + dagStip(d.datum, 8) + esc(d.datum === D.vandaag ? 'vandaag' : dagLabelKort(d.datum)) + '<span class="klein">' + d.g + '/' + d.p + '</span></div>' + items + '</div>';
+  }).join('') + '</div>';
+}
 function renderKpi(laag) {
   var k = persoon(kpiScherm.kind) || { naam: '?', kleur: '#ECEEF3' }, x = kpiVan(kpiScherm.kind);
   if (!x) { kpiScherm = null; render(); return; }
@@ -1914,6 +1933,7 @@ function renderKpi(laag) {
     '<button type="button" class="knop2" data-act="kpiSluit" style="margin-left:auto">Sluiten</button></div>' +
     '<div class="okkop">Deze week</div><div class="kdagen">' + WD_KORT.concat(['za', 'zo']).map(function (d) { return '<span class="kdk">' + d + '</span>'; }).join('') + dagen + '</div>' +
     '<div class="okkop">Laatste 5 weken</div><div class="kweken">' + weken + '</div>' +
+    '<div class="okkop">Wat deed ' + esc(k.naam) + ' deze week</div>' + kpiLijst(x, k) +
     '<div class="klein">Gedaan = afgevinkt (ook overgenomen klusjes en goedgekeurde extra klusjes). Bonus bij 🔥 ' +
     esc(Object.keys(D.reeksBonus || {}).join(', ') || '7, 14, 30, 50 en 100') + ' dagen op rij.</div></div></div>';
 }
