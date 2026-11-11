@@ -533,6 +533,22 @@ textarea.veld{width:100%;min-height:84px;box-sizing:border-box;padding:12px 14px
 .schoolstrip{display:flex;flex-direction:column;gap:6px}.sskop{font-size:13px;font-weight:900;color:var(--muted);letter-spacing:.03em}
 .ssrij{display:grid;gap:6px}.sschip{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;background:var(--card2);border:1.5px solid transparent;border-radius:99px;padding:4px 6px 4px 4px;color:var(--text);font-family:inherit;font-size:14px;cursor:pointer;white-space:nowrap}.sschip .av{flex:0 0 auto}.ssico{font-size:14px;line-height:1}
 .sschip.gw{border-color:#F59E0B}.sschip.leeg{border-color:#B28DFF;border-style:dashed}.sschip.leeg b{color:#B28DFF}@media (max-width:520px){.sschip{flex-direction:column;gap:2px;border-radius:14px;padding:5px 2px}.sschip b{font-size:13px}.ssico{font-size:12px}}
+.vlamb{margin-left:6px;background:rgba(255,159,67,.15);color:#FF9F43;border-radius:99px;padding:1px 7px;font-weight:900;font-size:12px;white-space:nowrap}.vlamb.groot{font-size:14px;padding:3px 10px;margin-left:0}
+.kpikaart{gap:8px}.kpirij{display:grid;grid-template-columns:150px minmax(60px,1fr) 78px 86px;align-items:center;gap:12px;background:var(--card2);border:none;border-radius:14px;padding:8px 12px;color:var(--text);font-family:inherit;cursor:pointer;text-align:left}
+.kpin{display:flex;align-items:center;gap:8px;font-weight:900;font-size:15px;min-width:0;white-space:nowrap;overflow:hidden}.kpibar{height:12px;border-radius:9px;background:#2b3140;overflow:hidden}.kpibar i{display:block;height:100%;border-radius:9px}
+.kpipct{font-size:19px;font-weight:900;text-align:right;display:flex;flex-direction:column;line-height:1.1}.tr{font-size:12px;font-weight:900}.tr.op{color:#4ADE80}.tr.af{color:#FF8A7A}.tr.gl{color:var(--muted)}
+.kpivl{font-weight:900;font-size:17px;white-space:nowrap;display:flex;align-items:baseline;gap:4px}.kpivl small{font-size:11px;color:var(--muted)}
+.kpibox{max-width:560px;width:100%;display:flex;flex-direction:column;gap:10px}.kdagen{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}.kdk{font-size:12px;font-weight:800;color:var(--muted)}
+.kdag{height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;background:var(--card2);font-size:14px}.kdag.niet{color:#FF8A7A;background:rgba(255,138,122,.12)}.kdag.deels,.kdag.bezig{color:#F59E0B;background:rgba(245,158,11,.12)}.kdag.later{opacity:.4}.kdag.geen{color:var(--muted)}
+.kweken{display:flex;align-items:flex-end;gap:10px;height:130px}.kwk{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:800;color:var(--muted)}.kwk i{display:block;width:100%;border-radius:8px 8px 4px 4px}
+.mijlpaal{position:fixed;left:50%;top:24px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#5a3a10,#7a2d1a);border-radius:18px;padding:14px 22px;box-shadow:0 10px 40px rgba(0,0,0,.5);transition:opacity .6s;max-width:92vw}
+.mijlpaal.weg{opacity:0}.mijlpaal .big{font-size:40px}.mijlpaal b{display:block;font-size:20px}.mijlpaal span span{color:#ffd9b8}
+.weekknop{margin-left:auto;padding:6px 10px;font-size:13px;white-space:nowrap}.thuisblok{background:#2b3140;border-radius:12px;padding:10px 12px;color:var(--muted);font-weight:800;font-size:14px;margin-top:10px}
+.broodweek{max-width:760px}.braster{display:grid;grid-template-columns:70px 1fr 1fr 0.75fr;gap:6px;align-items:stretch}.bh{font-size:12px;font-weight:900;color:var(--muted);padding:2px 4px}.bd{font-weight:900;display:flex;align-items:center;gap:4px;font-size:14px}
+.bcel{background:var(--card2);border:1.5px solid transparent;border-radius:12px;padding:5px;display:flex;flex-wrap:wrap;gap:4px;min-height:38px;align-items:center;cursor:pointer}.bcel.sel{border-color:#FFD54A;box-shadow:0 0 0 3px rgba(255,213,74,.15)}.bcel.oud{opacity:.45;cursor:default}
+.bcel.th{background:repeating-linear-gradient(135deg,#1a1d25,#1a1d25 8px,#20242e 8px,#20242e 16px);color:var(--muted);font-size:12px;font-weight:800;justify-content:center;cursor:default}
+.bsn{display:inline-flex;align-items:center;gap:4px;border:1.5px solid #3a4050;border-radius:9px;padding:2px 6px;font-weight:800;font-size:12px;background:#12141A;color:var(--text);font-family:inherit;cursor:pointer}.bleeg{color:var(--muted);font-weight:900;padding:0 6px}
+@media (max-width:760px){.kpirij{grid-template-columns:minmax(0,1fr) 64px 70px;gap:8px}.kpibar{grid-column:1/-1;grid-row:2}.braster{grid-template-columns:52px 1fr 1fr 0.8fr;gap:4px}.bsn{font-size:11px;padding:2px 4px}}
 </style>
 </head>
 <body>
@@ -588,6 +604,7 @@ var dagWisselSinds = 0;         // sinds wanneer de datum op het scherm achterlo
 var dataTeller = 0;   // telt nieuwe data; een verversing die al liep vóór een opslag mag die niet overschrijven
 function nieuweData(res) {
   D = res; dataTeller++;
+  setTimeout(mijlpaalCheck, 300);
   laatsteData = Date.now(); dagWisselSinds = 0;
   try { if (gezinscode) localStorage.setItem(DATA_SLEUTEL, JSON.stringify(res)); } catch (e) {}
 }
@@ -811,7 +828,7 @@ function isNacht() {
   return van > tot ? (nu >= van || nu < tot) : (nu >= van && nu < tot);
 }
 function iemandBezig() {
-  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || geven || straf || oppasForm || okForm || weerScherm || afvalScherm || aftelScherm || dagForm || weekForm || vastForm);
+  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || geven || straf || oppasForm || okForm || weerScherm || afvalScherm || aftelScherm || dagForm || weekForm || vastForm || kpiScherm || broodWeek);
 }
 function toonNacht() {
   return tabletStand && !isMobiel() && Date.now() - laatsteAanraking > KLOK_NA_MS && !iemandBezig();
@@ -1164,14 +1181,14 @@ function vandaag() {
     var aangeboden = aanbodVoor(k);
     if (aangeboden.length) nog = 'Wil je ' + aangeboden.map(function (c) { return c.klus + ' van ' + ((persoon(c.kind) || {}).naam || ''); }).join(', ') + ' overnemen?';
     return '<button type="button" class="kregel' + (jarigVandaag(k.id) ? ' feestrand' : '') + '" data-act="tab" data-id="klusjes" aria-label="' + esc(k.naam + ': ' + (lijst.length ? klaar + ' van ' + lijst.length + ' klusjes gedaan. ' : '') + nog + '. Tegoed ' + euro(verd - uit)) + '">' +
-      '<span class="dot" style="width:11px;height:11px;background:' + esc(k.kleur) + '"></span><span class="n">' + esc(k.naam) + '</span>' +
+      '<span class="dot" style="width:11px;height:11px;background:' + esc(k.kleur) + '"></span><span class="n">' + esc(k.naam) + vlam(k.id) + '</span>' +
       '<span class="kn' + (aangeboden.length ? ' vraag' : lijst.length && !open.length ? ' klaar' : '') + '">' + esc(nog) + '</span>' +
       '<span class="frac">' + (lijst.length ? klaar + '/' + lijst.length : '') + '</span>' +
       '<span class="kt" style="color:' + esc(k.kleur) + '">' + euro(verd - uit) + '</span></button>';
   }).join('');
 
   return '<main class="grid-vandaag">' + (feestBanner() ? '<div class="feestrij">' + feestBanner() + '</div>' : '') +
-    '<section class="card agendakaart"><div class="kop"><h2>Agenda vandaag</h2><span class="dagchip" style="color:' + dagKleur(D.vandaag) + ';border-color:' + dagKleur(D.vandaag) + '66">' + esc(DAG_KORT_VOL()) + '</span><span class="klein">Tik op ✏️ om te wijzigen</span></div>' + weerBalk() + afvalRegel() + roosterHerinnering() + schoolStrip() + events + morgenHtml + '</section>' +
+    '<section class="card agendakaart"><div class="kop"><h2>Agenda vandaag</h2><span class="dagchip" style="color:' + dagKleur(D.vandaag) + ';border-color:' + dagKleur(D.vandaag) + '66">' + esc(DAG_KORT_VOL()) + '</span><span class="klein">Tik op ✏️ om te wijzigen</span></div>' + weerBalk() + afvalRegel() + roosterHerinnering() + broodHerinnering() + schoolStrip() + events + morgenHtml + '</section>' +
     '<div class="kolom">' +
     '<section class="card"><div class="kop"><h2>Wie eet er mee?</h2><span class="klein">' + tel.ja + ' mee · ' + tel.nee + ' niet · ' + tel.onb + ' ?</span></div>' +
     menuRegel + '<div class="eters">' + eters + '</div></section>' +
@@ -1311,7 +1328,7 @@ function klusjes() {
       aanbodBlok(k) + (knoppen || '<div class="leegtekst">Vandaag geen klusjes</div>') + extraLijst(k) + '</section>';
   }).join('');
   var metOuders = !mijnKind();
-  return '<main style="display:flex;flex-direction:column;gap:14px">' + wachtBalk() + '<div class="kids">' + kaarten + '</div>' + (metOuders ? ouderKolom() : '') + samenBlok() +
+  return '<main style="display:flex;flex-direction:column;gap:14px">' + wachtBalk() + kpiBlok() + '<div class="kids">' + kaarten + '</div>' + (metOuders ? ouderKolom() : '') + samenBlok() +
     '<div class="voet" style="align-items:center"><span>Tik op een klus en typ je pincode om hem af te vinken. 1–3 punten per klus · 25 punten = € 1</span>' +
     '<span class="chips"><button type="button" class="knop2" data-act="beoordeelOpen">+ Extra punten geven</button>' +
     '<button type="button" class="knop2" data-act="beheerAan" style="display:inline-flex;align-items:center;gap:8px">' + svg('potlood', 18) + 'Klusjes beheren</button></span></div></main>';
@@ -1789,6 +1806,153 @@ function openVastForm(kind) {
   render();
 }
 
+/** Schooltijden opslaan: met de pincode van het kind of een ouder; is een ouder net ingelogd, dan zonder nieuwe pincode. */
+/* ---------------- klusjes-KPI's ---------------- */
+var kpiScherm = null;   // {kind}
+var broodWeek = null;   // {kind, week, cel: {datum, m}, data: {datum: {ontbijt, lunch, fruit}}, fout}
+function kpiVan(id) { return D.kpi && D.kpi.kinderen ? D.kpi.kinderen[id] || null : null; }
+function vlam(id) { var x = kpiVan(id); return x && x.reeks >= 2 ? '<span class="vlamb" title="' + x.reeks + ' dagen op rij alles af">🔥' + x.reeks + '</span>' : ''; }
+function kpiBlok() {
+  if (!D.kpi || !D.kpi.kinderen) return '';
+  var kids = D.gezin.filter(function (p) { return p.rol === 'kind' && kpiVan(p.id); });
+  if (!kids.length) return '';
+  var rijen = kids.map(function (k) {
+    var x = kpiVan(k.id), pct = x.pct, d = pct !== null && x.vorig !== null ? pct - x.vorig : null;
+    var trend = d === null ? '<span class="tr gl">nieuw</span>' : d > 0 ? '<span class="tr op">▲ +' + d + '%</span>' : d < 0 ? '<span class="tr af">▼ ' + d + '%</span>' : '<span class="tr gl">● =</span>';
+    return '<button type="button" class="kpirij" data-act="kpiOpen" data-id="' + esc(k.id) + '" aria-label="' + esc(k.naam + ': ' + (pct === null ? 'nog geen klusjes' : pct + ' procent gedaan') + ', ' + x.reeks + ' dagen op rij') + '">' +
+      '<span class="kpin">' + av(k, 30) + esc(k.naam) + '</span>' +
+      '<span class="kpibar"><i style="width:' + (pct || 0) + '%;background:' + esc(k.kleur) + '"></i></span>' +
+      '<span class="kpipct">' + (pct === null ? '–' : pct + '%') + trend + '</span>' +
+      '<span class="kpivl">' + (x.reeks ? '🔥 ' + x.reeks : '· 0') + '<small>' + (x.reeks === 1 ? 'dag' : 'dagen') + '</small></span></button>';
+  }).join('');
+  return '<section class="card kpikaart"><div class="kop"><h2>Deze week</h2><span class="klein">klusjes gedaan deze week · vs zelfde dagen vorige week · 🔥 dagen op rij alles af</span></div>' + rijen + '</section>';
+}
+function renderKpi(laag) {
+  var k = persoon(kpiScherm.kind) || { naam: '?', kleur: '#ECEEF3' }, x = kpiVan(kpiScherm.kind);
+  if (!x) { kpiScherm = null; render(); return; }
+  var dagen = x.week.map(function (d) {
+    var icoon = d.s === 'af' ? '✓' : d.s === 'deels' ? d.g + '/' + d.p : d.s === 'niet' ? '✗' : d.s === 'bezig' ? d.g + '/' + d.p : d.s === 'geen' ? '–' : '';
+    return '<span class="kdag ' + d.s + '" style="' + (d.s === 'af' ? 'color:' + esc(k.kleur) + ';background:' + esc(k.kleur) + '2e' : '') + '">' + esc(icoon) + '</span>';
+  }).join('');
+  var max = 100;
+  var weken = x.weken.map(function (w, i) {
+    var h = w.pct === null ? 4 : Math.max(4, Math.round(w.pct / max * 90));
+    return '<div class="kwk"><span>' + (w.pct === null ? '–' : w.pct + '%') + '</span><i style="height:' + h + 'px;background:' + esc(k.kleur) + (i === x.weken.length - 1 ? '' : '77') + '"></i><span>wk ' + w.week + '</span></div>';
+  }).join('');
+  laag.innerHTML = '<div class="overlay"><div class="detailbox kpibox" role="dialog" aria-modal="true" aria-label="Klusjes van ' + esc(k.naam) + '">' +
+    '<div class="rij" style="gap:12px;flex-wrap:wrap">' + av(k, 44) + '<h2 style="margin:0">' + esc(k.naam) + '</h2>' +
+    '<span class="vlamb groot">🔥 ' + x.reeks + ' ' + (x.reeks === 1 ? 'dag' : 'dagen') + ' op rij · record ' + x.record + '</span>' +
+    '<button type="button" class="knop2" data-act="kpiSluit" style="margin-left:auto">Sluiten</button></div>' +
+    '<div class="okkop">Deze week</div><div class="kdagen">' + WD_KORT.concat(['za', 'zo']).map(function (d) { return '<span class="kdk">' + d + '</span>'; }).join('') + dagen + '</div>' +
+    '<div class="okkop">Laatste 5 weken</div><div class="kweken">' + weken + '</div>' +
+    '<div class="klein">Gedaan = afgevinkt (ook overgenomen klusjes en goedgekeurde extra klusjes). Bonus bij 🔥 ' +
+    esc(Object.keys(D.reeksBonus || {}).join(', ') || '7, 14, 30, 50 en 100') + ' dagen op rij.</div></div></div>';
+}
+function mijlpaalCheck() {
+  var lijst = (D.kpi && D.kpi.mijlpalen) || [];
+  var gezien = {};
+  try { gezien = JSON.parse(localStorage.getItem('gezinsdashboard-mijlpaal') || '{}'); } catch (e) {}
+  var nieuw = lijst.filter(function (m) { return !gezien[D.vandaag + m.kind + m.n]; })[0];
+  if (!nieuw) return;
+  gezien[D.vandaag + nieuw.kind + nieuw.n] = 1;
+  try { localStorage.setItem('gezinsdashboard-mijlpaal', JSON.stringify(gezien)); } catch (e) {}
+  var p = persoon(nieuw.kind) || { naam: '' };
+  var el = document.createElement('div');
+  el.className = 'mijlpaal';
+  el.setAttribute('role', 'status');
+  el.innerHTML = '<span class="big">🔥</span><span><b>' + esc(p.naam) + ': ' + nieuw.n + ' dagen op rij!</b><span>Alle klusjes af' + (nieuw.punten ? ' · +' + nieuw.punten + ' bonuspunten' : '') + '</span></span>';
+  document.body.appendChild(el);
+  setTimeout(function () { el.classList.add('weg'); }, 6000);
+  setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 6800);
+}
+
+/* ---------------- brood voor de hele week ---------------- */
+function lunchThuis(datum, id) {
+  var x = schoolOp(datum, id);
+  return !!x && (x.vrij || (!!x.u && x.u <= '12:30'));
+}
+function vakantieDag(datum, id) { var x = schoolOp(datum, id); return !!x && x.vrij && x.vak && x.vak !== 'vrij'; }
+function broodWeekDatums(week) { var s = SD(); return s ? s.weken[week].filter(function (d) { return d >= D.vandaag; }) : []; }
+function openBroodWeek(kind, week) {
+  var s = SD();
+  if (!s) return;
+  if (week === 0 && !broodWeekDatums(0).length) week = 1;
+  var data = {};
+  s.weken[week].forEach(function (d) {
+    var b = (D.brood[d] || {})[kind] || {};
+    data[d] = { ontbijt: (b.ontbijt || []).slice(), lunch: (b.lunch || []).slice(), fruit: (b.fruit || []).slice() };
+  });
+  var eerste = broodWeekDatums(week).filter(function (d) { return !vakantieDag(d, kind); })[0] || s.weken[week][0];
+  broodWeek = { kind: kind, week: week, cel: { datum: eerste, m: 'ontbijt' }, data: data, fout: '' };
+  render();
+}
+function renderBroodWeek(laag) {
+  var f = broodWeek, s = SD(), k = persoon(f.kind) || { naam: '?', kleur: '#ECEEF3' };
+  var week = s.weken[f.week];
+  var M = ['ontbijt', 'lunch', 'fruit'];
+  var cel = function (d, m) {
+    var verleden = d < D.vandaag;
+    if (vakantieDag(d, f.kind)) return m === 'ontbijt' ? '<div class="bcel th" style="grid-column:span 3">' + esc(schoolOp(d, f.kind).vak) + '</div>' : '';
+    if (m === 'lunch' && lunchThuis(d, f.kind)) { var x = schoolOp(d, f.kind); return '<div class="bcel th">🏠 thuis' + (x && x.u ? ' · uit ' + esc(tijdKort(x.u)) : '') + '</div>'; }
+    var sel = f.cel.datum === d && f.cel.m === m;
+    var chips = f.data[d][m].map(function (b, i) {
+      return '<button type="button" class="bsn" data-act="bwWeg" data-id="' + esc(d + '|' + m + '|' + i) + '" aria-label="' + esc(b) + ' weghalen"' + (verleden ? ' disabled' : '') + '>' +
+        '<span style="color:' + esc(k.kleur) + ';display:inline-flex">' + svg(m === 'fruit' ? 'fruit' : 'brood', 13) + '</span>' + esc(b) + '</button>';
+    }).join('');
+    return '<div class="bcel' + (sel ? ' sel' : '') + (verleden ? ' oud' : '') + '" data-act="' + (verleden ? '' : 'bwCel') + '" data-id="' + esc(d + '|' + m) + '" role="button" tabindex="0" aria-label="' + esc(dagLabelKort(d) + ' ' + m) + ' kiezen">' + (chips || '<span class="bleeg">+</span>') + '</div>';
+  };
+  var raster = '<div class="braster"><span></span><span class="bh">Ontbijt</span><span class="bh">Lunch op school</span><span class="bh">Fruit</span>' +
+    week.filter(function (d) { return d >= D.vandaag; }).map(function (d) { return '<span class="bd">' + dagStip(d, 8) + esc(dagLabelKort(d)) + '</span>' + M.map(function (m) { return cel(d, m); }).join(''); }).join('') + '</div>';
+  var fruit = f.cel.m === 'fruit';
+  var palet = (fruit ? D.fruit : D.beleg.filter(function (b) { return b.voor === 'beide' || b.voor === f.cel.m; }).map(function (b) { return b.naam; }))
+    .map(function (b) { return '<button type="button" class="keuze" data-act="bwPalet" data-id="' + esc(b) + '">' + esc(b) + '</button>'; }).join('');
+  var kids = D.gezin.filter(function (p) { return p.rol === 'kind'; });
+  var mk = mijnKind();
+  var kiesKind = mk ? '' : '<div class="chips">' + kids.map(function (p) { return '<button type="button" class="keuze" data-act="bwKind" data-id="' + esc(p.id) + '" aria-pressed="' + (p.id === f.kind) + '">' + esc(p.naam) + '</button>'; }).join('') + '</div>';
+  var heeftStandaard = !!(D.broodStandaard || {})[f.kind];
+  laag.innerHTML = '<div class="overlay"><div class="detailbox schoolform broodweek" role="dialog" aria-modal="true" aria-label="Brood voor de hele week">' +
+    '<div class="rij" style="gap:12px;flex-wrap:wrap">' + av(k, 40) + '<h2 style="margin:0">' + esc(k.naam) + ' · week ' + isoWeek(week[0]) + '</h2>' +
+    '<div class="chips" style="margin-left:auto">' + [0, 1].filter(function (i) { return broodWeekDatums(i).length; }).map(function (i) { return '<button type="button" class="tab" data-act="bwWeek" data-id="' + i + '" aria-pressed="' + (f.week === i) + '">Week ' + isoWeek(s.weken[i][0]) + '</button>'; }).join('') + '</div></div>' +
+    kiesKind + raster +
+    '<div class="okkop">' + (fruit ? 'FRUIT' : 'BELEG') + ' — tik om toe te voegen aan het gele vakje (' + esc(dagLabelKort(f.cel.datum) + ' · ' + f.cel.m) + ')</div><div class="chips">' + palet + '</div>' +
+    '<div class="chips"><button type="button" class="keuze" data-act="bwKopie">⧉ ' + esc(dagLabelKort(f.cel.datum)) + ' naar hele week</button>' +
+    (f.week === 1 ? '<button type="button" class="keuze" data-act="bwVorige">↺ Zelfde als vorige week</button>' : '') +
+    (heeftStandaard ? '<button type="button" class="keuze" data-act="bwStandaard">⭐ Mijn standaard</button>' : '') +
+    '<button type="button" class="keuze" data-act="bwAlsStandaard">☆ ' + esc(dagLabelKort(f.cel.datum)) + ' als standaard</button></div>' +
+    '<div class="fout" aria-live="assertive">' + esc(f.fout || '') + '</div>' +
+    '<div class="chips"><button type="button" class="knop" data-act="bwOpslaan">Opslaan met pincode</button><button type="button" class="knop2" data-act="bwSluit">Annuleren</button></div></div></div>';
+}
+function broodHerinnering() {
+  var s = SD();
+  if (!s || !D.gezin) return '';
+  var n = new Date(), wd = (n.getDay() + 6) % 7;
+  if (!(wd === 5 || wd === 6 || (wd === 4 && n.getHours() >= 12))) return '';
+  var week = wd === 4 ? 1 : 0;
+  var mk = mijnKind();
+  var leeg = D.gezin.filter(function (p) {
+    if (p.rol !== 'kind' || (mk && mk.id !== p.id)) return false;
+    return s.weken[week].some(function (d) {
+      if (vakantieDag(d, p.id) || (schoolOp(d, p.id) || {}).vrij) return false;
+      var b = (D.brood[d] || {})[p.id];
+      return !b || (!b.ontbijt.length && !b.lunch.length && !b.fruit.length);
+    });
+  });
+  if (!leeg.length) return '';
+  var namen = leeg.map(function (p) { return p.naam; });
+  var tekst = namen.length > 1 ? namen.slice(0, -1).join(', ') + ' en ' + namen[namen.length - 1] : namen[0];
+  return '<button type="button" class="roosterherin broodherin" data-act="broodWeekOpen" data-id="' + esc(leeg[0].id + '|' + week) + '">🥪 ' + esc(tekst) + ': brood voor ' + (week === 1 ? 'volgende' : 'komende') + ' week kiezen ›</button>';
+}
+
+function schoolPin(kind, sub, fn, args, gelukt) {
+  if (ouderActief()) {
+    ouderSessie.tot = Date.now() + 5 * 60000;
+    zegt(gelukt, (persoon(kind) || {}).kleur || '#9CC2FF');
+    bewaar(fn, args.concat([ouderSessie.pin]));
+    render();
+    return;
+  }
+  vraagKindPin(kind, sub, fn, args, gelukt);
+}
 function schoolStrip() {
   var s = SD();
   if (!s || !D.dagen || !D.dagen.length) return '';
@@ -1831,6 +1995,7 @@ function brood() {
     var b = data[k.id] || { ontbijt: [], lunch: [], fruit: [] };
     M.forEach(function (m) {
       b[m] = b[m] || [];
+      if (m === 'lunch' && lunchThuis(dag.datum, k.id)) return;
       if (!b[m].length) nog.push(k.naam + ' (' + m + ')');
       b[m].forEach(function (x) { telling[m][x] = (telling[m][x] || 0) + 1; totaal[m]++; });
     });
@@ -1842,8 +2007,10 @@ function brood() {
         '<button type="button" class="wis" data-act="meeWeg" data-id="' + esc(x.id) + '" aria-label="' + esc(x.wat) + ' weghalen">×</button></div>';
     }).join('');
     return '<section class="card" style="padding:18px"><div class="rij kindkop" style="gap:10px">' + av(k, 44) +
-      '<div style="font-size:18px;font-weight:900">' + esc(k.naam) + '</div></div>' + (schoolKop(k, dag.datum) ? '<div class="schoolregel">' + schoolKop(k, dag.datum) + '</div>' : '') +
-      maal(k, 'ontbijt', 'Ontbijt', b.ontbijt) + maal(k, 'lunch', 'Lunch op school', b.lunch) + maal(k, 'fruit', 'Fruit', b.fruit) +
+      '<div style="font-size:18px;font-weight:900">' + esc(k.naam) + '</div>' + (SD() ? '<button type="button" class="knop2 weekknop" data-act="broodWeekOpen" data-id="' + esc(k.id + '|' + ((SD().weken[1] || []).indexOf(dag.datum) >= 0 ? 1 : 0)) + '" aria-label="Brood voor de hele week kiezen voor ' + esc(k.naam) + '">📅 Week</button>' : '') + '</div>' + (schoolKop(k, dag.datum) ? '<div class="schoolregel">' + schoolKop(k, dag.datum) + '</div>' : '') +
+      maal(k, 'ontbijt', 'Ontbijt', b.ontbijt) +
+      (lunchThuis(dag.datum, k.id) ? '<div class="thuisblok">🏠 Lunch thuis' + ((schoolOp(dag.datum, k.id) || {}).u ? ' — uit om ' + esc(tijdKort(schoolOp(dag.datum, k.id).u)) : '') + '</div>' : maal(k, 'lunch', 'Lunch op school', b.lunch)) +
+      maal(k, 'fruit', 'Fruit', b.fruit) +
       '<div class="maal"><div class="kop"><span class="mtitel">Mee naar school</span></div>' + spullen +
       '<button type="button" class="snee plus" data-act="meeNieuw" data-id="' + esc(k.id) + '" aria-label="Iets mee naar school voor ' + esc(k.naam) + '">+ iets meenemen</button></div>' +
       '</section>';
@@ -1868,7 +2035,7 @@ function brood() {
       return w ? '<div class="weerbalk"><span class="nu" style="font-size:16px">' + svg(w.icoon, 22) + esc(w.tekst) + ' · ' + w.min + '–' + w.max + '°</span>' +
         (w.tips.length ? w.tips.map(function (t) { return '<span class="weertip">' + esc(t) + '</span>'; }).join('') : '<span>Geen bijzonderheden voor onderweg</span>') + '</div>' : '';
     })() +
-    roosterHerinnering() + '<div class="kids">' + kaarten + '</div>' + schoolOverzicht() +
+    roosterHerinnering() + broodHerinnering() + '<div class="kids">' + kaarten + '</div>' + schoolOverzicht() +
     '<section class="card"><div class="kop"><h2>Klaarzetten voor ' + esc(dag.label === 'Vandaag' || dag.label === 'Morgen' ? dag.label.toLowerCase() : dag.dag) + '</h2>' +
     '<span class="klein">Staat ook in de mail van ' + D.meldingOverig + ':00 de avond ervoor</span></div>' +
     '<div class="grid-eten" style="gap:12px 20px">' + overzicht + '</div>' +
@@ -2184,6 +2351,8 @@ function renderPin() {
   if (!pin && dagForm) { renderDagForm(laag); return; }
   if (!pin && weekForm) { renderWeekForm(laag); return; }
   if (!pin && vastForm) { renderVastForm(laag); return; }
+  if (!pin && kpiScherm) { renderKpi(laag); return; }
+  if (!pin && broodWeek) { renderBroodWeek(laag); return; }
   if (!pin) { laag.innerHTML = ''; return; }
   var k = pin.ouder ? { naam: '', kleur: '#ECEEF3' } : (persoon(pin.server ? pin.kind : pin.klus.kind) || { naam: '?', kleur: '#ECEEF3' });
   var dots = ''; for (var i = 0; i < 4; i++) dots += '<span style="border-color:' + esc(k.kleur) + ';background:' + (i < pin.digits.length ? esc(k.kleur) : 'transparent') + '"></span>';
@@ -2197,7 +2366,7 @@ function renderPin() {
       '<span class="av" style="width:64px;height:64px;background:#ECEEF3">' + svg('potlood', 30) + '</span><h2>' + esc(pin.titel || 'Ouderpincode') + '</h2>' +
       '<div style="font-size:15px;color:#C9CEDA;font-weight:700;text-align:center">Pincode van ' + esc(ouders().map(function (o) { return o.naam; }).concat(pin.alleenOuders ? [] : actieveOppas().map(function (o) { return o.naam + ' (oppas)'; })).join(' of ')) + '</div>' :
       av(k, 64) + '<h2>Hoi ' + esc(k.naam) + '!</h2>' +
-      '<div style="font-size:15px;color:#C9CEDA;font-weight:700;text-align:center">' + (pin.server ? esc(pin.sub) : esc(pin.klus.klus) + ' · +' + pin.klus.punten + (pin.klus.punten === 1 ? ' punt' : ' punten')) + '</div>') +
+      '<div style="font-size:15px;color:#C9CEDA;font-weight:700;text-align:center">' + (pin.server ? esc(pin.sub) + '<br><span style="font-size:13px;color:var(--muted)">Pincode van ' + esc(k.naam) + ' of van een ouder</span>' : esc(pin.klus.klus) + ' · +' + pin.klus.punten + (pin.klus.punten === 1 ? ' punt' : ' punten')) + '</div>') +
     '<div class="pindots" aria-label="' + pin.digits.length + ' van 4 cijfers">' + dots + '</div>' +
     '<div class="fout" aria-live="assertive">' + esc(pin.bezig ? 'Even controleren…' : pin.fout || '') + '</div>' +
     '<div class="keys">' + keys + '</div>' +
@@ -2881,7 +3050,7 @@ document.addEventListener('click', function (ev) {
   if (act === 'schoolWeek') { schoolWeek = Number(id) || 0; render(); return; }
   if (act === 'gymNiet') {
     var gp = id.split('|'), gk = persoon(gp[0]) || { naam: '' };
-    vraagKindPin(gp[0], 'Gym gaat niet door · ' + dagLabelKort(gp[1]), 'zetGym', [gp[0], gp[1], false], 'Gym gaat niet door voor ' + gk.naam);
+    schoolPin(gp[0], 'Gym gaat niet door · ' + dagLabelKort(gp[1]), 'zetGym', [gp[0], gp[1], false], 'Gym gaat niet door voor ' + gk.naam);
     return;
   }
   if (act === 'schoolCel') {
@@ -2907,7 +3076,7 @@ document.addEventListener('click', function (ev) {
       { datum: df.datum, begin: df.vrij ? '' : df.b, uit: df.vrij ? '' : df.u, vrij: df.vrij, notitie: df.n, gym: df.vrij ? false : df.gym };
     var dpn = persoon(df.kind) || { naam: '' };
     dagForm = null;
-    vraagKindPin(df.kind, 'Schooltijden ' + dagLabelKort(df.datum), 'zetRooster', [df.kind, [item]], 'Schooltijden van ' + dpn.naam + ' bijgewerkt');
+    schoolPin(df.kind, 'Schooltijden ' + dagLabelKort(df.datum), 'zetRooster', [df.kind, [item]], 'Schooltijden van ' + dpn.naam + ' bijgewerkt');
     return;
   }
   if (weekForm && (act === 'wfB' || act === 'wfU' || act === 'wfVrij')) {
@@ -2945,7 +3114,7 @@ document.addEventListener('click', function (ev) {
     if (!items.length) { wf.fout = 'Kies per dag in elk geval hoe laat je uit bent'; render(); return; }
     var wpn = persoon(wf.kind) || { naam: '' };
     weekForm = null;
-    vraagKindPin(wf.kind, 'Rooster week ' + isoWeek(Object.keys(wf.rijen)[0]), 'zetRooster', [wf.kind, items], 'Rooster van ' + wpn.naam + ' opgeslagen');
+    schoolPin(wf.kind, 'Rooster week ' + isoWeek(Object.keys(wf.rijen)[0]), 'zetRooster', [wf.kind, items], 'Rooster van ' + wpn.naam + ' opgeslagen');
     return;
   }
   if (act === 'vastOpen') {
@@ -2975,6 +3144,70 @@ document.addEventListener('click', function (ev) {
       render();
     };
     if (ouderBeheer()) bewaarVast(); else { vastForm = null; vraagOuderPin(function () { vastForm = vf; bewaarVast(); }, 'Vaste schooltijden', true); }
+    return;
+  }
+  if (act === 'kpiOpen') { kpiScherm = { kind: id }; render(); return; }
+  if (act === 'kpiSluit') { kpiScherm = null; render(); return; }
+  if (act === 'broodWeekOpen') { var bp = id.split('|'); openBroodWeek(bp[0], Number(bp[1]) || 0); return; }
+  if (broodWeek && act === 'bwCel') { var cp = id.split('|'); broodWeek.cel = { datum: cp[0], m: cp[1] }; render(); return; }
+  if (broodWeek && act === 'bwWeg') { var wp = id.split('|'); broodWeek.data[wp[0]][wp[1]].splice(Number(wp[2]), 1); broodWeek.cel = { datum: wp[0], m: wp[1] }; render(); return; }
+  if (broodWeek && act === 'bwPalet') {
+    var bc = broodWeek.cel, lijstB = broodWeek.data[bc.datum] && broodWeek.data[bc.datum][bc.m];
+    if (!lijstB) return;
+    var maxB = bc.m === 'fruit' ? 2 : 4;
+    if (lijstB.length >= maxB) { broodWeek.fout = 'Maximaal ' + maxB + (bc.m === 'fruit' ? ' stuks fruit' : ' boterhammen'); render(); return; }
+    lijstB.push(id); broodWeek.fout = ''; render(); return;
+  }
+  if (broodWeek && act === 'bwKopie') {
+    var bron0 = broodWeek.data[broodWeek.cel.datum];
+    broodWeekDatums(broodWeek.week).forEach(function (d) {
+      if (d === broodWeek.cel.datum || vakantieDag(d, broodWeek.kind)) return;
+      ['ontbijt', 'lunch', 'fruit'].forEach(function (m) { if (m === 'lunch' && lunchThuis(d, broodWeek.kind)) return; broodWeek.data[d][m] = bron0[m].slice(); });
+    });
+    render(); return;
+  }
+  if (broodWeek && act === 'bwVorige') {
+    var s0b = SD().weken[0], s1b = SD().weken[1];
+    s1b.forEach(function (d, i) {
+      var vb = (D.brood[s0b[i]] || {})[broodWeek.kind];
+      if (!vb || vakantieDag(d, broodWeek.kind)) return;
+      ['ontbijt', 'lunch', 'fruit'].forEach(function (m) { if (m === 'lunch' && lunchThuis(d, broodWeek.kind)) return; if (vb[m] && vb[m].length) broodWeek.data[d][m] = vb[m].slice(); });
+    });
+    render(); return;
+  }
+  if (broodWeek && act === 'bwStandaard') {
+    var st = (D.broodStandaard || {})[broodWeek.kind];
+    if (!st) return;
+    broodWeekDatums(broodWeek.week).forEach(function (d) {
+      if (vakantieDag(d, broodWeek.kind)) return;
+      ['ontbijt', 'lunch', 'fruit'].forEach(function (m) { if (m === 'lunch' && lunchThuis(d, broodWeek.kind)) return; broodWeek.data[d][m] = (st[m] || []).slice(); });
+    });
+    render(); return;
+  }
+  if (broodWeek && act === 'bwAlsStandaard') {
+    var bs = broodWeek.data[broodWeek.cel.datum];
+    D.broodStandaard = D.broodStandaard || {};
+    D.broodStandaard[broodWeek.kind] = { ontbijt: bs.ontbijt.slice(), lunch: bs.lunch.slice(), fruit: bs.fruit.slice() };
+    broodWeek.standaardNieuw = true;
+    zegt('Wordt je standaard bij opslaan', '#9CC2FF'); render(); return;
+  }
+  if (broodWeek && act === 'bwKind') { openBroodWeek(id, broodWeek.week); return; }
+  if (broodWeek && act === 'bwWeek') { var bwk = broodWeek.kind; openBroodWeek(bwk, Number(id) || 0); return; }
+  if (act === 'bwSluit') { broodWeek = null; render(); return; }
+  if (broodWeek && act === 'bwOpslaan') {
+    var bw = broodWeek, items = [];
+    broodWeekDatums(bw.week).forEach(function (d) {
+      if (vakantieDag(d, bw.kind)) return;
+      ['ontbijt', 'lunch', 'fruit'].forEach(function (m) {
+        if (m === 'lunch' && lunchThuis(d, bw.kind)) return;
+        items.push({ datum: d, maaltijd: m, beleg: bw.data[d][m] });
+        D.brood[d] = D.brood[d] || {}; D.brood[d][bw.kind] = D.brood[d][bw.kind] || { ontbijt: [], lunch: [], fruit: [] };
+      });
+    });
+    if (bw.standaardNieuw) ['ontbijt', 'lunch', 'fruit'].forEach(function (m) { items.push({ datum: 'standaard', maaltijd: m, beleg: D.broodStandaard[bw.kind][m] }); });
+    var bpn = persoon(bw.kind) || { naam: '' };
+    broodWeek = null;
+    schoolPin(bw.kind, 'Brood week ' + isoWeek(SD().weken[bw.week][0]), 'zetBroodWeek', [bw.kind, items], 'Brood van ' + bpn.naam + ' opgeslagen');
     return;
   }
   if (act === 'afvalOpen') { afvalScherm = {}; render(); return; }
@@ -3297,7 +3530,7 @@ function dagWachter() {
   if (!dagWisselSinds) dagWisselSinds = Date.now();
   if (Date.now() - laatsteAanraking > 5 * 60000) {
     pin = null; keuze = null; detail = null; bewerkA = null; menuEdit = null; klusForm = null; helpDag = null; meeForm = null;
-    wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null; geven = null; straf = null; oppasForm = null; okForm = null; weerScherm = null; afvalScherm = null; aftelScherm = null; dagForm = null; weekForm = null; vastForm = null;
+    wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null; geven = null; straf = null; oppasForm = null; okForm = null; weerScherm = null; afvalScherm = null; aftelScherm = null; dagForm = null; weekForm = null; vastForm = null; kpiScherm = null; broodWeek = null;
     bezig = 0;
   }
   ververs();
