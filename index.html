@@ -575,6 +575,11 @@ textarea.veld{width:100%;min-height:84px;box-sizing:border-box;padding:12px 14px
 .versievoet{text-align:center;color:var(--dim);font-size:11px;font-weight:700;padding:14px 0 6px;opacity:.7}
 .nieuwversie{color:#4ADE80;font-weight:900;text-decoration:none}
 @media (max-width:760px){.versievoet{padding-bottom:90px}}
+.oitem.wacht,.okrij.wacht,.oktegel.wacht{opacity:.75}.oitem.wacht .ow,.okrij.wacht .okt,.oktegel.wacht .okhoofd{text-decoration:line-through}
+.oitem.wacht .ovk,.okrij.wacht .okvink{background:#4ADE80;border-color:#4ADE80;color:#101218;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px}
+.oitem.wacht small{color:#4ADE80;display:inline-block;text-decoration:none}
+.orij{display:flex;align-items:center;gap:4px;min-width:0}.orij .oitem{flex:1}.oic{display:inline-flex;flex:0 0 auto}
+.obewerk{width:30px;height:30px;flex:0 0 auto;border-radius:9px;border:none;background:transparent;color:var(--dim);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 </style>
 </head>
 <body>
@@ -627,6 +632,7 @@ if (D.slot && gezinscode) {
 var vergrendeld = !!D.slot;   // er is een gezinscode ingesteld en dit apparaat heeft hem (nog) niet
 var laatsteData = Date.now();   // wanneer de gegevens voor het laatst van de server kwamen
 var dagWisselSinds = 0;         // sinds wanneer de datum op het scherm achterloopt
+var okWacht = {};     // ouderklussen die net zijn afgevinkt en nog 6 seconden terug te zetten zijn
 var dataTeller = 0;   // telt nieuwe data; een verversing die al liep vóór een opslag mag die niet overschrijven
 function nieuweData(res) {
   D = res; dataTeller++;
@@ -697,6 +703,7 @@ var ICONS = {
   zonop: '<path d="M12 3v4M5.6 7.6l1.4 1.4M18.4 7.6L17 9M3 15h18M7 15a5 5 0 0 1 10 0M9 19h6"/>',
   druppel: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
   fiets: '<circle cx="5" cy="17.5" r="3.5"/><circle cx="19" cy="17.5" r="3.5"/><path d="M5 17.5L9 11h6.5L19 17.5"/><path d="M9 11l3 6.5"/><path d="M9 9.5L14.5 7.5 16 11"/><circle cx="17.3" cy="5.4" r="1.7"/>',
+  cadeau: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12"/><path d="M12 8c-2-4-6-4-6-1.5S9 8 12 8c3 0 6-1 6-1.5S14 4 12 8z"/>',
   gootsteen: '<path d="M4 10h16v3a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6z"/><path d="M12 10V5a2 2 0 0 1 4 0"/><circle cx="12" cy="14.5" r="1"/>',
   gereedschap: '<path d="M14.5 6.5a4 4 0 0 0 5 5L12 19l-3-3 7.5-7.5"/><path d="M14.5 6.5L17 4l3 3-2.5 2.5"/>',
   lamp: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>',
@@ -856,7 +863,7 @@ function isNacht() {
   return van > tot ? (nu >= van || nu < tot) : (nu >= van && nu < tot);
 }
 function iemandBezig() {
-  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || geven || straf || oppasForm || okForm || weerScherm || afvalScherm || aftelScherm || dagForm || weekForm || vastForm || kpiScherm || broodWeek);
+  return !!(pin || keuze || detail || menuEdit || klusForm || helpDag || meeForm || wieKiezen || extraForm || beoordeel || spaarForm || geven || straf || oppasForm || okForm || weerScherm || afvalScherm || aftelScherm || dagForm || weekForm || vastForm || kpiScherm || broodWeek || Object.keys(okWacht).length > 0);
 }
 function toonNacht() {
   return tabletStand && !isMobiel() && Date.now() - laatsteAanraking > KLOK_NA_MS && !iemandBezig();
@@ -927,7 +934,7 @@ function verschuifKlok() {
 }
 
 /* ---------------- versie ---------------- */
-var VERSIE = '2026-11-11 18:45';   // moet gelijk zijn aan VERSIE in Code.gs
+var VERSIE = '2026-11-11 22:45';   // moet gelijk zijn aan VERSIE in Code.gs
 var inGoogle = /googleusercontent/.test(location.hostname);
 function versieTekst(v) { var m = String(v || '').match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})$/); return m ? Number(m[3]) + ' ' + MAAND_KORT[Number(m[2]) - 1] + ' ' + m[4] : String(v || '?'); }
 /** Draait de server (Apps Script) een nieuwere versie dan deze pagina? Dan zo snel als het kan herladen. */
@@ -1007,8 +1014,9 @@ function ouderBlok(alleenId) {
     var mijn = lijst.filter(function (x) { return x.wie === o.id || x.wie === 'samen'; });
     var items = mijn.map(function (x) {
       var laat = x.datum && x.datum < D.vandaag;
-      return '<button type="button" class="oitem' + (laat ? ' laat' : '') + '" data-act="okVink" data-id="' + esc(x.id) + '" aria-label="' + esc(x.wat + ' afvinken') + '">' +
-        '<span class="ovk"></span><span class="ow">' + esc(x.wat) + '<small>' + esc((x.wie === 'samen' ? 'samen · ' : '') + (!x.datum ? 'deze week' : laat ? 'was ' + datumKort(x.datum) : x.datum === D.vandaag ? 'vandaag' : datumKort(x.datum))) + '</small></span></button>';
+      return '<div class="orij"><button type="button" class="oitem' + (laat ? ' laat' : '') + (okWacht[x.id] ? ' wacht' : '') + '" data-act="okVink" data-id="' + esc(x.id) + '" aria-label="' + esc(x.wat + (okWacht[x.id] ? ' afgevinkt. Tik om terug te zetten' : ' afvinken')) + '">' +
+        '<span class="ovk">' + (okWacht[x.id] ? '✓' : '') + '</span><span class="oic" style="color:' + esc(o.kleur) + '">' + svg(x.icoon, 18) + '</span><span class="ow">' + esc(x.wat) + '<small>' + (okWacht[x.id] ? '↶ tik om terug te zetten' : '') + esc(okWacht[x.id] ? '' : (x.wie === 'samen' ? 'samen · ' : '') + (!x.datum ? 'deze week' : laat ? 'was ' + datumKort(x.datum) : x.datum === D.vandaag ? 'vandaag' : datumKort(x.datum))) + '</small></span></button>' +
+        '<button type="button" class="obewerk" data-act="okBewerk" data-id="' + esc(x.id) + '" aria-label="' + esc(x.wat) + ' aanpassen">' + svg('potlood', 14) + '</button></div>';
     }).join('');
     return { o: o, n: mijn.length, html: '<div class="okol">' + (alleenId ? '' : '<div class="okolh">' + av(o, 24) + esc(o.naam) + '<span class="klein">' + (mijn.length ? mijn.length + ' open' : '✓ niets open') + '</span></div>') + items +
       (alleenId ? '' : '<button type="button" class="oplus" data-act="okNieuw" data-id="plan|' + esc(o.id) + '">+ ouderklus</button>') + '</div>' };
@@ -2577,9 +2585,9 @@ function samenBlok() {
   var lijst = ok.lijst.map(function (o) {
     var p = okPersoon(o.wie);
     var wanneer = !o.datum ? 'deze week' : o.datum < D.vandaag ? 'was ' + datumKort(o.datum) : datumKort(o.datum);
-    return '<div class="okrij"><button type="button" class="okvink" data-act="okVink" data-id="' + esc(o.id) + '" aria-label="' + esc(o.wat) + ' afvinken"></button>' +
+    return '<div class="okrij' + (okWacht[o.id] ? ' wacht' : '') + '"><button type="button" class="okvink" data-act="okVink" data-id="' + esc(o.id) + '" aria-label="' + esc(o.wat) + (okWacht[o.id] ? ' afgevinkt. Tik om terug te zetten' : ' afvinken') + '">' + (okWacht[o.id] ? '✓' : '') + '</button>' +
       svg(o.icoon, 18) + '<span class="okt">' + esc(o.wat) + ' <span class="' + (o.datum && o.datum < D.vandaag ? 'oklaat' : 'okw') + '">· ' + esc(wanneer) + '</span></span>' +
-      av(p, 24) + '<button type="button" class="okweg" data-act="okWeg" data-id="' + esc(o.id) + '" aria-label="' + esc(o.wat) + ' van de lijst halen">' + svg('kruis', 14) + '</button></div>';
+      av(p, 24) + '<button type="button" class="okweg" data-act="okBewerk" data-id="' + esc(o.id) + '" aria-label="' + esc(o.wat) + ' aanpassen">' + svg('potlood', 14) + '</button>' + '<button type="button" class="okweg" data-act="okWeg" data-id="' + esc(o.id) + '" aria-label="' + esc(o.wat) + ' van de lijst halen">' + svg('kruis', 14) + '</button></div>';
   }).join('');
   var gedaan = ok.gedaan.map(function (o) { return { soort: 'ouder', id: o.id, p: okPersoon(o.wie), wat: o.wat, datum: o.datum, bedankt: o.bedankt }; })
     .concat((D.extra || []).filter(function (x) { return x.status === 'goed'; }).map(function (x) {
@@ -2607,10 +2615,11 @@ function ouderKolom() {
     var p = okPersoon(o.wie);
     var laat = o.datum && o.datum < D.vandaag;
     var wanneer = !o.datum ? 'deze week' : laat ? 'was ' + datumKort(o.datum) : datumKort(o.datum);
-    return '<div class="oktegel"><button type="button" class="okhoofd" data-act="okVink" data-id="' + esc(o.id) + '" aria-label="' + esc(o.wat + ' (' + p.naam + ') afvinken') + '">' +
+    return '<div class="oktegel' + (okWacht[o.id] ? ' wacht' : '') + '"><button type="button" class="okhoofd" data-act="okVink" data-id="' + esc(o.id) + '" aria-label="' + esc(o.wat + ' (' + p.naam + ')' + (okWacht[o.id] ? ' afgevinkt. Tik om terug te zetten' : ' afvinken')) + '">' +
       '<span class="icoon" style="width:36px;height:36px;background:' + esc(p.kleur) + '26;color:' + esc(p.kleur) + '">' + svg(o.icoon, 20) + '</span>' +
       '<span class="ktekst"><span class="kt">' + esc(o.wat) + '</span><span class="kmeta' + (laat ? ' laat' : '') + '">' + esc(p.naam + ' · ' + wanneer) + '</span></span></button>' +
-      '<button type="button" class="okweg" data-act="okWeg" data-id="' + esc(o.id) + '" aria-label="' + esc(o.wat) + ' van de lijst halen">' + svg('kruis', 14) + '</button></div>';
+      '<button type="button" class="okweg" data-act="okBewerk" data-id="' + esc(o.id) + '" aria-label="' + esc(o.wat) + ' aanpassen">' + svg('potlood', 14) + '</button>' +
+'<button type="button" class="okweg" data-act="okWeg" data-id="' + esc(o.id) + '" aria-label="' + esc(o.wat) + ' van de lijst halen">' + svg('kruis', 14) + '</button></div>';
   }).join('');
   var gedaan = ok.gedaan.slice(0, 3).map(function (o) {
     var p = okPersoon(o.wie);
@@ -2624,9 +2633,9 @@ function ouderKolom() {
     '<div class="okbalk">' + (lijst || '<span class="leegtekst" style="font-size:14px;align-self:center">Niets op de lijst.</span>') + gedaan + meer + '</div></section>';
 }
 
-var OK_ICONEN = [['gereedschap', 'Klussen'], ['gootsteen', 'Loodgieter'], ['lamp', 'Elektra'], ['verven', 'Verven'], ['schoon', 'Schoonmaken'],
+var OK_ICONEN = [['gereedschap', 'Klussen'], ['lamp', 'Elektra'], ['verven', 'Verven'], ['schoon', 'Schoonmaken'],
   ['stofzuigen', 'Stofzuigen'], ['was', 'Was'], ['koken', 'Koken'], ['boodschappen', 'Boodschappen'], ['tuin', 'Tuin'], ['kliko', 'Afval'],
-  ['auto', 'Auto'], ['fiets', 'Fiets'], ['dier', 'Huisdier'], ['administratie', 'Administratie'], ['overig', 'Overig']];
+  ['auto', 'Auto'], ['fiets', 'Fiets'], ['dier', 'Huisdier'], ['administratie', 'Administratie'], ['cadeau', 'Cadeau'], ['overig', 'Overig']];
 function renderOkForm(laag) {
   var f = okForm;
   var wieK = ouders().concat([SAMEN]).map(function (p) {
@@ -2639,11 +2648,11 @@ function renderOkForm(laag) {
     return '<button type="button" class="okcat" data-act="okIcoon" data-id="' + i[0] + '" aria-pressed="' + (f.icoon === i[0]) + '">' + svg(i[0], 22) + '<span>' + i[1] + '</span></button>';
   }).join('');
   laag.innerHTML = '<div class="overlay"><form class="kiesbox" data-form="ouderklus" role="dialog" aria-modal="true" aria-label="Ouderklus">' +
-    '<h2>Ouderklus</h2>' +
+    '<h2>' + (f.id ? 'Ouderklus aanpassen' : 'Ouderklus') + '</h2>' +
     '<label class="klein" for="ok-wat" style="font-size:15px;color:var(--text);font-weight:800">Wat?</label>' +
-    '<input id="ok-wat" class="veld" type="text" maxlength="60" placeholder="Bijv. verstopte gootsteen ontstoppen" value="' + esc(f.wat) + '">' +
+    '<input id="ok-wat" class="veld" type="text" maxlength="60" placeholder="Bijv. cadeau kopen voor oma" value="' + esc(f.wat) + '">' +
     '<div style="font-size:15px;font-weight:800">Wie?</div><div class="chips">' + wieK + '</div>' +
-    '<div style="font-size:15px;font-weight:800">Gedaan of plannen?</div><div class="chips">' + st + '</div>' +
+    (f.id ? '' : '<div style="font-size:15px;font-weight:800">Gedaan of plannen?</div><div class="chips">' + st + '</div>') +
     (f.status === 'plan' ? '<label class="klein" for="ok-dag">Dag (mag leeg: dan "deze week")</label><input id="ok-dag" class="veld" type="date" value="' + esc(f.datum) + '">' : '') +
     '<div style="font-size:15px;font-weight:800">Soort klus</div><div class="okcats">' + ic + '</div>' +
     '<div class="fout" aria-live="assertive">' + esc(f.fout || '') + '</div>' +
@@ -3362,6 +3371,12 @@ document.addEventListener('click', function (ev) {
     render(); return;
   }
   if (act === 'weerSluit') { weerScherm = null; render(); return; }
+  if (act === 'okBewerk') {
+    var ob = ((D.ouderklussen || {}).lijst || []).filter(function (o) { return o.id === id; })[0];
+    if (!ob) return;
+    okForm = { id: ob.id, wat: ob.wat, wie: ob.wie, status: 'plan', datum: ob.datum || '', icoon: ob.icoon || 'overig', fout: '' };
+    render(); return;
+  }
   if (act === 'okNieuw' && id && id.indexOf('plan|') === 0) {
     okForm = { wat: '', wie: id.slice(5), status: 'plan', datum: '', icoon: 'gereedschap', fout: '' };
     render(); return;
@@ -3374,6 +3389,10 @@ document.addEventListener('click', function (ev) {
   if (act === 'okWie' && okForm) { okVeldenLezen(); okForm.wie = id; render(); return; }
   if (act === 'okStatus' && okForm) { okVeldenLezen(); okForm.status = id; render(); return; }
   if (act === 'okIcoon' && okForm) { okVeldenLezen(); okForm.icoon = id; render(); return; }
+  if (act === 'okVink' && okWacht[id]) {   // tweede tik binnen een paar seconden = ongedaan maken
+    clearTimeout(okWacht[id]); delete okWacht[id];
+    zegt('Teruggezet', '#9CC2FF'); render(); return;
+  }
   if (act === 'okVink' || act === 'okWeg') {
     var oki = ((D.ouderklussen || {}).lijst || []).filter(function (o) { return o.id === id; })[0];
     if (!oki) return;
@@ -3387,7 +3406,13 @@ document.addEventListener('click', function (ev) {
       } else zegt('Van de lijst gehaald', '#9CC2FF');
       bewaar(act === 'okVink' ? 'vinkOuderklus' : 'verwijderOuderklus', [id, ouderSessie.pin]);
     };
-    if (ouderBeheer()) doe(); else vraagOuderPin(doe, act === 'okVink' ? 'Ouderklus afvinken' : 'Van de lijst halen', true);
+    // Afvinken eerst 6 seconden zichtbaar als "afgevinkt" laten staan; nog een tik zet hem terug.
+    var vertraagd = act === 'okVink' ? function () {
+      ouderSessie.tot = Date.now() + 5 * 60000;
+      okWacht[id] = setTimeout(function () { delete okWacht[id]; doe(); render(); }, 6000);
+      render();
+    } : doe;
+    if (ouderBeheer()) vertraagd(); else vraagOuderPin(vertraagd, act === 'okVink' ? 'Ouderklus afvinken' : 'Van de lijst halen', true);
     return;
   }
   if (act === 'bedank') {
@@ -3528,8 +3553,14 @@ document.addEventListener('submit', function (ev) {
     var opslaanOk = function () {
       ouderSessie.tot = Date.now() + 5 * 60000;
       okForm = null;
-      var nieuw = { id: 'tijdelijk' + Date.now(), wat: kf.wat, wie: kf.wie, icoon: kf.icoon, datum: kf.status === 'plan' ? kf.datum : D.vandaag, bedankt: 0 };
       D.ouderklussen = D.ouderklussen || { lijst: [], gedaan: [] };
+      if (kf.id) {
+        D.ouderklussen.lijst.forEach(function (o) { if (o.id === kf.id) { o.wat = kf.wat; o.wie = kf.wie; o.icoon = kf.icoon; o.datum = kf.datum; } });
+        zegt('Aangepast', '#9CC2FF');
+        bewaar('zetOuderklus', [{ id: kf.id, wat: kf.wat, wie: kf.wie, icoon: kf.icoon, status: 'plan', datum: kf.datum }, ouderSessie.pin]);
+        return;
+      }
+      var nieuw = { id: 'tijdelijk' + Date.now(), wat: kf.wat, wie: kf.wie, icoon: kf.icoon, datum: kf.status === 'plan' ? kf.datum : D.vandaag, bedankt: 0 };
       if (kf.status === 'plan') D.ouderklussen.lijst.push(nieuw);
       else { D.ouderklussen.gedaan.unshift(nieuw); if (D.samen) { D.samen.totaal++; D.samen.per[kf.wie] = (D.samen.per[kf.wie] || 0) + 1; } }
       zegt(kf.status === 'plan' ? 'Op de lijst gezet' : 'Mooi! Staat erbij', '#9CC2FF');
