@@ -580,6 +580,9 @@ textarea.veld{width:100%;min-height:84px;box-sizing:border-box;padding:12px 14px
 .oitem.wacht small{color:#4ADE80;display:inline-block;text-decoration:none}
 .orij{display:flex;align-items:center;gap:4px;min-width:0}.orij .oitem{flex:1}.oic{display:inline-flex;flex:0 0 auto}
 .obewerk{width:30px;height:30px;flex:0 0 auto;border-radius:9px;border:none;background:transparent;color:var(--dim);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.versievoet{cursor:pointer}.statusbox{max-width:560px;width:100%;max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.loglijst{display:flex;flex-direction:column;gap:3px;font-size:12px}.logrij{display:grid;grid-template-columns:120px 70px 50px 1fr;gap:6px;background:var(--card2);border-radius:8px;padding:4px 8px;align-items:center}
+.logrij.fout b,.logrij.slot b{color:#FF8A7A}.logrij.ok b{color:#4ADE80}.logrij.herladen b,.logrij.handmatig b{color:#9CC2FF}
 </style>
 </head>
 <body>
@@ -601,16 +604,16 @@ window.google = { script: { run: (function maak(gelukt, mislukt) {
       if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(WEBAPP_LINK)) {
         fout('De webapp-link ontbreekt nog in config.js (zie het stappenplan, stap 8).', true); return;
       }
-      // Na 30 seconden zonder antwoord opgeven, zodat het dashboard nooit blijft hangen.
+      // Na 60 seconden zonder antwoord opgeven, zodat het dashboard nooit blijft hangen (Apps Script kan 's ochtends traag opstarten).
       var stop = window.AbortController ? new AbortController() : null;
-      var wekker = setTimeout(function () { if (stop) stop.abort(); }, 30000);
+      var wekker = setTimeout(function () { if (stop) stop.abort(); }, 60000);
       fetch(WEBAPP_LINK, {
         method: 'POST', redirect: 'follow', credentials: 'omit', signal: stop ? stop.signal : undefined,
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ code: code, fn: fn, args: args || [] })
       }).then(function (r) { return r.json(); })
         .then(function (res) { if (res && res.__fout) fout(res.__fout); else if (gelukt) setTimeout(function () { gelukt(res); }, 0); })
-        .catch(function () { fout('Geen verbinding'); })
+        .catch(function (e) { fout(e && e.name === 'AbortError' ? 'Geen antwoord binnen 60 seconden' : e && e.name === 'SyntaxError' ? 'Onverwacht antwoord van Apps Script' : 'Geen verbinding'); })
         .then(function () { clearTimeout(wekker); });
     }
   };
@@ -934,7 +937,7 @@ function verschuifKlok() {
 }
 
 /* ---------------- versie ---------------- */
-var VERSIE = '2026-11-11 22:45';   // moet gelijk zijn aan VERSIE in Code.gs
+var VERSIE = '2026-11-13 08:00';   // moet gelijk zijn aan VERSIE in Code.gs
 var inGoogle = /googleusercontent/.test(location.hostname);
 function versieTekst(v) { var m = String(v || '').match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})$/); return m ? Number(m[3]) + ' ' + MAAND_KORT[Number(m[2]) - 1] + ' ' + m[4] : String(v || '?'); }
 /** Draait de server (Apps Script) een nieuwere versie dan deze pagina? Dan zo snel als het kan herladen. */
@@ -955,7 +958,7 @@ function versieMelding() {
   return ' · <a class="nieuwversie" ' + (inGoogle && D.dashboardLink ? 'href="' + esc(D.dashboardLink) + '" target="_top"' : 'href="?v=' + esc(D.versie.replace(/\D/g, '')) + '"') + '>Nieuwe versie ›</a>';
 }
 function versieVoet() {
-  return '<div class="versievoet">Versie ' + esc(versieTekst(VERSIE)) + (D && D.versie && D.versie !== VERSIE ? ' · server ' + esc(versieTekst(D.versie)) : '') +
+  return '<div class="versievoet" data-act="statusOpen" role="button" tabindex="0" title="Verbinding bekijken">Versie ' + esc(versieTekst(VERSIE)) + (D && D.versie && D.versie !== VERSIE ? ' · server ' + esc(versieTekst(D.versie)) : '') +
     (inGoogle ? ' · Google' : ' · GitHub') + ' · gegevens van ' + esc(new Date(laatsteData || Date.now()).toTimeString().slice(0, 5)) + '</div>';
 }
 
@@ -992,7 +995,8 @@ function kop() {
   var opNu = actieveOppas();
   return '<header><div class="kopblok"><div class="hklok" aria-label="Huidige tijd">' + nuTijd() + '</div><div class="koptekst"><div class="datum">' + dagStip(D.vandaag, 14) + '<span class="dlang">' + esc(hoofdletter(D.datumTekst)) + '</span><span class="dkort">' + esc(hoofdletter(DAG_KORT[wdVan(D.vandaag)]) + ' ' + Number(D.vandaag.slice(8, 10)) + ' ' + MAAND_KORT[Number(D.vandaag.slice(5, 7)) - 1]) + '</span></div><div class="sub">Ons gezin · week ' + D.week +
     (opNu.length ? ' · oppas: ' + esc(opNu.map(function (o) { return o.naam; }).join(' & ')) : '') +
-    (Date.now() - laatsteData > 10 * 60000 ? ' · <span style="color:#F2A65A">niet bijgewerkt sinds ' + esc(new Date(laatsteData).toTimeString().slice(0, 5)) + '</span>' : '') +
+    (D.vandaag && D.vandaag !== lokaleDatum() ? ' · <span style="color:#F2A65A" data-act="statusOpen">gegevens van ' + esc(datumKort(D.vandaag)) + ', bezig met ophalen…</span>' : '') +
+    (Date.now() - laatsteData > 10 * 60000 ? ' · <span style="color:#F2A65A" data-act="statusOpen">niet bijgewerkt sinds ' + esc(new Date(laatsteData).toTimeString().slice(0, 5)) + '</span>' : '') +
     versieMelding() + '<span class="volgende"> · volgende melding ' + esc(volgende) + '</span></div></div></div>' + ikKnop + '<nav aria-label="Onderdelen" role="tablist">' + tabs.map(function (t) {
       return '<button type="button" class="tab" role="tab" aria-selected="' + (tab === t[0]) + '" data-act="tab" data-id="' + t[0] + '">' +
         svg(t[2], 22) + (t[3] ? '<span class="lang">' + t[1] + '</span><span class="kort">' + t[3] + '</span>' : '<span>' + t[1] + '</span>') + '</button>';
@@ -2482,6 +2486,7 @@ function renderPin() {
   if (!pin && dagForm) { renderDagForm(laag); return; }
   if (!pin && weekForm) { renderWeekForm(laag); return; }
   if (!pin && vastForm) { renderVastForm(laag); return; }
+  if (!pin && statusOpen) { renderStatus(laag); return; }
   if (!pin && kpiScherm) { renderKpi(laag); return; }
   if (!pin && broodWeek) { renderBroodWeek(laag); return; }
   if (!pin) { laag.innerHTML = ''; return; }
@@ -2806,9 +2811,11 @@ function renderSlot() {
 var slotAuto = false;   // de bewaarde code wordt automatisch gecontroleerd (geen invoer nodig)
 function probeerCode(code, auto) {
   slotBezig = true; slotAuto = !!auto; slotFout = ''; render();
+  var start = Date.now();
   google.script.run
     .withSuccessHandler(function (res) {
       slotBezig = false; slotAuto = false;
+      logboek(res && !res.slot ? 'ok' : 'slot', Date.now() - start, 'code controleren' + (res && res.fout ? ': ' + res.fout : ''));
       if (!res || res.slot) {
         slotFout = (res && res.fout) || '';
         if (codeEchtFout(res) || !auto) vergeetCode();
@@ -2822,6 +2829,7 @@ function probeerCode(code, auto) {
     })
     .withFailureHandler(function (err) {
       slotBezig = false; slotAuto = false;
+      logboek('fout', Date.now() - start, 'code controleren: ' + ((err && err.message) || 'onbekend'));
       slotFout = err && err.toonbaar ? err.message : 'Geen verbinding. Probeer het opnieuw.';
       if (auto) { slotFout = 'Geen verbinding, ik probeer het zo opnieuw…'; setTimeout(function () { if (vergrendeld && gezinscode) probeerCode(gezinscode, true); }, 10000); }
       render();
@@ -2865,11 +2873,45 @@ function ververs() {
   // Het weerscherm is alleen om te kijken: dat mag gewoon bijgewerkt worden terwijl het openstaat.
   var bezigMetInvoer = function () { var w = weerScherm; weerScherm = null; var b = iemandBezig(); weerScherm = w; return b; };
   if (vergrendeld || bezigMetInvoer() || bezig) return;
-  var teller0 = dataTeller;
+  if (verversLoopt && Date.now() - verversLoopt < 70000) return;   // er loopt er al een
+  var teller0 = dataTeller, start = Date.now();
+  verversLoopt = start;
   google.script.run.withSuccessHandler(function (res) {
-    if (res && res.slot) { toonSlot(res); return; }
+    verversLoopt = 0; verversFouten = 0;
+    if (res && res.slot) { logboek('slot', Date.now() - start, res.fout || res.reden); toonSlot(res); return; }
+    logboek('ok', Date.now() - start, res && res.tijden ? 'server ' + Math.round((res.tijden.totaal || 0) / 100) / 10 + ' s' : '');
     if (!bezigMetInvoer() && !bezig && !pin && dataTeller === teller0 && res && res.gezin) { nieuweData(res); render(); }
+  }).withFailureHandler(function (e) {
+    verversLoopt = 0; verversFouten++;
+    logboek('fout', Date.now() - start, (e && e.message) || 'onbekend');
+    // Snel opnieuw proberen (15, 30, 45, 60 s) in plaats van een hele minuut te wachten.
+    clearTimeout(verversOpnieuw);
+    verversOpnieuw = setTimeout(ververs, Math.min(60000, 15000 * verversFouten));
+    if (statusOpen) render();
   }).api(gezinscode, 'getData', []);
+}
+var verversLoopt = 0, verversFouten = 0, verversOpnieuw = null, statusOpen = false;
+/** Klein logboek van de laatste verbindingen (alleen op dit apparaat), te zien via de versieregel onderaan. */
+function logboek(soort, ms, tekst) {
+  var l = [];
+  try { l = JSON.parse(localStorage.getItem('gezinsdashboard-log') || '[]'); } catch (e) {}
+  l.unshift({ t: Date.now(), s: soort, ms: ms, x: String(tekst || '').slice(0, 80) });
+  try { localStorage.setItem('gezinsdashboard-log', JSON.stringify(l.slice(0, 30))); } catch (e) {}
+}
+function renderStatus(laag) {
+  var l = [];
+  try { l = JSON.parse(localStorage.getItem('gezinsdashboard-log') || '[]'); } catch (e) {}
+  var tijden = D && D.tijden ? Object.keys(D.tijden).map(function (k) { return k + ' ' + (Math.round(D.tijden[k] / 100) / 10) + ' s'; }).join(' · ') : '–';
+  var rijen = l.map(function (x) {
+    var d = new Date(x.t);
+    return '<div class="logrij ' + esc(x.s) + '"><span>' + esc(('0' + d.getDate()).slice(-2) + '/' + (d.getMonth() + 1) + ' ' + d.toTimeString().slice(0, 8)) + '</span><b>' + esc(x.s) + '</b><span>' + (Math.round(x.ms / 100) / 10) + ' s</span><span class="klein">' + esc(x.x) + '</span></div>';
+  }).join('');
+  laag.innerHTML = '<div class="overlay"><div class="detailbox statusbox" role="dialog" aria-modal="true" aria-label="Verbinding">' +
+    '<div class="kop" style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Verbinding</h2><button type="button" class="knop2" data-act="statusSluit">Sluiten</button></div>' +
+    '<div class="klein">Versie ' + esc(versieTekst(VERSIE)) + ' · server ' + esc(D && D.versie ? versieTekst(D.versie) : '?') + ' · gegevens van ' + esc(D && D.vandaag ? D.vandaag : '?') + ' ' + esc(new Date(laatsteData).toTimeString().slice(0, 5)) + '</div>' +
+    '<div class="klein">Laatste serverduur: ' + esc(tijden) + '</div>' +
+    '<div class="chips"><button type="button" class="knop" data-act="statusNu">Nu verversen</button><button type="button" class="knop2" data-act="statusHerlaad">Pagina opnieuw laden</button></div>' +
+    '<div class="okkop">Laatste verbindingen</div><div class="loglijst">' + (rijen || '<div class="klein">Nog niets.</div>') + '</div></div></div>';
 }
 
 function alleEvents() {
@@ -3342,6 +3384,10 @@ document.addEventListener('click', function (ev) {
     schoolPin(bw.kind, 'Brood week ' + isoWeek(SD().weken[bw.week][0]), 'zetBroodWeek', [bw.kind, items], 'Brood van ' + bpn.naam + ' opgeslagen');
     return;
   }
+  if (act === 'statusOpen') { statusOpen = true; render(); return; }
+  if (act === 'statusSluit') { statusOpen = false; render(); return; }
+  if (act === 'statusNu') { verversLoopt = 0; bezig = 0; logboek('handmatig', 0, 'nu verversen'); ververs(); zegt('Bezig met verversen…', '#9CC2FF'); return; }
+  if (act === 'statusHerlaad') { try { location.replace(location.pathname + '?r=' + Date.now() + location.hash); } catch (e) { location.reload(); } return; }
   if (act === 'afvalOpen') { afvalScherm = {}; render(); return; }
   if (act === 'afvalSluit') { afvalScherm = null; render(); return; }
   if (act === 'aftelOpen') { aftelScherm = { beheer: false, wat: '', datum: '', icoon: '⭐', voor: [], fout: '' }; render(); return; }
@@ -3688,13 +3734,19 @@ function dagWachter() {
   if (!dagWisselSinds) dagWisselSinds = Date.now();
   if (Date.now() - laatsteAanraking > 5 * 60000) {
     pin = null; keuze = null; detail = null; bewerkA = null; menuEdit = null; klusForm = null; helpDag = null; meeForm = null;
-    wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null; geven = null; straf = null; oppasForm = null; okForm = null; weerScherm = null; afvalScherm = null; aftelScherm = null; dagForm = null; weekForm = null; vastForm = null; kpiScherm = null; broodWeek = null;
+    wieKiezen = false; extraForm = null; beoordeel = null; spaarForm = null; geven = null; straf = null; oppasForm = null; okForm = null; weerScherm = null; afvalScherm = null; aftelScherm = null; dagForm = null; weekForm = null; vastForm = null; kpiScherm = null; broodWeek = null; statusOpen = false;
     bezig = 0;
   }
   ververs();
   // Pagina opnieuw laden (niet in de Google-versie: daar zit het scherm in een kader dat zichzelf niet kan herladen).
   if (Date.now() - dagWisselSinds > 15 * 60000 && Date.now() - laatsteAanraking > 5 * 60000 && !/googleusercontent/.test(location.hostname)) {
-    try { location.reload(); } catch (e) {}
+    // Hoogstens één keer per dag herladen, zodat een trage verbinding geen herlaad-lus geeft.
+    var al = ''; try { al = localStorage.getItem('gezinsdashboard-herladen') || ''; } catch (e) {}
+    if (al !== lokaleDatum()) {
+      try { localStorage.setItem('gezinsdashboard-herladen', lokaleDatum()); } catch (e) {}
+      logboek('herladen', 0, 'nieuwe dag');
+      try { location.replace(location.pathname + '?d=' + lokaleDatum().replace(/-/g, '') + location.hash); } catch (e) {}
+    }
   }
 }
 setInterval(dagWachter, 60000);
